@@ -1,0 +1,185 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 3/8/2017 8:59:29 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Disassembler Final Project
+00000000                             3  * Written by : Dwina Solihin & Brian Mostrom
+00000000                             4  * Date       : February 5, 2017
+00000000                             5  * Description: 422 Final Project
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  * Contains variables, constants, and definitions
+00000000                             8  *-----------------------------------------------------------
+00000000                             9  *Equates opcodes
+00000000  =0000000D                 10  CR              EQU     $0D         carriage return
+00000000  =0000000A                 11  LF              EQU     $0A         line feed
+00000000                            12  *-----------------------------------------------------------
+00000000                            13  *Output messages 
+00000000= 43 53 53 20 34 32 ...     14  welcome_msg         DC.B    'CSS 422 Disassembler Final Project',CR,LF
+00000024= 42 79 20 44 77 69 ...     15                      DC.B    'By Dwina Solihin & Brian Mostrom',CR,LF
+00000046= 45 6E 74 65 72 20 ...     16  reenter_output_msg  DC.B    'Enter data to continue program',CR,LF
+00000066= 54 68 65 20 73 74 ...     17  location_start_msg  DC.B    'The start of the location is at address ___',CR,LF
+00000093= 52 65 61 63 68 65 ...     18  endtest_msg         DC.B    'Reached end of test data.',CR,LF
+000000AE= 54 72 79 20 61 6E ...     19                      DC.B    'Try another location? (yes/no): ',0
+000000CF= 41 64 64 72 65 73 ...     20  addr_oddB_msg       DC.B    'Address cannot end on odd byte.',CR,LF,CR,LF,0
+Line 21 ERROR: Invalid syntax
+000000F3=                           21  addr_order          DC.B    'The ending address cannot go before the starting address'CR,LF,CR,LF,0
+000000F3= 50 72 65 73 73 20 ...     22  pause_msg           DC.B    'Press enter to continue'
+0000010A= 0D 0A 00                  23  linebreak           DC.B    CR,LF,0
+0000010D                            24                      
+0000010D                            25  *Printing out the Op-codes required
+0000010D= 4E 4F 50 00               26  nop_disp            DC.B    'NOP',0
+00000111= 4D 4F 56 45 00            27  move_disp           DC.B    'MOVE',0
+00000116= 4D 4F 56 45 41 00         28  movea_disp          DC.B    'MOVEA',0
+0000011C= 4D 4F 56 45 51 00         29  moveq_disp          DC.B    'MOVEQ',0
+00000122= 4D 4F 56 45 4D 00         30  movem_disp          DC.B    'MOVEM',0
+00000128= 41 44 44 00               31  add_disp            DC.B    'ADD',0
+0000012C= 41 44 44 41 00            32  adda_disp           DC.B    'ADDA',0
+00000131= 41 44 44 49 00            33  addi_disp           DC.B    'ADDI',0
+00000136= 41 44 44 51 00            34  addq_disp           DC.B    'ADDQ',0
+0000013B= 53 55 42 00               35  sub_disp            DC.B    'SUB',0
+0000013F= 4D 55 4C 53 00            36  muls_disp           DC.B    'MULS',0
+00000144= 44 49 56 55 00            37  divu_disp           DC.B    'DIVU',0
+00000149= 4C 45 41 00               38  lea_disp            DC.B    'LEA',0
+0000014D= 43 4C 52 00               39  clr_disp            DC.B    'CLR',0
+00000151= 41 4E 44 00               40  and_disp            DC.B    'AND',0
+00000155= 4F 52 00                  41  or_disp             DC.B    'OR',0
+00000158= 4C 53 4C 00               42  lsl_disp            DC.B    'LSL',0
+0000015C= 4C 53 52 00               43  lsr_disp            DC.B    'LSR',0
+00000160= 41 53 52 00               44  asr_disp            DC.B    'ASR',0 
+00000164= 41 53 4C 00               45  asl_disp            DC.B    'ASL',0
+00000168= 52 4F 4C 00               46  rol_disp            DC.B    'ROL',0
+0000016C= 52 4F 52 00               47  ror_disp            DC.B    'ROR',0
+00000170= 43 4D 50 00               48  cmp_disp            DC.B    'CMP',0
+00000174= 42 43 43 00               49  bcc_disp            DC.B    'BCC',0
+00000178= 42 47 54 00               50  cgt_disp            DC.B    'BGT',0
+0000017C= 42 4C 45 00               51  ble_disp            DC.B    'BLE',0
+00000180= 4A 53 52 00               52  jsr_disp            DC.B    'JSR',0
+00000184= 52 54 53 00               53  rts_disp            DC.B    'RTS',0
+00000188                            54  
+00000188                            55  *Printing out the symbols needed
+00000188= 30 00                     56  hexaTable               DC.B    '0',0
+0000018A= 31 00                     57                          DC.B    '1',0
+0000018C= 32 00                     58                          DC.B    '2',0
+0000018E= 33 00                     59                          DC.B    '3',0
+00000190= 34 00                     60                          DC.B    '4',0
+00000192= 35 00                     61                          DC.B    '5',0
+00000194= 36 00                     62                          DC.B    '6',0
+00000196= 37 00                     63                          DC.B    '7',0
+00000198= 38 00                     64                          DC.B    '8',0
+0000019A= 39 00                     65                          DC.B    '9',0
+0000019C= 41 00                     66                          DC.B    'A',0
+0000019E= 42 00                     67                          DC.B    'B',0
+000001A0= 43 00                     68                          DC.B    'C',0
+000001A2= 44 00                     69                          DC.B    'D',0
+000001A4= 45 00                     70                          DC.B    'E',0
+000001A6= 46 00                     71                          DC.B    'F',0
+000001A8= 23 00                     72  poundsign               DC.B    '#',0
+000001AA= 24 00                     73  dollarsign              DC.B    '$',0
+000001AC= 2B 00                     74  plussign                DC.B    '+',0
+000001AE= 2D 00                     75  minussign               DC.B    '-',0
+000001B0= 2C 00                     76  commasign               DC.B    ',',0
+000001B2= 2F 00                     77  backslashsigh           DC.B    '/',0
+000001B4= 28 00                     78  openparen               DC.B    '(',0
+000001B6= 29 00                     79  closeparen              DC.B    ')',0
+000001B8= 20 00                     80  space                   DC.B    ' ',0   
+000001BA= 2E 62 00                  81  size_b                  DC.B    '.b',0
+000001BD= 2E 77 00                  82  size_w                  DC.B    '.w',0        
+000001C0= 2E 6C 00                  83  size_l                  DC.B    '.l',0
+000001C3                            84  
+000001C3                            85  *Defining storage
+000001C3                            86  linecount               DS.B    1       *storeage for lines on a screen
+000001C4                            87  input_buffer            DS.L    1       *creates input buffer for ascii string
+000001C8                            88  table_length            DS.B    1       *number of spaces in table to print to console
+000001C9                            89  opcode_size             DS.B    1       *for size of the current opword
+000001CA                            90  opcode_current          DS.W    1       *save storage current opword being processed
+000001CC                            91  location_startData      DS.L    1       *location where to begin reading data
+000001D0                            92  location_endData        DS.L    1       *location where to end reading data
+000001D4                            93  dest_register           DS.W    1       *storage for the destination EA register id
+000001D6                            94  dest_mode               DS.W    1       *storage for destination EA mode
+000001D8                            95  movem_first             DS.B    1       *keeps track of first register in list for movem
+000001D9                            96  movem_last              DS.B    1       *tracks most recent register in list for movem as loop goes through mask
+000001DA                            97  movem_printed           DS.B    1       *boolean used to track if movem print subroutine has been called
+000001DB                            98  
+000001DB                            99  
+000001DB                           100  
+000001DB                           101  
+000001DB                           102  
+000001DB                           103  
+000001DB                           104  
+000001DB                           105  
+000001DB                           106  
+000001DB                           107  
+000001DB                           108  
+Line 109 WARNING: END directive missing, starting address not set
+
+1 error detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDA_DISP           12C
+ADDI_DISP           131
+ADDQ_DISP           136
+ADDR_ODDB_MSG       CF
+ADDR_ORDER          F3
+ADD_DISP            128
+AND_DISP            151
+ASL_DISP            164
+ASR_DISP            160
+BACKSLASHSIGH       1B2
+BCC_DISP            174
+BLE_DISP            17C
+CGT_DISP            178
+CLOSEPAREN          1B6
+CLR_DISP            14D
+CMP_DISP            170
+COMMASIGN           1B0
+CR                  D
+DEST_MODE           1D6
+DEST_REGISTER       1D4
+DIVU_DISP           144
+DOLLARSIGN          1AA
+ENDTEST_MSG         93
+HEXATABLE           188
+INPUT_BUFFER        1C4
+JSR_DISP            180
+LEA_DISP            149
+LF                  A
+LINEBREAK           10A
+LINECOUNT           1C3
+LOCATION_ENDDATA    1D0
+LOCATION_STARTDATA  1CC
+LOCATION_START_MSG  66
+LSL_DISP            158
+LSR_DISP            15C
+MINUSSIGN           1AE
+MOVEA_DISP          116
+MOVEM_DISP          122
+MOVEM_FIRST         1D8
+MOVEM_LAST          1D9
+MOVEM_PRINTED       1DA
+MOVEQ_DISP          11C
+MOVE_DISP           111
+MULS_DISP           13F
+NOP_DISP            10D
+OPCODE_CURRENT      1CA
+OPCODE_SIZE         1C9
+OPENPAREN           1B4
+OR_DISP             155
+PAUSE_MSG           F3
+PLUSSIGN            1AC
+POUNDSIGN           1A8
+REENTER_OUTPUT_MSG  46
+ROL_DISP            168
+ROR_DISP            16C
+RTS_DISP            184
+SIZE_B              1BA
+SIZE_L              1C0
+SIZE_W              1BD
+SPACE               1B8
+SUB_DISP            13B
+TABLE_LENGTH        1C8
+WELCOME_MSG         0

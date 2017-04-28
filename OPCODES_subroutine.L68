@@ -1,0 +1,63 @@
+00000000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 4/27/2017 9:17:00 PM
+
+00000000  4E71                       1          NOP
+00000002                             2  
+Line 3 ERROR: Undefined symbol
+00000002  4EF9 004DBB8E              3  jmp_table      JMP         code0000
+00000008                             4  
+Line 5 ERROR: Undefined symbol
+00000008  4EF9 004DBB8E              5                 JMP         code0001
+0000000E                             6  
+Line 7 ERROR: Undefined symbol
+0000000E  4EF9 004DBB8E              7                 JMP         code0010
+00000014                             8  
+Line 9 ERROR: Undefined symbol
+00000014  4EF9 004DBB8E              9                 JMP         code0011
+0000001A                            10  
+Line 11 ERROR: Undefined symbol
+0000001A  4EF9 004DBB8E             11                 JMP         code0100
+00000020                            12  
+Line 13 ERROR: Undefined symbol
+00000020  4EF9 004DBB8E             13                 JMP         code0101
+00000026                            14  
+Line 15 ERROR: Undefined symbol
+00000026  4EF9 004DBB8E             15                 JMP         code0110
+0000002C                            16  
+Line 17 ERROR: Undefined symbol
+0000002C  4EF9 004DBB8E             17                 JMP         code0111
+00000032                            18  
+Line 19 ERROR: Undefined symbol
+00000032  4EF9 004DBB8E             19                 JMP         code1000
+00000038                            20  
+Line 21 ERROR: Undefined symbol
+00000038  4EF9 004DBB8E             21                 JMP         code1001
+0000003E                            22  
+Line 23 ERROR: Undefined symbol
+0000003E  4EF9 004DBB8E             23                 JMP         code1010
+00000044                            24  
+Line 25 ERROR: Undefined symbol
+00000044  4EF9 004DBB8E             25                 JMP         code1011
+0000004A                            26  
+Line 27 ERROR: Undefined symbol
+0000004A  4EF9 004DBB8E             27                 JMP         code1100
+00000050                            28  
+Line 29 ERROR: Undefined symbol
+00000050  4EF9 004DBB8E             29                 JMP       code1101
+00000056                            30  
+Line 31 ERROR: Undefined symbol
+00000056  4EF9 004DBB8E             31                 JMP         code1110
+0000005C                            32  
+Line 33 ERROR: Undefined symbol
+0000005C  4EF9 004DBB8E             33                 JMP         code1111
+Line 34 WARNING: END directive missing, starting address not set
+
+16 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+JMP_TABLE           2

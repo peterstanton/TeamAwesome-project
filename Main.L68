@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 4/20/2017 1:21:42 PM
+Created On: 4/27/2017 9:17:45 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Final Project
@@ -14,30 +14,30 @@ Created On: 4/20/2017 1:21:42 PM
 00001000                            10      
 00001000                            11                  INCLUDE 'IO_subroutine.x68'
 00001000                            12  
-00001000  43F9 0000104C             13                  LEA     welcome_msg, A1             *loads welcome message to A1
+00001000  43F9 0000104E             13                  LEA     welcome_msg, A1             *loads welcome message to A1
 00001006  103C 000D                 14                  MOVE.B  #13,D0              
 0000100A  4E4F                      15                  TRAP    #15
 0000100C                            16          
-0000100C  13FC 0007 000011E2        17                  MOVE.B  #7,linecount                *initializes counter
-00001014  43F9 000010B0             18  FN_InputLoop    LEA     location_start_msg,A1       *Store the console message for output.
+0000100C  13FC 0007 00001130        17                  MOVE.B  #7,linecount                *initializes counter
+00001014  43F9 000010B2             18  FN_InputLoop    LEA     location_start_msg,A1       *Store the console message for output.
 0000101A  103C 000E                 19                  MOVE.B  #14,D0                  
 0000101E  4E4F                      20                  TRAP    #15                         *Display to console.
 00001020                            21  
-00001020  43F9 000011E3             22                  LEA     input_buffer,A1             *Raw input stored
+00001020  43F9 00001131             22                  LEA     input_buffer,A1             *Raw input stored
 00001026  103C 0002                 23                  MOVE.B  #2,D0                       *Read string from keyboard to A1
 0000102A  4E4F                      24                  TRAP    #15                         *Get the user input from console
 0000102C                            25                  
-0000102C  43F9 000010CF             26                  LEA     location_end_msg,A1         *Store the console message for output.
+0000102C  43F9 000010D1             26                  LEA     location_end_msg,A1         *Store the console message for output.
 00001032  103C 000E                 27                  MOVE.B  #14,D0                  
 00001036  4E4F                      28                  TRAP    #15                         *Display to console.
 00001038                            29  
-00001038  45F9 000011E3             30                  LEA     input_buffer,A2             *Raw input stored
+00001038  45F9 00001131             30                  LEA     input_buffer,A2             *Raw input stored
 0000103E  103C 0002                 31                  MOVE.B  #2,D0                       *Read string from keyboard to A1
 00001042  4E4F                      32                  TRAP    #15                         *Get the user input from console
 00001044                            33                 
 00001044                            34  
 00001044                            35                  
-00001044  6000 0002                 36                  BRA     END_PROGRAM
+00001044  6000 0004                 36                  BRA     END_PROGRAM
 00001048                            37                  
 00001048                            38  
 00001048                            39  
@@ -54,75 +54,76 @@ Created On: 4/20/2017 1:21:42 PM
 00001048                            50  
 00001048                            51  
 00001048                            52  -------------------- end include --------------------
-00001048                            53  
-00001048  FFFF FFFF                 54  END_PROGRAM     SIMHALT                *Stop the simulator
-0000104C                            55  
-0000104C                            56  *-----------------------------------------------------------
-0000104C                            57                  *INCLUDE 'helpers.x68'
-0000104C                            58                  INCLUDE 'definitions.x68'
-0000104C                            59  
-0000104C  =0000000D                 60  CR              EQU     $0D         carriage return
-0000104C  =0000000A                 61  LF              EQU     $0A         line feed
-0000104C= 43 53 53 20 34 32 ...     62  welcome_msg         DC.B    'CSS 422 Disassembler Final Project',CR,LF
-00001070= 42 79 20 54 65 61 ...     63                      DC.B    'By Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)',CR,LF,0
-000010B0= 45 6E 74 65 72 20 ...     64  location_start_msg  DC.B    'Enter Start location address',CR,LF,0
-000010CF= 45 6E 74 65 72 20 ...     65  location_end_msg    DC.B    'Enter End location address',CR,LF,0
-000010EC= 52 65 61 63 68 65 ...     66  endtest_msg         DC.B    'Reached end of test data.',CR,LF
-00001107= 54 72 79 20 61 6E ...     67                      DC.B    'Try another location? (yes/no): ',0
-00001128= 41 64 64 72 65 73 ...     68  addr_oddB_msg       DC.B    'Address cannot end on odd byte.',CR,LF,CR,LF,0
-0000114C= 54 68 65 20 65 6E ...     69  addr_order          DC.B    'The ending address cannot go before the starting address',CR,LF,CR,LF,0
-00001189= 50 72 65 73 73 20 ...     70  pause_msg           DC.B    'Press enter to continue'
-000011A0= 0D 0A 00                  71  linebreak           DC.B    CR,LF,0
-000011A3                            72                      
-000011A3= 4E 4F 50 00               73  nop_disp            DC.B    'NOP',0
-000011A7                            74  
-000011A7                            75  
-000011A7= 30 00                     76  hexaTable               DC.B    '0',0
-000011A9= 31 00                     77                          DC.B    '1',0
-000011AB= 32 00                     78                          DC.B    '2',0
-000011AD= 33 00                     79                          DC.B    '3',0
-000011AF= 34 00                     80                          DC.B    '4',0
-000011B1= 35 00                     81                          DC.B    '5',0
-000011B3= 36 00                     82                          DC.B    '6',0
-000011B5= 37 00                     83                          DC.B    '7',0
-000011B7= 38 00                     84                          DC.B    '8',0
-000011B9= 39 00                     85                          DC.B    '9',0
-000011BB= 41 00                     86                          DC.B    'A',0
-000011BD= 42 00                     87                          DC.B    'B',0
-000011BF= 43 00                     88                          DC.B    'C',0
-000011C1= 44 00                     89                          DC.B    'D',0
-000011C3= 45 00                     90                          DC.B    'E',0
-000011C5= 46 00                     91                          DC.B    'F',0
-000011C7= 23 00                     92  poundsign               DC.B    '#',0
-000011C9= 24 00                     93  dollarsign              DC.B    '$',0
-000011CB= 2B 00                     94  plussign                DC.B    '+',0
-000011CD= 2D 00                     95  minussign               DC.B    '-',0
-000011CF= 2C 00                     96  commasign               DC.B    ',',0
-000011D1= 2F 00                     97  backslashsigh           DC.B    '/',0
-000011D3= 28 00                     98  openparen               DC.B    '(',0
-000011D5= 29 00                     99  closeparen              DC.B    ')',0
-000011D7= 20 00                    100  space                   DC.B    ' ',0   
-000011D9= 2E 62 00                 101  size_b                  DC.B    '.b',0
-000011DC= 2E 77 00                 102  size_w                  DC.B    '.w',0        
-000011DF= 2E 6C 00                 103  size_l                  DC.B    '.l',0
-000011E2                           104  
-000011E2                           105  linecount               DS.B    1       *storeage for lines on a screen
-000011E3= 01                       106  input_buffer            DC.B    1
-000011E4                           107  
-000011E4                           108  
-000011E4                           109  
-000011E4                           110  
-000011E4                           111  
-000011E4                           112  
-000011E4                           113  
-000011E4                           114  
-000011E4                           115  
-000011E4                           116  
-000011E4                           117  
-000011E4                           118  
-000011E4                           119  -------------------- end include --------------------
-000011E4                           120                  
-000011E4                           121                  END    START        ; last line of source
+00001048                            53                  INCLUDE 'OPCODES_subroutine.x68'
+00001048  4E71                      54          NOP
+0000104A                            55  
+0000104A                            56  
+0000104A                            57  -------------------- end include --------------------
+0000104A                            58  
+0000104A  FFFF FFFF                 59  END_PROGRAM     SIMHALT                *Stop the simulator
+0000104E                            60  
+0000104E                            61  *-----------------------------------------------------------
+0000104E                            62                  *INCLUDE 'helpers.x68'
+0000104E                            63                  INCLUDE 'definitions.x68'
+0000104E                            64  
+0000104E  =0000000D                 65  CR              EQU     $0D         carriage return
+0000104E  =0000000A                 66  LF              EQU     $0A         line feed
+0000104E= 43 53 53 20 34 32 ...     67  welcome_msg         DC.B    'CSS 422 Disassembler Final Project',CR,LF
+00001072= 42 79 20 54 65 61 ...     68                      DC.B    'By Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)',CR,LF,0
+000010B2= 45 6E 74 65 72 20 ...     69  location_start_msg  DC.B    'Enter Start location address',CR,LF,0
+000010D1= 45 6E 74 65 72 20 ...     70  location_end_msg    DC.B    'Enter End location address',CR,LF,0
+000010EE= 0D 0A 00                  71  linebreak           DC.B    CR,LF,0
+000010F1                            72                      
+000010F1= 4E 4F 50 00               73  nop_disp            DC.B    'NOP',0
+000010F5                            74  
+000010F5                            75  
+000010F5= 30 00                     76  hexaTable               DC.B    '0',0
+000010F7= 31 00                     77                          DC.B    '1',0
+000010F9= 32 00                     78                          DC.B    '2',0
+000010FB= 33 00                     79                          DC.B    '3',0
+000010FD= 34 00                     80                          DC.B    '4',0
+000010FF= 35 00                     81                          DC.B    '5',0
+00001101= 36 00                     82                          DC.B    '6',0
+00001103= 37 00                     83                          DC.B    '7',0
+00001105= 38 00                     84                          DC.B    '8',0
+00001107= 39 00                     85                          DC.B    '9',0
+00001109= 41 00                     86                          DC.B    'A',0
+0000110B= 42 00                     87                          DC.B    'B',0
+0000110D= 43 00                     88                          DC.B    'C',0
+0000110F= 44 00                     89                          DC.B    'D',0
+00001111= 45 00                     90                          DC.B    'E',0
+00001113= 46 00                     91                          DC.B    'F',0
+00001115= 23 00                     92  poundsign               DC.B    '#',0
+00001117= 24 00                     93  dollarsign              DC.B    '$',0
+00001119= 2B 00                     94  plussign                DC.B    '+',0
+0000111B= 2D 00                     95  minussign               DC.B    '-',0
+0000111D= 2C 00                     96  commasign               DC.B    ',',0
+0000111F= 2F 00                     97  backslashsigh           DC.B    '/',0
+00001121= 28 00                     98  openparen               DC.B    '(',0
+00001123= 29 00                     99  closeparen              DC.B    ')',0
+00001125= 20 00                    100  space                   DC.B    ' ',0   
+00001127= 2E 62 00                 101  size_b                  DC.B    '.b',0
+0000112A= 2E 77 00                 102  size_w                  DC.B    '.w',0        
+0000112D= 2E 6C 00                 103  size_l                  DC.B    '.l',0
+00001130                           104  
+00001130                           105  linecount               DS.B    1       *storeage for lines on a screen
+00001131= 01                       106  input_buffer            DC.B    1
+00001132                           107  
+00001132                           108  
+00001132                           109  
+00001132                           110  
+00001132                           111  
+00001132                           112  
+00001132                           113  
+00001132                           114  
+00001132                           115  
+00001132                           116  
+00001132                           117  
+00001132                           118  
+00001132                           119  
+00001132                           120  -------------------- end include --------------------
+00001132                           121                  
+00001132                           122                  END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -131,32 +132,28 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADDR_ODDB_MSG       1128
-ADDR_ORDER          114C
-BACKSLASHSIGH       11D1
-CLOSEPAREN          11D5
-COMMASIGN           11CF
+BACKSLASHSIGH       111F
+CLOSEPAREN          1123
+COMMASIGN           111D
 CR                  D
-DOLLARSIGN          11C9
-ENDTEST_MSG         10EC
-END_PROGRAM         1048
+DOLLARSIGN          1117
+END_PROGRAM         104A
 FN_INPUTLOOP        1014
-HEXATABLE           11A7
-INPUT_BUFFER        11E3
+HEXATABLE           10F5
+INPUT_BUFFER        1131
 LF                  A
-LINEBREAK           11A0
-LINECOUNT           11E2
-LOCATION_END_MSG    10CF
-LOCATION_START_MSG  10B0
-MINUSSIGN           11CD
-NOP_DISP            11A3
-OPENPAREN           11D3
-PAUSE_MSG           1189
-PLUSSIGN            11CB
-POUNDSIGN           11C7
-SIZE_B              11D9
-SIZE_L              11DF
-SIZE_W              11DC
-SPACE               11D7
+LINEBREAK           10EE
+LINECOUNT           1130
+LOCATION_END_MSG    10D1
+LOCATION_START_MSG  10B2
+MINUSSIGN           111B
+NOP_DISP            10F1
+OPENPAREN           1121
+PLUSSIGN            1119
+POUNDSIGN           1115
+SIZE_B              1127
+SIZE_L              112D
+SIZE_W              112A
+SPACE               1125
 START               1000
-WELCOME_MSG         104C
+WELCOME_MSG         104E

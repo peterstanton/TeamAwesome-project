@@ -15,42 +15,60 @@ START:                  ; first instruction of program
     //get the 4 right bits with AND 0F... or F0000000?
     
     //grab 3 bits
+
+code0000
+//parse 000
+
+    ;parse next 3 digits
+    JMP 000
+    jmp 001
+    JMP 010
+    JMP 011
+    JMP 100
+    JMP 101
+    JMP 110
+    JMP 111
+
+code0001
+
+code0010
+
+
+code0011
+
+code0100
+
+    ;parse the next 4 digits
+    JMP 0000
+    JMP 0001
+    JMP 0010
+    JMP 0011
+    JMP 0100
+    JMP 0101
+    JMP 0110
+    JMP 0111
+    JMP 1000
+
+code0101
+
+code0110
+
+code0111
+
+code1000
+
+code1001
+
+code1011
+
+code1100
+
+code1101
+
+code1110
+
+code1111
     
-    //if 000 jump to 000 
-    //if 001 jump to 001   
-    //if 010 jump to 010
-    //if 011 jump to 011
-    //if 100 jump to 100
-    //if 101 jump to 101
-    //if 110 jump to 110
-    //if 111 jump to 111
-    
-    
-    
-JUMP000
-    //stuff for 000 operations
-    
-    
-JUMP001 
-    //stuff for 001 operations
-    
-JUMP010
-    //stuff for 010 operations
-    
-JUMP011
-    //stuff for 011 operations
-    
-JUMP100
-    //stuff for 100 operations
-    
-JUMP101
-    //stuff for 101 operations
-    
-JUMP110
-    //stuff for 110 operations
-    
-JUMP111
-    //stuff for 111 operations.
     
     
     
@@ -60,6 +78,8 @@ JUMP111
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
 
 *~Font name~Courier New~
 *~Font size~10~

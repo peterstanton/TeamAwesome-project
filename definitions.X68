@@ -16,10 +16,17 @@ welcome_msg         DC.B    'CSS 422 Disassembler Final Project',CR,LF
                     DC.B    'By Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)',CR,LF,0
 location_start_msg  DC.B    'Enter Start location address',CR,LF,0
 location_end_msg    DC.B    'Enter End location address',CR,LF,0
+addr_oddBit_msg     DC.B    'Address cannot end on an odd byte.',CR,LF,CR,LF,0
+addr_order_check    DC.B    'Ending Address cannot go before the starting address.',CR,LF,CR,LF,0
+pause_msg           DC.B    'Press enter to continue!',CR,LF
+endTest_msg         DC.B    'Reached end of test data.', CR,LF
+                    DC.B    'Try another location? (yes/no): ',0
 linebreak           DC.B    CR,LF,0
                     
 *Printing out the Op-codes required
-nop_disp            DC.B    'NOP',0
+Invalid_disp        DC.B    'DATA',0
+InvalidEA_disp      DC.B    'WRONGEA',0
+NOP_disp            DC.B    'NOP',0
 
 
 *Printing out the symbols needed
@@ -54,7 +61,11 @@ size_l                  DC.B    '.l',0
 
 *Defining storage
 linecount               DS.B    1       *storeage for lines on a screen
-input_buffer            DC.B    1
+input_buffer            DC.B    1       *creates input buffer for ASCII string
+location_startData      DS.L    1       *location on where to start reading data
+location_endData        DS.L    1       *location on where to end reading data
+table_length            DS.B    1       *Number of spaces in the table to print to console
+
 
 
 

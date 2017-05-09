@@ -1,73 +1,111 @@
-00001000 Starting Address
+00000000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 4/27/2017 8:56:43 PM
+Created On: 4/28/2017 11:52:57 AM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Final Project
-00000000                             3  * Written by : Team Awesome
+00000000                             3  * Written by : Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)
 00000000                             4  * Date       : April 15, 2017
-00000000                             5  * Description: 422 Final Project
+00000000                             5  * Description: CSS 422 Final Project
 00000000                             6  *-----------------------------------------------------------
-00000000                             7  
-00000000                             8  *Displays the welcome message
-Line 9 ERROR: Undefined symbol
-00000000  43F9 004DBB8E              9                  LEA     welcome_msg, A1             *loads welcome message to A1
-00000006  103C 000D                 10                  MOVE.B  #13,D0              
-0000000A  4E4F                      11                  TRAP    #15
-0000000C                            12          
-Line 13 ERROR: Undefined symbol
-0000000C  13FC 0007 00544488        13                  MOVE.B  #7,linecount                *initializes counter
-00000014                            14  *Get Input               
-00000014                            15  *Shows start location prompt
+00000000                             7  *First test will be with NOP
+00000000                             8  *Machine code is 01 00 111 001 110 010
+00000000                             9  *Use test code
+00000000                            10  *-----------------------------------------------------------
+00000000                            11  *Displays the welcome message
+Line 12 ERROR: Undefined symbol
+00000000  43F9 004DBB8E             12                  LEA     welcome_msg, A1             *loads welcome message to A1
+00000006  103C 000D                 13                  MOVE.B  #13,D0              
+0000000A  4E4F                      14                  TRAP    #15
+0000000C                            15          
 Line 16 ERROR: Undefined symbol
-00000014  43F9 004DBB8E             16  FN_InputLoop    LEA     location_start_msg,A1       *Store the console message for output.
-0000001A  103C 000E                 17                  MOVE.B  #14,D0                  
-0000001E  4E4F                      18                  TRAP    #15                         *Display to console.
-00000020                            19  
-00000020                            20  *Get User Input
-Line 21 ERROR: Undefined symbol
-00000020  43F9 004DBB8E             21                  LEA     input_buffer,A1             *Raw input stored
-00000026  103C 0002                 22                  MOVE.B  #2,D0                       *Read string from keyboard to A1
-0000002A  4E4F                      23                  TRAP    #15                         *Get the user input from console
-0000002C                            24                  
-0000002C                            25  *Show end location prompt               
-Line 26 ERROR: Undefined symbol
-0000002C  43F9 004DBB8E             26                  LEA     location_end_msg,A1         *Store the console message for output.
-00000032  103C 000E                 27                  MOVE.B  #14,D0                  
-00000036  4E4F                      28                  TRAP    #15                         *Display to console.
-00000038                            29  
-00000038                            30  *Get User Input
+0000000C  13FC 0007 00544488        16                  MOVE.B  #7,linecount                *initializes counter
+00000014                            17  *-----------------------------------------------------------
+00000014                            18  *Get Input               
+00000014                            19  *Shows start location prompt
+Line 20 ERROR: Undefined symbol
+00000014  43F9 004DBB8E             20  FN_StartLoop    LEA     location_start_msg,A1       *Store the console message for output.
+0000001A  103C 000E                 21                  MOVE.B  #14,D0                  
+0000001E  4E4F                      22                  TRAP    #15                         *Display to console.
+00000020                            23  
+00000020                            24  *Get User Input
+Line 25 ERROR: Undefined symbol
+00000020  43F9 004DBB8E             25                  LEA     input_buffer,A1             *Raw input stored
+00000026  103C 0002                 26                  MOVE.B  #2,D0                       *Read string from keyboard to A1
+0000002A  4E4F                      27                  TRAP    #15                         *Get the user input from console
+0000002C                            28  
+0000002C                            29  *Convert ASCII input to hexadecimal
+Line 30 ERROR: Undefined symbol
+0000002C  4EB9 004DBB8E             30                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
 Line 31 ERROR: Undefined symbol
-00000038  45F9 004DBB8E             31                  LEA     input_buffer,A2             *Raw input stored
-0000003E  103C 0002                 32                  MOVE.B  #2,D0                       *Read string from keyboard to A1
-00000042  4E4F                      33                  TRAP    #15                         *Get the user input from console
-00000044                            34                 
-00000044                            35  
+00000032  23C7 0054448C             31                  MOVE.L  D7, location_startData      *store hex value 
+00000038                            32                  
+Line 33 ERROR: Undefined symbol
+00000038  43F9 004DBB8E             33                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
+0000003E  103C 000E                 34                  MOVE.B  #14,D0                      *no next line when displaying
+00000042  4E4F                      35                  TRAP    #15
 00000044                            36                  
 Line 37 ERROR: Undefined symbol
-00000044  6000 BB48                 37                  BRA     END_PROGRAM
-00000048                            38                  
-00000048                            39  
-00000048                            40  
-00000048                            41  
-00000048                            42  
-00000048                            43  
-00000048                            44  
-00000048                            45  
-00000048                            46  
-00000048                            47  
-00000048                            48  
-00000048                            49  
-00000048                            50  
-00000048                            51  
-00000048                            52  
-Line 53 WARNING: END directive missing, starting address not set
+00000044  4EB9 004DBB8E             37                  JSR     sub_startReadingData        *reads the location_StartData and returns D7
+0000004A  BE3C 0001                 38                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
+0000004E  67C4                      39                  BEQ     FN_StartLoop                *starts all over
+00000050                            40  *-----------------------------------------------------------                
+00000050                            41  *Show end location prompt               
+Line 42 ERROR: Undefined symbol
+00000050  43F9 004DBB8E             42  FN_EndLoop      LEA     location_end_msg,A1         *Store the console message for output.
+00000056  103C 000E                 43                  MOVE.B  #14,D0                  
+0000005A  4E4F                      44                  TRAP    #15                         *Display to console.
+0000005C                            45  
+0000005C                            46  *Get User Input
+Line 47 ERROR: Undefined symbol
+0000005C  45F9 004DBB8E             47                  LEA     input_buffer,A2             *Raw input stored
+00000062  103C 0002                 48                  MOVE.B  #2,D0                       *Read string from keyboard to A1
+00000066  4E4F                      49                  TRAP    #15                         *Get the user input from console
+00000068                            50  *Convert ASCII input to hexadecimal
+Line 51 ERROR: Undefined symbol
+00000068  4EB9 004DBB8E             51                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
+Line 52 ERROR: Undefined symbol
+0000006E  23C7 0054448C             52                  MOVE.L  D7, location_endData      *store hex value 
+00000074                            53                  
+Line 54 ERROR: Undefined symbol
+00000074  43F9 004DBB8E             54                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
+0000007A  103C 000E                 55                  MOVE.B  #14,D0                      *no next line when displaying
+0000007E  4E4F                      56                  TRAP    #15
+00000080                            57                  
+Line 58 ERROR: Undefined symbol
+00000080  4EB9 004DBB8E             58                  JSR     sub_endReadingData        *reads the location_StartData and returns D7
+00000086  BE3C 0001                 59                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
+0000008A  67C4                      60                  BEQ     FN_EndLoop                *starts all over
+0000008C                            61  
+0000008C                            62  *-----------------------------------------------------------               
+0000008C                            63  *Terminate Program
+0000008C                            64  *-----------------------------------------------------------                               
+Line 65 ERROR: Undefined symbol
+0000008C  6000 BB00                 65                  BRA     END_PROGRAM
+00000090                            66                  
+00000090                            67  
+00000090                            68  
+00000090                            69  
+00000090                            70  
+00000090                            71  
+00000090                            72  
+00000090                            73  
+00000090                            74  
+00000090                            75  
+00000090                            76  
+00000090                            77  
+00000090                            78  
+00000090                            79  
+00000090                            80  
+00000090                            81  
+Line 82 WARNING: END directive missing, starting address not set
 
-7 errors detected
+15 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-FN_INPUTLOOP        14
+FN_ENDLOOP          50
+FN_STARTLOOP        14

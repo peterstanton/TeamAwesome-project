@@ -69,7 +69,8 @@ IO_EndLoop      LEA     location_end_msg,A1         *Store the console message f
                 BRA     IO_commandPars
 *-----------------------------------------------------------
 *Parser through the various commands
-IO_commandPars  LEA     jumptable, A0                *goes to the jump table
+IO_commandPars  
+*                LEA     jumptable, A0                *goes to the jump table
                 MOVE.L  location_startData, A2
                 MOVE.L  location_endData, A3  
                 
@@ -133,6 +134,7 @@ IO_endProg      LEA     endTest_msg,A1
 *-----------------------------------------------------------                               
                 BRA     END_PROGRAM                 *else end program
                 
+
 
 
 

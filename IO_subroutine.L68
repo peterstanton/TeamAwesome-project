@@ -1,6 +1,6 @@
-00000000 Starting Address
+00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 4/28/2017 11:52:57 AM
+Created On: 5/9/2017 5:06:35 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Final Project
@@ -24,7 +24,7 @@ Line 16 ERROR: Undefined symbol
 00000014                            18  *Get Input               
 00000014                            19  *Shows start location prompt
 Line 20 ERROR: Undefined symbol
-00000014  43F9 004DBB8E             20  FN_StartLoop    LEA     location_start_msg,A1       *Store the console message for output.
+00000014  43F9 004DBB8E             20  IO_StartLoop    LEA     location_start_msg,A1       *Store the console message for output.
 0000001A  103C 000E                 21                  MOVE.B  #14,D0                  
 0000001E  4E4F                      22                  TRAP    #15                         *Display to console.
 00000020                            23  
@@ -35,77 +35,172 @@ Line 25 ERROR: Undefined symbol
 0000002A  4E4F                      27                  TRAP    #15                         *Get the user input from console
 0000002C                            28  
 0000002C                            29  *Convert ASCII input to hexadecimal
-Line 30 ERROR: Undefined symbol
-0000002C  4EB9 004DBB8E             30                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
-Line 31 ERROR: Undefined symbol
-00000032  23C7 0054448C             31                  MOVE.L  D7, location_startData      *store hex value 
-00000038                            32                  
+0000002C  4280                      30                  CLR.L   D0
+0000002E  4281                      31                  CLR.L   D1
+00000030                            32  
 Line 33 ERROR: Undefined symbol
-00000038  43F9 004DBB8E             33                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
-0000003E  103C 000E                 34                  MOVE.B  #14,D0                      *no next line when displaying
-00000042  4E4F                      35                  TRAP    #15
-00000044                            36                  
-Line 37 ERROR: Undefined symbol
-00000044  4EB9 004DBB8E             37                  JSR     sub_startReadingData        *reads the location_StartData and returns D7
-0000004A  BE3C 0001                 38                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
-0000004E  67C4                      39                  BEQ     FN_StartLoop                *starts all over
-00000050                            40  *-----------------------------------------------------------                
-00000050                            41  *Show end location prompt               
-Line 42 ERROR: Undefined symbol
-00000050  43F9 004DBB8E             42  FN_EndLoop      LEA     location_end_msg,A1         *Store the console message for output.
-00000056  103C 000E                 43                  MOVE.B  #14,D0                  
-0000005A  4E4F                      44                  TRAP    #15                         *Display to console.
-0000005C                            45  
-0000005C                            46  *Get User Input
-Line 47 ERROR: Undefined symbol
-0000005C  45F9 004DBB8E             47                  LEA     input_buffer,A2             *Raw input stored
-00000062  103C 0002                 48                  MOVE.B  #2,D0                       *Read string from keyboard to A1
-00000066  4E4F                      49                  TRAP    #15                         *Get the user input from console
-00000068                            50  *Convert ASCII input to hexadecimal
-Line 51 ERROR: Undefined symbol
-00000068  4EB9 004DBB8E             51                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
-Line 52 ERROR: Undefined symbol
-0000006E  23C7 0054448C             52                  MOVE.L  D7, location_endData      *store hex value 
-00000074                            53                  
-Line 54 ERROR: Undefined symbol
-00000074  43F9 004DBB8E             54                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
-0000007A  103C 000E                 55                  MOVE.B  #14,D0                      *no next line when displaying
-0000007E  4E4F                      56                  TRAP    #15
-00000080                            57                  
+00000030  4EB9 004DBB8E             33                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
+Line 34 ERROR: Undefined symbol
+00000036  23C7 0054448C             34                  MOVE.L  D7, location_startData      *store hex value 
+0000003C                            35                  
+Line 36 ERROR: Undefined symbol
+0000003C  43F9 004DBB8E             36                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
+00000042  103C 000E                 37                  MOVE.B  #14,D0                      *no next line when displaying
+00000046  4E4F                      38                  TRAP    #15
+00000048                            39                  
+Line 40 ERROR: Undefined symbol
+00000048  4EB9 004DBB8E             40                  JSR     sub_startReadingData        *reads the location_StartData and returns D7
+0000004E  BE3C 0001                 41                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
+00000052  67C0                      42                  BEQ     IO_StartLoop                *starts all over
+00000054                            43  *-----------------------------------------------------------                
+00000054                            44  *Show end location prompt               
+Line 45 ERROR: Undefined symbol
+00000054  43F9 004DBB8E             45  IO_EndLoop      LEA     location_end_msg,A1         *Store the console message for output.
+0000005A  103C 000E                 46                  MOVE.B  #14,D0                  
+0000005E  4E4F                      47                  TRAP    #15                         *Display to console.
+00000060                            48  
+00000060                            49  *Get User Input
+Line 50 ERROR: Undefined symbol
+00000060  45F9 004DBB8E             50                  LEA     input_buffer,A2             *Raw input stored
+00000066  103C 0002                 51                  MOVE.B  #2,D0                       *Read string from keyboard to A1
+0000006A  4E4F                      52                  TRAP    #15                         *Get the user input from console
+0000006C                            53  
+0000006C                            54  *Convert ASCII input to hexadecimal
+0000006C  4280                      55                  CLR.L   D0
+0000006E  4281                      56                  CLR.L   D1
+00000070                            57                  
 Line 58 ERROR: Undefined symbol
-00000080  4EB9 004DBB8E             58                  JSR     sub_endReadingData        *reads the location_StartData and returns D7
-00000086  BE3C 0001                 59                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
-0000008A  67C4                      60                  BEQ     FN_EndLoop                *starts all over
-0000008C                            61  
-0000008C                            62  *-----------------------------------------------------------               
-0000008C                            63  *Terminate Program
-0000008C                            64  *-----------------------------------------------------------                               
+00000070  4EB9 004DBB8E             58                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
+Line 59 ERROR: Undefined symbol
+00000076  23C7 0054448C             59                  MOVE.L  D7, location_endData        *store hex value 
+0000007C                            60                  
+Line 61 ERROR: Undefined symbol
+0000007C  43F9 004DBB8E             61                  LEA     linebreak,A1                *appends a linefeed to the end of the user input
+00000082  103C 000E                 62                  MOVE.B  #14,D0                      *no next line when displaying
+00000086  4E4F                      63                  TRAP    #15
+00000088                            64                  
 Line 65 ERROR: Undefined symbol
-0000008C  6000 BB00                 65                  BRA     END_PROGRAM
-00000090                            66                  
-00000090                            67  
-00000090                            68  
-00000090                            69  
-00000090                            70  
-00000090                            71  
-00000090                            72  
-00000090                            73  
-00000090                            74  
-00000090                            75  
-00000090                            76  
-00000090                            77  
-00000090                            78  
-00000090                            79  
-00000090                            80  
-00000090                            81  
-Line 82 WARNING: END directive missing, starting address not set
+00000088  4EB9 004DBB8E             65                  JSR     sub_endReadingData          *reads the location_StartData and returns D7
+0000008E  BE3C 0001                 66                  CMP.B   #1,D7                       *checks of D7 == 1. If it is, then input is invalid
+00000092  67C0                      67                  BEQ     IO_EndLoop                  *starts all over
+00000094                            68                  
+00000094  6000 0002                 69                  BRA     IO_commandPars
+00000098                            70  *-----------------------------------------------------------
+00000098                            71  *Parser through the various commands
+Line 72 ERROR: Undefined symbol
+00000098  41F9 004DBB8E             72  IO_commandPars  LEA     jumptable, A0                *goes to the jump table
+Line 73 ERROR: Undefined symbol
+0000009E  2479 004DBB8E             73                  MOVE.L  location_startData, A2
+Line 74 ERROR: Undefined symbol
+000000A4  2679 004DBB8E             74                  MOVE.L  location_endData, A3  
+000000AA                            75                  
+Line 76 ERROR: Undefined symbol
+000000AA  0C39 001D 005444A4        76  cmParsLoop      CMPI.B  #29, linecount              *will pause output if the screen lines equal 30
+000000B2  6700 002A                 77                  BEQ     IO_pause
+000000B6                            78  
+Line 79 ERROR: Undefined symbol
+000000B6  4EB9 004DBB8E             79  cmParsReturn    JSR     sub_PrintAddress            *goes to helper subroutine
+Line 80 ERROR: Undefined symbol
+000000BC  5239 00544490             80                  ADDQ.B  #1,linecount                increments screen line counter
+000000C2                            81                  
+000000C2  4287                      82                  CLR.L   D7                          *clears D7 which holds the hex value
+000000C4                            83                      
+000000C4  3E12                      84                  MOVE.W  (A2),D7                     *puts the next opcode in D7
+000000C6  103C 000C                 85                  MOVE.B  #12,D0                      *set to shift 12 bits
+000000CA  E06F                      86                  LSR.W   D0,D7                       *uses the shift call to isolate bits from root
+000000CC                            87                  
+000000CC  CEFC 0006                 88                  MULU    #6,D7
+000000D0  4EB0 7000                 89                  JSR     0(A0,D7)
+000000D4                            90                  *ASL.W   #2,D7                       *4 byte table entries
+000000D4                            91                  *MOVEA.L (0,A0,D7.W),A1
+000000D4                            92                  *JSR     (A1)                        *jumps to specific subroutine in jumptable
+000000D4                            93                  
+000000D4                            94                  *MOVEA.L location_endData,A6
+000000D4                            95                  
+000000D4  B5CE                      96                  CMPA.L  A6,A2                       *checks if the end of input is reached
+000000D6  6C00 0022                 97                  BGE     IO_endProg                  *if it is reached, then exits the loop
+000000DA                            98                  
+000000DA  544A                      99                  ADDA.W  #2,A2                       *if not, it will go to the next opcode in test                      
+000000DC  60CC                     100                  BRA     cmParsLoop                  *continues the loop
+000000DE                           101  *-----------------------------------------------------------               
+000000DE                           102  *Pause the program
+Line 103 ERROR: Undefined symbol
+000000DE  43F9 004DBB8E            103  IO_pause        LEA     pause_msg, A1               *displays pause_msg
+000000E4  103C 000E                104                  MOVE.B  #14,D0                      *without next line
+000000E8  4E4F                     105                  TRAP    #15
+000000EA                           106  
+000000EA  103C 0005                107                  MOVE.B  #5,D0                       *Press enter key
+000000EE  4E4F                     108                  TRAP    #15
+000000F0                           109  
+Line 110 ERROR: Undefined symbol
+000000F0  13FC 0000 00544480       110                  MOVE.B  #0,linecount
+000000F8  60BC                     111                  BRA     cmParsReturn                *start program again  
+000000FA                           112  *-----------------------------------------------------------                              
+000000FA                           113  *Terminate Program
+Line 114 ERROR: Undefined symbol
+000000FA  43F9 004DBB8E            114  IO_endProg      LEA     endTest_msg,A1
+00000100  103C 000E                115                  MOVE.B  #14,D0
+00000104  4E4F                     116                  TRAP    #15
+00000106                           117  
+00000106                           118  *checks what the user inputs (yes or no)
+Line 119 ERROR: Undefined symbol
+00000106  43F9 004DBB8E            119                  LEA     input_buffer,A1             *the input is put in buffer
+0000010C  103C 0002                120                  MOVE.B  #2,D0
+00000110  4E4F                     121                  TRAP    #15
+00000112                           122                  
+Line 123 ERROR: Undefined symbol
+00000112  43F9 004DBB8E            123                  LEA     linebreak,A1                *puts a linebreak between the input and question
+00000118  103C 000E                124                  MOVE.B  #14,D0
+0000011C  4E4F                     125                  TRAP    #15
+0000011E                           126                  
+Line 127 ERROR: Undefined symbol
+0000011E  13FC 0005 005444A8       127                  MOVE.B  #5,linebreak                *this is used for the question and prompts user input
+00000126                           128                  
+Line 129 ERROR: Undefined symbol
+00000126  2E39 004DBB8E            129                  MOVE.L  input_buffer,D7
+0000012C                           130                  
+0000012C  0C87 79657300            131                  CMPI.L  #$79657300,D7               *if they type in yes, go to program again
+00000132  6700 FEE0                132                  BEQ     IO_StartLoop
+00000136                           133  *-----------------------------------------------------------                               
+Line 134 ERROR: Undefined symbol
+00000136  6000 BA56                134                  BRA     END_PROGRAM                 *else end program
+0000013A                           135                  
+0000013A                           136  
+0000013A                           137  
+0000013A                           138  
+0000013A                           139  
+0000013A                           140  
+0000013A                           141  
+0000013A                           142  
+0000013A                           143  
+0000013A                           144  
+0000013A                           145  
+0000013A                           146  
+0000013A                           147  
+0000013A                           148  
+0000013A                           149  
+0000013A                           150  
+0000013A                           151  
+0000013A                           152  
+0000013A                           153  
+0000013A                           154  
+0000013A                           155  
+0000013A                           156  
+0000013A                           157  
+0000013A                           158  
+Line 159 WARNING: END directive missing, starting address not set
 
-15 errors detected
+28 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-FN_ENDLOOP          50
-FN_STARTLOOP        14
+CMPARSLOOP          AA
+CMPARSRETURN        B6
+IO_COMMANDPARS      98
+IO_ENDLOOP          54
+IO_ENDPROG          FA
+IO_PAUSE            DE
+IO_STARTLOOP        14

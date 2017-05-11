@@ -32,6 +32,7 @@ OP_NOP          LEA     NOP_disp,A1             *Displays the NOP operand name
                 RTS
 *-----------------------------------------------------------                
 
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

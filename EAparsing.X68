@@ -1,6 +1,6 @@
 *-----------------------------------------------------------
-* Title      :
-* Written by :
+* Title      : EA decomposer
+* Written by : Peter Stanton
 * Date       :
 * Description:
 *-----------------------------------------------------------
@@ -9,15 +9,72 @@ START:                  ; first instruction of program
 
 * Put program code here
 
-    MOVE.W  (A1),D1
-    //do something to convert to a big string of bits
+    MOVE.L #%0001001000000001, D5
+    AND.L  #%0000000111000000, D5
+    CMP    #%0000000000000000, D5
+    JMP    MoveDn
     
-    //get the 4 right bits with AND 0F... or F0000000?
+    MOVE.L #%0001001000000001, D5
+    AND.L  #%0000000111000000, D5
+    CMP    #%0000000001000000, D5
+    JMP    MoveAn
     
-    //grab 3 bits
+    MOVE.L #%0001001000000001, D5
+    AND.L  #%0000000111000000, D5
+    CMP    #%0000000010000000, D5
+    JMP    MoveAdr
+    
+    MOVE.L #%0001001000000001, D5
+    AND.L  #%0000000111000000, D5
+    CMP    #%0000000011000000, D5
+    JMP    MoveAdrPost
+    
+    
+    MOVE.L #%0001001000000001, D5
+    AND.L  #%0000000111000000, D5
+    CMP    #%0000000100000000, D5
+    JMP    MoveAdrPre
+   
+    
+MoveDn
+    LEA     DnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    
+MoveAN
+    LEA     AnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    
+MoveAdr
+    LEA     AdrMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    
+MoveAdrPost
+    LEA     AdrPostMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+
+MoveAdrPre
+    LEA     AdrPreMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+
+
+
+DnMessage      DC.B    'Destination is a data register',0
+AnMessage      DC.B    'Destination is an address register',0
+AdrMessage     DC.B    'Destination is an address',0
+AdrPostMessage DC.B    'Destination is a post-incremented address',0
+AdrPreMessage  DC.B    'Destination is a pre-incremented address',0
+
+    
+           ;move, size, destination, destination mode, source mode, source.
+           
+    
 
 code0000
-//parse 000
 
     ;parse next 3 digits
     JMP 000
@@ -78,6 +135,7 @@ code1111
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

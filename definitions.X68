@@ -27,7 +27,32 @@ linebreak           DC.B    CR,LF,0
 Invalid_disp        DC.B    'DATA',0
 InvalidEA_disp      DC.B    'WRONGEA',0
 NOP_disp            DC.B    'NOP',0
-
+MOVE_disp           DC.B    'MOVE',0
+MOVEA_disp          DC.B    'MOVEA',0
+MOVEQ_disp          DC.B    'MOVEQ',0
+MOVEM_disp          DC.B    'MOVEM'0
+ADD_disp            DC.B    'ADD',0
+ADDA_disp           DC.B    'ADDA',0
+ADDI_disp           DC.B    'ADDI',0
+ADDQ_disp           DC.B    'ADDQ',0
+SUB_disp            DC.B    'SUB',0
+MULS_disp           DC.B    'MULS',0
+DIVU_disp           DC.B    'DIVU',0
+LEA_disp            DC.B    'LEA',0
+CLR_disp            DC.B    'CLR',0
+AND_disp            DC.B    'AND',0
+OR_disp             DC.B    'OR',0
+LSL_disp            DC.B    'LSL',0
+LSR_disp            DC.B    'LSR',0
+ASL_disp            DC.B    'ASL',0
+ASR_disp            DC.B    'ASR',0
+ROL_disp            DC.B    'ROL',0
+ROR_disp            DC.B    'ROR',0
+JSR_disp            DC.B    'JSR',0
+RTS_disp            DC.B    'RTS',0
+BCC_disp            DC.B    'BCC',0
+BGT_disp            DC.B    'BGT',0    
+BLE_disp            DC.b    'BLE',0
 
 *Printing out the symbols needed
 hexaTable               DC.B    '0',0
@@ -65,6 +90,7 @@ input_buffer            DC.B    1       *creates input buffer for ASCII string
 location_startData      DS.L    1       *location on where to start reading data
 location_endData        DS.L    1       *location on where to end reading data
 table_length            DS.B    1       *Number of spaces in the table to print to console
+
 
 
 

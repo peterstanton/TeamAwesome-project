@@ -1,126 +1,269 @@
-00000000 Starting Address
+00006000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/13/2017 12:40:41 PM
+Created On: 5/13/2017 2:50:17 PM
 
-00000000                             1  
-00000000                             2                 
-00000000  4FF9 0000A000              3                   LEA     $A000,SP        *Load the SP
-00000006  41F9 00000024              4                   LEA     jmp_table,A0    *Index into the table
-0000000C  4280                       5                   CLR.L   D0              *Zero it
-0000000E  303C 4E79                  6                   MOVE.W  #$4E79,D0       *We'll play with it here
-00000012  123C 000C                  7                   MOVE.B  #12,D1          *Shift 12 bits to the right  
-00000016                             8  
-00000016  E268                       9                   LSR.W   D1,D0           *Move the bits
-00000018  C0FC 0006                 10                   MULU    #6,D0       *Form offset     
-0000001C  4EB0 0000                 11                   JSR     0(A0,D0)   *Jump indirect with index
-00000020                            12                
-00000020                            13                   
-00000020  FFFF FFFF                 14         SIMHALT    
-00000024  4EF9 00000090             15  jmp_table      JMP         code0000
-0000002A                            16  
-0000002A  4EF9 00000094             17                 JMP         code0001
-00000030                            18  
-00000030  4EF9 00000098             19                 JMP         code0010
-00000036                            20  
-00000036  4EF9 0000009C             21                 JMP         code0011
-0000003C                            22  
-0000003C  4EF9 000000A0             23                 JMP         code0100
-00000042                            24                 
-Line 25 ERROR: Undefined symbol
-00000042  43F9 004DBB8E             25  OP_Invalid          LEA     NOP_disp,A1          
-00000048  103C 000D                 26                      MOVE.B  #13,D0
-0000004C  4E4F                      27                      TRAP    #15
-0000004E                            28                 
-0000004E                            29                 
-0000004E                            30  * NOP
-0000004E                            31  
-0000004E  4EF9 000000A4             32                 JMP         code0101
-00000054                            33  
-00000054  4EF9 000000A8             34                 JMP         code0110
-0000005A                            35  
-0000005A  4EF9 000000AC             36                 JMP         code0111
-00000060                            37  
-00000060  4EF9 000000B0             38                 JMP         code1000
-00000066                            39  
-00000066  4EF9 000000B4             40                 JMP         code1001
-0000006C                            41  
-0000006C  4EF9 000000B8             42                 JMP         code1010
-00000072                            43  
-00000072  4EF9 000000BC             44                 JMP         code1011
-00000078                            45  
-00000078  4EF9 000000BE             46                 JMP         code1100
-0000007E                            47  
-0000007E  4EF9 000000C2             48                 JMP         code1101
-00000084                            49  
-00000084  4EF9 000000C6             50                 JMP         code1110
-0000008A                            51  
-0000008A  4EF9 000000CA             52                 JMP         code1111
-00000090                            53  
-00000090                            54  
-00000090  4E72 2700                 55  code0000       STOP        #$2700
-00000094                            56  
-00000094  4E72 2700                 57  code0001       STOP        #$2700
-00000098                            58  
-00000098  4E72 2700                 59  code0010       STOP        #$2700
-0000009C                            60  
-0000009C  4E72 2700                 61  code0011       STOP        #$2700
-000000A0                            62  
-000000A0  4E72 2700                 63  code0100       STOP        #$2700
-000000A4                            64  
-000000A4  4E72 2700                 65  code0101       STOP        #$2700
-000000A8                            66  
-000000A8  4E72 2700                 67  code0110       STOP        #$2700
-000000AC                            68  
-000000AC  4E72 2700                 69  code0111       STOP        #$2700
-000000B0                            70  
-000000B0  4E72 2700                 71  code1000       STOP        #$2700
-000000B4                            72  
-000000B4  4E72 2700                 73  code1001       STOP        #$2700
-000000B8                            74  
-000000B8  4E72 2700                 75  code1010       STOP        #$2700
-000000BC                            76  
-000000BC  60FE                      77  code1011       BRA        code1011
-000000BE                            78  
-000000BE                            79    
-000000BE                            80  
-000000BE  4E72 2700                 81  code1100       STOP        #$2700
-000000C2                            82  
-000000C2  4E72 2700                 83  code1101       STOP        #$2700
-000000C6                            84  
-000000C6  4E72 2700                 85  code1110       STOP        #$2700
-000000CA                            86  
-000000CA  4E72 2700                 87  code1111       STOP        #$2700
-000000CE                            88  
-000000CE                            89   
-000000CE                            90  
-000000CE                            91       
-000000CE                            92  
-000000CE                            93  
-000000CE                            94  
-Line 95 WARNING: END directive missing, starting address not set
+00006000                             1  START    ORG   $6000
+00006000                             2                 
+00006000                             3            
+00006000  4FF9 0000A000              4                   LEA     $A000,SP        *Load the SP
+00006006  41F9 00006026              5                   LEA     jmp_table,A0    *Index into the table
+0000600C  4283                       6                   CLR.L   D3              *Zero it
+0000600E  363C 4E75                  7                   MOVE.W  #$4E75,D3       *We'll play with it here
+00006012  3A03                       8                   MOVE.W  D3,D5
+00006014  183C 000C                  9                   MOVE.B  #12,D4          *Shift 12 bits to the right  
+00006018                            10  
+00006018                            11             
+00006018  E86B                      12                   LSR.W   D4,D3       *Move the bits
+0000601A  C6FC 0006                 13                   MULU    #6,D3       *Form offset     
+0000601E  4EB0 3000                 14                   JSR     0(A0,D3)   *Jump indirect with index
+00006022                            15  
+00006022                            16  EXIT                 
+00006022  FFFF FFFF                 17         SIMHALT   
+00006026                            18  
+00006026  4EF9 00006086             19  jmp_table      JMP         code0000
+0000602C                            20  
+0000602C  4EF9 0000608A             21                 JMP         code0001
+00006032                            22  
+00006032  4EF9 0000608E             23                 JMP         code0010
+00006038                            24  
+00006038  4EF9 00006092             25                 JMP         code0011
+0000603E                            26  
+0000603E  4EF9 00006096             27                 JMP         code0100
+00006044                            28                             
+00006044  4EF9 000060C6             29                 JMP         code0101
+0000604A                            30  
+0000604A  4EF9 000060CA             31                 JMP         code0110
+00006050                            32  
+00006050  4EF9 000060CE             33                 JMP         code0111
+00006056                            34  
+00006056  4EF9 000060D2             35                 JMP         code1000
+0000605C                            36                 
+0000605C                            37                 * DIVU
+0000605C                            38                 * OR
+0000605C                            39  
+0000605C  4EF9 000060D6             40                 JMP         code1001
+00006062                            41  
+00006062  4EF9 000060DA             42                 JMP         code1010
+00006068                            43  
+00006068  4EF9 000060DE             44                 JMP         code1011
+0000606E                            45  
+0000606E  4EF9 000060E0             46                 JMP         code1100
+00006074                            47  
+00006074  4EF9 000060E4             48                 JMP         code1101
+0000607A                            49  
+0000607A  4EF9 000060E8             50                 JMP         code1110
+00006080                            51  
+00006080  4EF9 000060EC             52                 JMP         code1111
+00006086                            53  
+00006086                            54  
+00006086  4E72 2700                 55  code0000       STOP        #$2700
+0000608A                            56  
+0000608A  4E72 2700                 57  code0001       STOP        #$2700
+0000608E                            58  
+0000608E  4E72 2700                 59  code0010       STOP        #$2700
+00006092                            60  
+00006092  4E72 2700                 61  code0011       STOP        #$2700
+00006096                            62  
+00006096                            63  code0100       
+00006096                            64                  *NOP
+00006096  3405                      65                  MOVE.W  D5,D2
+00006098  C47C 0FFF                 66                  AND     #%0000111111111111,D2
+0000609C  B4BC 00000E79             67                  CMP.L   #%0000111001111001, D2
+000060A2  6700 004C                 68                  BEQ     NOP
+000060A6                            69                 
+000060A6                            70                 *RTS
+000060A6  3405                      71                 MOVE.W  D5,D2
+000060A8  C47C 0FFF                 72                 AND     #%0000111111111111,D2
+000060AC  B4BC 00000E75             73                 CMP.L   #%0000111001110101, D2
+000060B2  6700 004C                 74                 BEQ     RTS
+000060B6                            75  
+000060B6                            76                 *JSR
+000060B6  3405                      77                 MOVE.W  D5,D2
+000060B8  C47C 0FC0                 78                 AND     #%0000111111000000,D2
+000060BC  B4BC 00000E80             79                 CMP.L   #%0000111010000000, D2
+000060C2  6700 004C                 80                 BEQ     JSR
+000060C6                            81                 
+000060C6                            82                 *MOVEM
+000060C6                            83                 *LEA
+000060C6                            84                 
+000060C6                            85                 
+000060C6                            86  
+000060C6  4E72 2700                 87  code0101       STOP        #$2700
+000060CA                            88  
+000060CA  4E72 2700                 89  code0110       STOP        #$2700
+000060CE                            90  
+000060CE  4E72 2700                 91  code0111       STOP        #$2700
+000060D2                            92  
+000060D2  4E72 2700                 93  code1000       STOP        #$2700
+000060D6                            94  
+000060D6  4E72 2700                 95  code1001       STOP        #$2700
+000060DA                            96  
+000060DA  4E72 2700                 97  code1010       STOP        #$2700
+000060DE                            98  
+000060DE  60FE                      99  code1011       BRA        code1011
+000060E0                           100  
+000060E0                           101    
+000060E0                           102  
+000060E0  4E72 2700                103  code1100       STOP        #$2700
+000060E4                           104  
+000060E4  4E72 2700                105  code1101       STOP        #$2700
+000060E8                           106  
+000060E8  4E72 2700                107  code1110       STOP        #$2700
+000060EC                           108  
+000060EC  4E72 2700                109  code1111       STOP        #$2700
+000060F0                           110  
+000060F0  43F9 00006287            111  NOP                 LEA     NOP_disp,A1          
+000060F6  103C 000D                112                      MOVE.B  #13,D0
+000060FA  4E4F                     113                      TRAP    #15
+000060FC  6000 FF24                114                      BRA     EXIT
+00006100                           115  RTS      
+00006100  43F9 0000628F            116                      LEA     CLR_disp,A1          
+00006106  103C 000D                117                      MOVE.B  #13,D0
+0000610A  4E4F                     118                      TRAP    #15 
+0000610C  6000 FF14                119                      BRA     EXIT
+00006110                           120  
+00006110                           121  JSR      
+00006110  43F9 00006293            122                      LEA     JSR_disp,A1          
+00006116  103C 000D                123                      MOVE.B  #13,D0
+0000611A  4E4F                     124                      TRAP    #15
+0000611C  6000 FF04                125                      BRA     EXIT 
+00006120                           126      INCLUDE 'definitions.x68'
+00006120                           127  
+00006120  =0000000D                128  CR              EQU     $0D         carriage return
+00006120  =0000000A                129  LF              EQU     $0A         line feed
+00006120= 43 53 53 20 34 32 ...    130  welcome_msg         DC.B    'CSS 422 Disassembler Final Project',CR,LF
+00006144= 42 79 20 54 65 61 ...    131                      DC.B    'By Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)',CR,LF,0
+00006184= 45 6E 74 65 72 20 ...    132  location_start_msg  DC.B    'Enter Start location address',CR,LF,0
+000061A3= 45 6E 74 65 72 20 ...    133  location_end_msg    DC.B    'Enter End location address',CR,LF,0
+000061C0= 41 64 64 72 65 73 ...    134  addr_oddBit_msg     DC.B    'Address cannot end on an odd byte.',CR,LF,CR,LF,0
+000061E7= 45 6E 64 69 6E 67 ...    135  addr_order_check    DC.B    'Ending Address cannot go before the starting address.',CR,LF,CR,LF,0
+00006221= 50 72 65 73 73 20 ...    136  pause_msg           DC.B    'Press enter to continue!',CR,LF
+0000623B= 52 65 61 63 68 65 ...    137  endTest_msg         DC.B    'Reached end of test data.', CR,LF
+00006256= 54 72 79 20 61 6E ...    138                      DC.B    'Try another location? (yes/no): ',0
+00006277= 0D 0A 00                 139  linebreak           DC.B    CR,LF,0
+0000627A                           140                      
+0000627A= 44 41 54 41 00           141  Invalid_disp        DC.B    'DATA',0
+0000627F= 57 52 4F 4E 47 45 ...    142  InvalidEA_disp      DC.B    'WRONGEA',0
+00006287= 4E 4F 50 00              143  NOP_disp            DC.B    'NOP',0
+0000628B= 52 54 53 00              144  RTS_disp            DC.B    'RTS',0
+0000628F= 43 4C 52 00              145  CLR_disp            DC.B    'CLR',0
+00006293= 4A 53 52 00              146  JSR_disp            DC.B    'JSR',0
+00006297                           147  
+00006297= 30 00                    148  hexaTable               DC.B    '0',0
+00006299= 31 00                    149                          DC.B    '1',0
+0000629B= 32 00                    150                          DC.B    '2',0
+0000629D= 33 00                    151                          DC.B    '3',0
+0000629F= 34 00                    152                          DC.B    '4',0
+000062A1= 35 00                    153                          DC.B    '5',0
+000062A3= 36 00                    154                          DC.B    '6',0
+000062A5= 37 00                    155                          DC.B    '7',0
+000062A7= 38 00                    156                          DC.B    '8',0
+000062A9= 39 00                    157                          DC.B    '9',0
+000062AB= 41 00                    158                          DC.B    'A',0
+000062AD= 42 00                    159                          DC.B    'B',0
+000062AF= 43 00                    160                          DC.B    'C',0
+000062B1= 44 00                    161                          DC.B    'D',0
+000062B3= 45 00                    162                          DC.B    'E',0
+000062B5= 46 00                    163                          DC.B    'F',0
+000062B7= 23 00                    164  poundsign               DC.B    '#',0
+000062B9= 24 00                    165  dollarsign              DC.B    '$',0
+000062BB= 2B 00                    166  plussign                DC.B    '+',0
+000062BD= 2D 00                    167  minussign               DC.B    '-',0
+000062BF= 2C 00                    168  commasign               DC.B    ',',0
+000062C1= 2F 00                    169  backslashsigh           DC.B    '/',0
+000062C3= 28 00                    170  openparen               DC.B    '(',0
+000062C5= 29 00                    171  closeparen              DC.B    ')',0
+000062C7= 20 00                    172  space                   DC.B    ' ',0   
+000062C9= 2E 62 00                 173  size_b                  DC.B    '.b',0
+000062CC= 2E 77 00                 174  size_w                  DC.B    '.w',0        
+000062CF= 2E 6C 00                 175  size_l                  DC.B    '.l',0
+000062D2                           176  
+000062D2                           177  linecount               DS.B    1       *storeage for lines on a screen
+000062D3= 01                       178  input_buffer            DC.B    1       *creates input buffer for ASCII string
+000062D4                           179  location_startData      DS.L    1       *location on where to start reading data
+000062D8                           180  location_endData        DS.L    1       *location on where to end reading data
+000062DC                           181  table_length            DS.B    1       *Number of spaces in the table to print to console
+000062DD                           182  
+000062DD                           183  
+000062DD                           184  
+000062DD                           185  
+000062DD                           186  
+000062DD                           187  
+000062DD                           188  
+000062DD                           189  
+000062DD                           190  
+000062DD                           191  
+000062DD                           192  
+000062DD                           193  
+000062DD                           194  
+000062DD                           195  
+000062DD                           196  
+000062DD                           197  -------------------- end include --------------------
+000062DD                           198       
+000062DD                           199  
+000062DD                           200  
+000062DD                           201      END START 
 
-1 error detected
-1 warning generated
+No errors detected
+No warnings generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CODE0000            90
-CODE0001            94
-CODE0010            98
-CODE0011            9C
-CODE0100            A0
-CODE0101            A4
-CODE0110            A8
-CODE0111            AC
-CODE1000            B0
-CODE1001            B4
-CODE1010            B8
-CODE1011            BC
-CODE1100            BE
-CODE1101            C2
-CODE1110            C6
-CODE1111            CA
-JMP_TABLE           24
-OP_INVALID          42
+ADDR_ODDBIT_MSG     61C0
+ADDR_ORDER_CHECK    61E7
+BACKSLASHSIGH       62C1
+CLOSEPAREN          62C5
+CLR_DISP            628F
+CODE0000            6086
+CODE0001            608A
+CODE0010            608E
+CODE0011            6092
+CODE0100            6096
+CODE0101            60C6
+CODE0110            60CA
+CODE0111            60CE
+CODE1000            60D2
+CODE1001            60D6
+CODE1010            60DA
+CODE1011            60DE
+CODE1100            60E0
+CODE1101            60E4
+CODE1110            60E8
+CODE1111            60EC
+COMMASIGN           62BF
+CR                  D
+DOLLARSIGN          62B9
+ENDTEST_MSG         623B
+EXIT                6022
+HEXATABLE           6297
+INPUT_BUFFER        62D3
+INVALIDEA_DISP      627F
+INVALID_DISP        627A
+JMP_TABLE           6026
+JSR                 6110
+JSR_DISP            6293
+LF                  A
+LINEBREAK           6277
+LINECOUNT           62D2
+LOCATION_ENDDATA    62D8
+LOCATION_END_MSG    61A3
+LOCATION_STARTDATA  62D4
+LOCATION_START_MSG  6184
+MINUSSIGN           62BD
+NOP                 60F0
+NOP_DISP            6287
+OPENPAREN           62C3
+PAUSE_MSG           6221
+PLUSSIGN            62BB
+POUNDSIGN           62B7
+RTS                 6100
+RTS_DISP            628B
+SIZE_B              62C9
+SIZE_L              62CF
+SIZE_W              62CC
+SPACE               62C7
+START               6000
+TABLE_LENGTH        62DC
+WELCOME_MSG         6120

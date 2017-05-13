@@ -27,7 +27,9 @@ linebreak           DC.B    CR,LF,0
 Invalid_disp        DC.B    'DATA',0
 InvalidEA_disp      DC.B    'WRONGEA',0
 NOP_disp            DC.B    'NOP',0
-
+RTS_disp            DC.B    'RTS',0
+CLR_disp            DC.B    'CLR',0
+JSR_disp            DC.B    'JSR',0
 
 *Printing out the symbols needed
 hexaTable               DC.B    '0',0
@@ -65,6 +67,7 @@ input_buffer            DC.B    1       *creates input buffer for ASCII string
 location_startData      DS.L    1       *location on where to start reading data
 location_endData        DS.L    1       *location on where to end reading data
 table_length            DS.B    1       *Number of spaces in the table to print to console
+
 
 
 

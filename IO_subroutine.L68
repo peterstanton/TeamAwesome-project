@@ -1,6 +1,6 @@
-00001000 Starting Address
+00006000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/13/2017 1:27:03 PM
+Created On: 5/13/2017 2:46:00 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Final Project
@@ -40,7 +40,7 @@ Line 25 ERROR: Undefined symbol
 00000030                            32  
 Line 33 ERROR: Undefined symbol
 00000030  4EB9 004DBB8E             33                  JSR     sub_AstoHeLoop              *conversion method for raw input characters
-00000036  2447                      34                  MOVE.L  D7, A2     *store hex value 
+00000036  2447                      34                  MOVE.L  D7, A2                       *store hex value 
 00000038                            35                  
 Line 36 ERROR: Undefined symbol
 00000038  43F9 004DBB8E             36                  LEA     linebreak,A1                *appends a linefeed to the end of the user input

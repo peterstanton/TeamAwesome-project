@@ -7,22 +7,22 @@
             MOVEQ.L #0,D1           *Clear D1
             MOVE.L  D0,D1           *Move the opcode to D1              
             
-            LEA     jumptable,A1    *loads the jumptable into A1    
+            LEA     jumptable,A0    *loads the jumptable into A0    
             
             ROL.L   #4,D1           *Moves the index to the right nibble
             ANDI.B  #$0F,D1          *Gets the first nibble
-            MOVEA.L (0,A1,D1.W),A0  *It has 4 byte table entries
+            MOVEA.L (0,A2,D1.W),A0  *It has 4 byte table entries
             JMP     (A0)            *Jumps to specified routine
 
 
 jumptable:      DC.L    routine_0   *Bit manipulation/MOVEP/Immediate (D)
-                DC.L     Op_Invalid    *Move Byte(D)
-                DC.L     Op_Invalid     *Move Long (D)
-                DC.L     Op_Invalid    *Move Word (D)
+                DC.L    OP_Invalid    *Move Byte(D)
+                DC.L    OP_Invalid     *Move Long (D)
+                DC.L    OP_Invalid    *Move Word (D)
                 DC.L    routine_4   *Misc
                 DC.L    routine_5   *ADDQ/SUBQ/Scc/DBcc
                 DC.L    routine_6   *BSR,BRA,Bcc
-                DC.L     Op_Invalid     *MOVEQ
+                DC.L    OP_Invalid     *MOVEQ
                 DC.L    routine_8   *OR/DIV/SBCD 
                 DC.L    routine_9   *SUB/SUBX
                 DC.L    Op_Invalid  *Unassigned (D)
@@ -41,7 +41,7 @@ routine_4:
     *Miscellaneous
     JSR     sub_Bits11to8
     CMP.B   #$2,D7              *compares immediate data, 2 in D7
-    BRA     Op_NOP
+    BRA     NOP_disp
 
 routine_5:
     *ADDQ/SUBQ/Scc/DBcc
@@ -163,6 +163,9 @@ sub_Bits11to9           MOVE.W  (A2),D7     *gets opcode for evauluation
                         LSR.W   D0,D7       *isolates nibble
                         RTS
 *-----------------------------------------------------------
+
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

@@ -1,116 +1,126 @@
-00006000 Starting Address
+00000000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/9/2017 5:33:50 PM
+Created On: 5/13/2017 12:40:41 PM
 
-00006000                             1  START       ORG $6000
-00006000                             2  
-00006000                             3  ** 0100 1110
-00006000                             4                 
-00006000  4FF9 0000A000              5                   LEA     $A000,SP        *Load the SP
-00006006  41F9 00006024              6                   LEA     jmp_table,A0    *Index into the table
-0000600C  4280                       7                   CLR.L   D0              *Zero it
-0000600E  303C 4E79                  8                   MOVE.W  #$4E79,D0     *We'll play with it here
-00006012  123C 000C                  9                   MOVE.B  #12,D1       *Shift 12 bits to the right  
-00006016                            10  
-00006016  E268                      11                   LSR.W   D1,D0           *Move the bits
-00006018  C0FC 0006                 12                   MULU        #6,D0       *Form offset     
-0000601C  4EB0 0000                 13                   JSR          0(A0,D0)   *Jump indirect with index
-00006020                            14                   
-00006020  FFFF FFFF                 15         SIMHALT    
-00006024  4EF9 00006084             16  jmp_table      JMP         code0000
-0000602A                            17  
-0000602A  4EF9 00006088             18                 JMP         code0001
-00006030                            19  
-00006030  4EF9 0000608C             20                 JMP         code0010
-00006036                            21  
-00006036  4EF9 00006090             22                 JMP         code0011
-0000603C                            23  
-0000603C  4EF9 00006094             24                 JMP         code0100
-00006042                            25                 
-00006042                            26  * NOP
-00006042                            27  
-00006042  4EF9 00006098             28                 JMP         code0101
-00006048                            29  
-00006048  4EF9 0000609C             30                 JMP         code0110
-0000604E                            31  
-0000604E  4EF9 000060A0             32                 JMP         code0111
-00006054                            33  
-00006054  4EF9 000060A4             34                 JMP         code1000
-0000605A                            35  
-0000605A  4EF9 000060A8             36                 JMP         code1001
-00006060                            37  
-00006060  4EF9 000060AC             38                 JMP         code1010
-00006066                            39  
-00006066  4EF9 000060B0             40                 JMP         code1011
-0000606C                            41  
-0000606C  4EF9 000060B2             42                 JMP         code1100
-00006072                            43  
-00006072  4EF9 000060B6             44                 JMP         code1101
-00006078                            45  
-00006078  4EF9 000060BA             46                 JMP         code1110
-0000607E                            47  
-0000607E  4EF9 000060BE             48                 JMP         code1111
-00006084                            49  
-00006084                            50  
-00006084  4E72 2700                 51  code0000       STOP        #$2700
-00006088                            52  
-00006088  4E72 2700                 53  code0001       STOP        #$2700
-0000608C                            54  
-0000608C  4E72 2700                 55  code0010       STOP        #$2700
-00006090                            56  
-00006090  4E72 2700                 57  code0011       STOP        #$2700
-00006094                            58  
-00006094  4E72 2700                 59  code0100       STOP        #$2700
-00006098                            60  
-00006098  4E72 2700                 61  code0101       STOP        #$2700
-0000609C                            62  
-0000609C  4E72 2700                 63  code0110       STOP        #$2700
-000060A0                            64  
-000060A0  4E72 2700                 65  code0111       STOP        #$2700
-000060A4                            66  
-000060A4  4E72 2700                 67  code1000       STOP        #$2700
-000060A8                            68  
-000060A8  4E72 2700                 69  code1001       STOP        #$2700
-000060AC                            70  
-000060AC  4E72 2700                 71  code1010       STOP        #$2700
-000060B0                            72  
-000060B0  60FE                      73  code1011       BRA        code1011
-000060B2                            74  
-000060B2                            75    
-000060B2                            76  
-000060B2  4E72 2700                 77  code1100       STOP        #$2700
-000060B6                            78  
-000060B6  4E72 2700                 79  code1101       STOP        #$2700
-000060BA                            80  
-000060BA  4E72 2700                 81  code1110       STOP        #$2700
-000060BE                            82  
-000060BE  4E72 2700                 83  code1111       STOP        #$2700
-000060C2                            84  
-000060C2                            85   
-000060C2                            86      END     START
+00000000                             1  
+00000000                             2                 
+00000000  4FF9 0000A000              3                   LEA     $A000,SP        *Load the SP
+00000006  41F9 00000024              4                   LEA     jmp_table,A0    *Index into the table
+0000000C  4280                       5                   CLR.L   D0              *Zero it
+0000000E  303C 4E79                  6                   MOVE.W  #$4E79,D0       *We'll play with it here
+00000012  123C 000C                  7                   MOVE.B  #12,D1          *Shift 12 bits to the right  
+00000016                             8  
+00000016  E268                       9                   LSR.W   D1,D0           *Move the bits
+00000018  C0FC 0006                 10                   MULU    #6,D0       *Form offset     
+0000001C  4EB0 0000                 11                   JSR     0(A0,D0)   *Jump indirect with index
+00000020                            12                
+00000020                            13                   
+00000020  FFFF FFFF                 14         SIMHALT    
+00000024  4EF9 00000090             15  jmp_table      JMP         code0000
+0000002A                            16  
+0000002A  4EF9 00000094             17                 JMP         code0001
+00000030                            18  
+00000030  4EF9 00000098             19                 JMP         code0010
+00000036                            20  
+00000036  4EF9 0000009C             21                 JMP         code0011
+0000003C                            22  
+0000003C  4EF9 000000A0             23                 JMP         code0100
+00000042                            24                 
+Line 25 ERROR: Undefined symbol
+00000042  43F9 004DBB8E             25  OP_Invalid          LEA     NOP_disp,A1          
+00000048  103C 000D                 26                      MOVE.B  #13,D0
+0000004C  4E4F                      27                      TRAP    #15
+0000004E                            28                 
+0000004E                            29                 
+0000004E                            30  * NOP
+0000004E                            31  
+0000004E  4EF9 000000A4             32                 JMP         code0101
+00000054                            33  
+00000054  4EF9 000000A8             34                 JMP         code0110
+0000005A                            35  
+0000005A  4EF9 000000AC             36                 JMP         code0111
+00000060                            37  
+00000060  4EF9 000000B0             38                 JMP         code1000
+00000066                            39  
+00000066  4EF9 000000B4             40                 JMP         code1001
+0000006C                            41  
+0000006C  4EF9 000000B8             42                 JMP         code1010
+00000072                            43  
+00000072  4EF9 000000BC             44                 JMP         code1011
+00000078                            45  
+00000078  4EF9 000000BE             46                 JMP         code1100
+0000007E                            47  
+0000007E  4EF9 000000C2             48                 JMP         code1101
+00000084                            49  
+00000084  4EF9 000000C6             50                 JMP         code1110
+0000008A                            51  
+0000008A  4EF9 000000CA             52                 JMP         code1111
+00000090                            53  
+00000090                            54  
+00000090  4E72 2700                 55  code0000       STOP        #$2700
+00000094                            56  
+00000094  4E72 2700                 57  code0001       STOP        #$2700
+00000098                            58  
+00000098  4E72 2700                 59  code0010       STOP        #$2700
+0000009C                            60  
+0000009C  4E72 2700                 61  code0011       STOP        #$2700
+000000A0                            62  
+000000A0  4E72 2700                 63  code0100       STOP        #$2700
+000000A4                            64  
+000000A4  4E72 2700                 65  code0101       STOP        #$2700
+000000A8                            66  
+000000A8  4E72 2700                 67  code0110       STOP        #$2700
+000000AC                            68  
+000000AC  4E72 2700                 69  code0111       STOP        #$2700
+000000B0                            70  
+000000B0  4E72 2700                 71  code1000       STOP        #$2700
+000000B4                            72  
+000000B4  4E72 2700                 73  code1001       STOP        #$2700
+000000B8                            74  
+000000B8  4E72 2700                 75  code1010       STOP        #$2700
+000000BC                            76  
+000000BC  60FE                      77  code1011       BRA        code1011
+000000BE                            78  
+000000BE                            79    
+000000BE                            80  
+000000BE  4E72 2700                 81  code1100       STOP        #$2700
+000000C2                            82  
+000000C2  4E72 2700                 83  code1101       STOP        #$2700
+000000C6                            84  
+000000C6  4E72 2700                 85  code1110       STOP        #$2700
+000000CA                            86  
+000000CA  4E72 2700                 87  code1111       STOP        #$2700
+000000CE                            88  
+000000CE                            89   
+000000CE                            90  
+000000CE                            91       
+000000CE                            92  
+000000CE                            93  
+000000CE                            94  
+Line 95 WARNING: END directive missing, starting address not set
 
-No errors detected
-No warnings generated
+1 error detected
+1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CODE0000            6084
-CODE0001            6088
-CODE0010            608C
-CODE0011            6090
-CODE0100            6094
-CODE0101            6098
-CODE0110            609C
-CODE0111            60A0
-CODE1000            60A4
-CODE1001            60A8
-CODE1010            60AC
-CODE1011            60B0
-CODE1100            60B2
-CODE1101            60B6
-CODE1110            60BA
-CODE1111            60BE
-JMP_TABLE           6024
-START               6000
+CODE0000            90
+CODE0001            94
+CODE0010            98
+CODE0011            9C
+CODE0100            A0
+CODE0101            A4
+CODE0110            A8
+CODE0111            AC
+CODE1000            B0
+CODE1001            B4
+CODE1010            B8
+CODE1011            BC
+CODE1100            BE
+CODE1101            C2
+CODE1110            C6
+CODE1111            CA
+JMP_TABLE           24
+OP_INVALID          42

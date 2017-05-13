@@ -3,12 +3,13 @@
                  LEA     $A000,SP        *Load the SP
                  LEA     jmp_table,A0    *Index into the table
                  CLR.L   D0              *Zero it
-                 MOVE.W  #$4E79,D0     *We'll play with it here
-                 MOVE.B  #12,D1       *Shift 12 bits to the right  
+                 MOVE.W  #$4E79,D0       *We'll play with it here
+                 MOVE.B  #12,D1          *Shift 12 bits to the right  
 
-                 LSR.W   D1,D0           *Move the bits
-                 MULU        #6,D0       *Form offset     
-                 JSR          0(A0,D0)   *Jump indirect with index
+                 LSR.W   D1,D0       *Move the bits
+                 MULU    #6,D0       *Form offset     
+                 JSR     0(A0,D0)   *Jump indirect with index
+              
                  
        SIMHALT    
 jmp_table      JMP         code0000
@@ -20,6 +21,11 @@ jmp_table      JMP         code0000
                JMP         code0011
 
                JMP         code0100
+               
+OP_Invalid          LEA     NOP_disp,A1          
+                    MOVE.B  #13,D0
+                    TRAP    #15
+               
                
 * NOP
 
@@ -83,6 +89,9 @@ code1111       STOP        #$2700
  
 
      
+
+
+
 
 
 *~Font name~Courier New~

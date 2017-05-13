@@ -1,0 +1,195 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 5/13/2017 1:22:43 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Disassembler Final Project
+00000000                             3  * Written by : Team Awesome (Olga Rocheeva, Dwina Solihin, Peter Stanton)
+00000000                             4  * Date       : April 15, 2017
+00000000                             5  * Description: CSS 422 Final Project
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  *-----------------------------------------------------------
+00000000                             8  *Below are helper subroutines that will be used throughout 
+00000000                             9  *this final project.
+00000000                            10  *-----------------------------------------------------------
+00000000                            11  *ASCII to Hexadecimal conversion Loop helper
+00000000  1019                      12  sub_AsToHeLoop          MOVE.B  (A1)+,D0            *gets first byte
+00000002  4EB9 0000001A             13                          JSR     sub_breakDownAs     *breaks down ASCII code
+00000008  D280                      14                          ADD.L   D0,D1               *load that char into D1
+0000000A  0C11 0000                 15                          CMPI.B  #$0,(A1)            *checks if more needs to be broken down
+0000000E  6700 0006                 16                          BEQ     athEndLoop          *if no more is needed to be worked on, exits
+00000012  E989                      17                          LSL.L   #$4,D1              *else, shift remaining char in D1 for next char
+00000014  60EA                      18                          BRA     sub_AsToHeLoop      *loops through again
+00000016                            19                          
+00000016  2E01                      20  athEndLoop              MOVE.L  D1,D7               *hex number in D7
+00000018  4E75                      21                          RTS
+0000001A                            22  *-----------------------------------------------------------
+0000001A                            23  *Breaks down ASCII code from digits 0-9, a-f or A-F
+0000001A                            24  *Makes the assumption that D0 holds $30-$39, $41-$46
+0000001A                            25  *-----------------------------------------------------------
+0000001A  B03C 0039                 26  sub_breakDownAs         CMP.B   #$39,D0     *$30-$39 is a digit (0-9)
+0000001E  6E00 0010                 27                          BGT     as_smallLetter
+00000022  B03C 0046                 28                          CMP.B   #$46,D0
+00000026                            29                          
+00000026  6E00 000E                 30                          BGT     as_bigLetter
+0000002A  0400 0030                 31                          SUB.B   #$30,D0
+0000002E  4E75                      32                          RTS
+00000030                            33                          
+00000030  0400 0030                 34  as_smallLetter          SUB.B   #$30,D0
+00000034  4E75                      35                          RTS
+00000036                            36                          
+00000036  0400 0037                 37  as_bigLetter            SUB.B  #$37,D0
+0000003A  4E75                      38                          RTS
+0000003C                            39  *-----------------------------------------------------------
+0000003C                            40  *start reading data helper method
+0000003C                            41  *check the data start address
+Line 42 ERROR: Undefined symbol
+0000003C  2239 004DBB8E             42  sub_StartReadingData    MOVE.L  location_startData,D1
+00000042                            43      
+00000042  0800 0000                 44                          BTST    #0,D0               *checks if LSB is 1, 
+00000046  6600 0006                 45                          BNE     srdFailAddrOddB     *if 1, then address is odd and invalid
+0000004A                            46                          
+0000004A  7E00                      47                          MOVE.L  #0,D7               *if D7 equals 0, then address is valid
+0000004C  4E75                      48  srdFinish               RTS
+0000004E                            49  
+Line 50 ERROR: Undefined symbol
+0000004E  43F9 004DBB8E             50  srdFailAddrOddB         LEA     addr_oddBit_msg,A1
+00000054  103C 000E                 51                          MOVE.B  #14,D0
+00000058  4E4F                      52                          TRAP    #15
+0000005A                            53                          
+0000005A  7E01                      54                          MOVE.L  #1,D7               *if D7 equals 1, then address is invalid
+0000005C  60EE                      55                          BRA     srdFinish
+0000005E                            56  *-----------------------------------------------------------
+0000005E                            57  *end reading data helper method
+0000005E                            58  *check the data end address            
+0000005E  2441                      59  sub_EndReadingData      MOVE.L  D1,A2
+Line 60 ERROR: Undefined symbol
+00000060  2679 004DBB8E             60                          MOVE.L  location_endData,A3
+00000066                            61      
+00000066  0800 0000                 62                          BTST    #0,D0               *checks if LSB is 1, 
+0000006A  6600 0016                 63                          BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
+0000006E                            64                          
+0000006E  B280                      65                          CMP.L  D0,D1               *end address must be greater than start address
+00000070  4E75                      66  erdFinish               RTS
+00000072                            67  
+Line 68 ERROR: Undefined symbol
+00000072  43F9 004DBB8E             68  erdFailAddrOrder        LEA     addr_order_check,A1
+00000078  103C 000E                 69                          MOVE.B  #14,D0
+0000007C  4E4F                      70                          TRAP    #15
+0000007E                            71                          
+0000007E  7E01                      72                          MOVE.L  #1,D7
+00000080  60EE                      73                          BRA     erdFinish
+00000082                            74  
+Line 75 ERROR: Undefined symbol
+00000082  43F9 004DBB8E             75  erdFailAddrOddB         LEA     addr_oddBit_msg,A1
+00000088  103C 000E                 76                          MOVE.B  #14,D0
+0000008C  4E4F                      77                          TRAP    #15
+0000008E                            78                          
+0000008E  7E01                      79                          MOVE.L  #1,D7               *if D7 equals 1, then address is invalid
+00000090  60DE                      80                          BRA     erdFinish
+00000092                            81  *-----------------------------------------------------------
+00000092                            82  *Prints Table
+00000092  4287                      83  sub_PrintTable  CLR.L   D7
+Line 84 ERROR: Undefined symbol
+00000094  1E39 004DBB8E             84                  MOVE.B  table_length,D7             *moves data to D7 as decreasing counter
+0000009A                            85  
+0000009A  BE3C 0000                 86  PrintTableLoopS CMP.B   #0,D7                       *checks of counter is 0
+0000009E  6700 0012                 87                  BEQ     PrintTableLoopE             *will end loop
+000000A2                            88                  
+Line 89 ERROR: Undefined symbol
+000000A2  43F9 004DBB8E             89                  LEA     space,A1                    *if not, print single space in consold
+000000A8  103C 000E                 90                  MOVE.B  #14,D0                      
+000000AC  4E4F                      91                  TRAP    #15
+000000AE                            92                  
+000000AE  5307                      93                  SUBQ.B  #1,D7                       *decrease loop counter by 1
+000000B0  60E8                      94                  BRA     PrintTableLoopS
+000000B2                            95                  
+000000B2  4E75                      96  PrintTableLoopE RTS                       
+000000B4                            97  *-----------------------------------------------------------
+000000B4                            98  *Prints a CR,LF at end of printed string
+Line 99 ERROR: Undefined symbol
+000000B4  43F9 004DBB8E             99  sub_PrintCRLF   LEA     linebreak,A1
+000000BA  103C 000E                100                  MOVE.B  #14,D0
+000000BE  4E4F                     101                  TRAP    #15
+000000C0  4E75                     102                  RTS
+000000C2                           103  *-----------------------------------------------------------
+000000C2                           104  *Converts Hex values to ASCII and displays in console
+000000C2  48E7 1E00                105  sub_PrintHexa       MOVEM.L D3-D6,-(SP)         ;Store registers in stack
+000000C6                           106                  
+Line 107 ERROR: Undefined symbol
+000000C6  47F9 004DBB8E            107                      LEA     hexatable,A3
+000000CC  CCFC 0004                108                      MULU.W  #4,D6               ;Convert number of digits to total bits (4 bits per char)
+000000D0                           109                  
+000000D0  7620                     110                      MOVE.L  #32,D3              ;Set the total number of bits
+000000D2  9686                     111                      SUB.L   D6,D3               ;Set the bit displacement for nibbles left to right
+000000D4  781C                     112                      MOVE.L  #28,D4              ;Bit displacement to truncate all but one nibble
+000000D6                           113                  
+000000D6  2A07                     114  PrintHexaLoop       MOVE.L  D7,D5               ;Load/reload hex output into D5 for work.
+000000D8                           115  
+000000D8  E7AD                     116                      LSL.L   D3,D5               ;For each loop, isolate the next nibble using displacement
+000000DA  E8AD                     117                      LSR.L   D4,D5               ;Truncate everything else except the nibble
+000000DC                           118                  
+000000DC  CAFC 0002                119                      MULU    #2,D5               ;Multiply nibble by two, find character in char_table
+000000E0  43F3 5000                120                      LEA     0(A3,D5),A1         ;Store the character for output
+000000E4  103C 000E                121                      MOVE.B  #14,D0              ;Will display from A1 without CR,LF.
+000000E8  4E4F                     122                      TRAP    #15                 ;Display to console.
+000000EA                           123                  
+000000EA  5803                     124                      ADD.B   #4,D3               ;Add another 4 bits to displacement to get next nibble
+000000EC  B63C 0020                125                      CMP.B   #32,D3              ;If displacement = 32, we're done.
+000000F0  66E4                     126                      BNE     PrintHexaLoop
+000000F2                           127  
+000000F2  4CDF 0078                128                      MOVEM.L (SP)+,D3-D6         ;Replace registers from stack
+000000F6  4E75                     129                      RTS
+000000F8                           130  *-----------------------------------------------------------
+000000F8                           131  *Prints the hex Address stored in A2
+000000F8  4287                     132  sub_PrintAddress    CLR.L   D7
+000000FA  2E0A                     133                      MOVE.L  A2,D7
+000000FC  7C08                     134                      MOVE.L  #8,D6
+000000FE  4EB8 00C2                135                      JSR     sub_PrintHexa
+00000102                           136                      
+Line 137 ERROR: Undefined symbol
+00000102  13FC 0003 00544480       137                      MOVE.B  #3,table_length
+0000010A  4EB8 0092                138                      JSR     sub_PrintTable
+0000010E  4E75                     139                      RTS
+00000110                           140  *-----------------------------------------------------------
+00000110                           141  
+00000110                           142  
+00000110                           143  
+00000110                           144  
+00000110                           145  
+00000110                           146  
+00000110                           147  
+00000110                           148  
+00000110                           149  
+00000110                           150  
+00000110                           151  
+00000110                           152  
+00000110                           153  
+Line 154 WARNING: END directive missing, starting address not set
+
+10 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+AS_BIGLETTER        36
+AS_SMALLLETTER      30
+ATHENDLOOP          16
+ERDFAILADDRODDB     82
+ERDFAILADDRORDER    72
+ERDFINISH           70
+PRINTHEXALOOP       D6
+PRINTTABLELOOPE     B2
+PRINTTABLELOOPS     9A
+SRDFAILADDRODDB     4E
+SRDFINISH           4C
+SUB_ASTOHELOOP      0
+SUB_BREAKDOWNAS     1A
+SUB_ENDREADINGDATA  5E
+SUB_PRINTADDRESS    F8
+SUB_PRINTCRLF       B4
+SUB_PRINTHEXA       C2
+SUB_PRINTTABLE      92
+SUB_STARTREADINGDATA  3C

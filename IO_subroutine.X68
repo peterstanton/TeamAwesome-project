@@ -31,7 +31,7 @@ IO_StartLoop    LEA     location_start_msg,A1       *Store the console message f
                 CLR.L   D1
 
                 JSR     sub_AstoHeLoop              *conversion method for raw input characters
-                MOVE.L  D7, location_startData      *store hex value 
+                MOVE.L  D7, A2                       *store hex value 
                 
                 LEA     linebreak,A1                *appends a linefeed to the end of the user input
                 MOVE.B  #14,D0                      *no next line when displaying
@@ -47,7 +47,7 @@ IO_EndLoop      LEA     location_end_msg,A1         *Store the console message f
                 TRAP    #15                         *Display to console.
 
 *Get User Input
-                LEA     input_buffer,A2             *Raw input stored
+                LEA     input_buffer,A1             *Raw input stored
                 MOVE.B  #2,D0                       *Read string from keyboard to A1
                 TRAP    #15                         *Get the user input from console
 
@@ -71,8 +71,8 @@ IO_EndLoop      LEA     location_end_msg,A1         *Store the console message f
 *Parser through the various commands
 IO_commandPars  
 *                LEA     jumptable, A0                *goes to the jump table
-                MOVE.L  location_startData, A2
-                MOVE.L  location_endData, A3  
+               ** MOVE.L  location_startData, A2
+              ***  MOVE.L  location_endData, A3  
                 
 cmParsLoop      CMPI.B  #29, linecount              *will pause output if the screen lines equal 30
                 BEQ     IO_pause
@@ -134,6 +134,8 @@ IO_endProg      LEA     endTest_msg,A1
 *-----------------------------------------------------------                               
                 BRA     END_PROGRAM                 *else end program
                 
+
+
 
 
 

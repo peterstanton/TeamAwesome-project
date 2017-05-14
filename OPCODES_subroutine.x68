@@ -1,11 +1,8 @@
 START    ORG   $6000
-            INCLUDE 'definitions.x68'
-               
-          
                  LEA     $A000,SP        *Load the SP
                  LEA     jmp_table,A0    *Index into the table
                  CLR.L   D3              *Zero it
-                 MOVE.W  #$4E75,D3       *We'll play with it here
+                 MOVE.W  #$48A7,D3       *We'll play with it here
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
 
@@ -14,7 +11,8 @@ START    ORG   $6000
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                 
-
+    INCLUDE 'definitions.x68'
+               
 EXIT                 
        SIMHALT   
 
@@ -63,25 +61,37 @@ code0010       STOP        #$2700
 code0011       STOP        #$2700
 
 code0100       
-                *NOP
                 MOVE.W  D5,D2
+                
+                *NOP
                 AND     #%0000111111111111,D2
                 CMP.L   #%0000111001111001, D2
                 BEQ     NOP
                
                *RTS
-               MOVE.W  D5,D2
                AND     #%0000111111111111,D2
                CMP.L   #%0000111001110101, D2
                BEQ     RTS
 
                *JSR
-               MOVE.W  D5,D2
                AND     #%0000111111000000,D2
                CMP.L   #%0000111010000000, D2
                BEQ     JSR
                
-               *MOVEM
+               * MOVE.M
+                ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
+               AND     #%0000111110000000,D2
+               
+               * DATA REGISTER
+               CMP.L   #%0000100010000000, D2
+               JSR      MOVEM
+               
+               * ADDRESS REGISTER (DECREMENTED)
+               CMP.L  #%0000110010000000, D2
+               JSR    MOVEM
+
+               
+               
                *LEA
                
                
@@ -111,24 +121,54 @@ code1110       STOP        #$2700
 code1111       STOP        #$2700
 
 NOP                 LEA     NOP_disp,A1          
-                    MOVE.B  #13,D0
+                    MOVE.B  #14,D0
                     TRAP    #15
                     BRA     EXIT
+                 
 RTS      
-                    LEA     CLR_disp,A1          
-                    MOVE.B  #13,D0
+                    LEA     RTS_disp,A1          
+                    MOVE.B  #14,D0
                     TRAP    #15 
                     BRA     EXIT
-
 JSR      
                     LEA     JSR_disp,A1          
-                    MOVE.B  #13,D0
+                    MOVE.B  #14,D0
                     TRAP    #15
                     BRA     EXIT 
-     
 
+MOVEM      
+                   
+                    ** SIZE SUBROUTINE
+                    ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
+                    AND #%0000000001000000,D2 
+                    * WORD
+                    CMP.L   #%0000000001000000,D2
+                    JSR     MOVEM_W 
+                    *LONG
+                    CMP.L   #%0000000001000000,D2 
+                    JSR     MOVEM_L
+                    MOVE.B  #14,D0
+                    TRAP    #15
+                    BRA     EXIT 
+MOVEM_W 
+         LEA     MOVEM_disp,A1
+        * PRINT MOVEM
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        * PRINT WORD PORTION
+        LEA     size_w, A0
+        MOVE.B  #14,D0
+        TRAP    #15 
+        
+        BRA     EXIT 
+
+                
+MOVEM_L
+      
 
     END START 
+
 
 
 

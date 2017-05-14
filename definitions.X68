@@ -26,10 +26,13 @@ linebreak           DC.B    CR,LF,0
 *Printing out the Op-codes required
 Invalid_disp        DC.B    'DATA',0
 InvalidEA_disp      DC.B    'WRONGEA',0
+
 NOP_disp            DC.B    'NOP',0
 RTS_disp            DC.B    'RTS',0
 CLR_disp            DC.B    'CLR',0
 JSR_disp            DC.B    'JSR',0
+MOVEM_disp          DC.B    'MOVEM',0
+LEA_disp            DC.B    'LEA',0
 
 *Printing out the symbols needed
 hexaTable               DC.B    '0',0
@@ -57,9 +60,9 @@ backslashsigh           DC.B    '/',0
 openparen               DC.B    '(',0
 closeparen              DC.B    ')',0
 space                   DC.B    ' ',0   
-size_b                  DC.B    '.b',0
-size_w                  DC.B    '.w',0        
-size_l                  DC.B    '.l',0
+size_b                  DC.B    '.B',0
+size_w                  DC.B    '.W',0        
+size_l                  DC.B    '.L',0
 
 *Defining storage
 linecount               DS.B    1       *storeage for lines on a screen
@@ -67,6 +70,7 @@ input_buffer            DC.B    1       *creates input buffer for ASCII string
 location_startData      DS.L    1       *location on where to start reading data
 location_endData        DS.L    1       *location on where to end reading data
 table_length            DS.B    1       *Number of spaces in the table to print to console
+
 
 
 

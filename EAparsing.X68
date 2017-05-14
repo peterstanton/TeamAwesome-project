@@ -9,7 +9,7 @@ START:                  ; first instruction of program
 
 * Put program code here
 
-
+    MOVE.L  #%0000000000111000,D5
 ;Mode finding
 
 LATE_MODE
@@ -29,15 +29,52 @@ LATE_MODE
 
     CMP    #%0000000000100000,D2
     JMP    AdrPreDecr
+    
+DataRegister
+    LEA     DnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
 
-    CMP    #%0000000000101000,D2
-    JMP    AdrDisplace
 
-    CMP    #%0000000000110000,D2
-    JMP    AdrIndex
+AddressRegister
+    LEA     AnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
 
-    JMP    #%0000000000111000,D2
-    JMP    AdrImmediate
+
+AddressRaw
+    LEA     AdrMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
+    
+
+AdrPostIncr
+    LEA     AdrPostMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
+
+AdrPreDecr
+    LEA     AdrPreMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
+
+
+
+DnMessage      DC.B    'Destination is a data register',0
+AnMessage      DC.B    'Destination is an address register',0
+AdrMessage     DC.B    'Destination is an address',0
+AdrPostMessage DC.B    'Destination is a post-incremented address',0
+AdrPreMessage  DC.B    'Destination is a pre-incremented address',0
+
+
 
 
 ;JSR destination register.
@@ -69,42 +106,28 @@ FIND_DEST
 
     CMP    #%0000000000000111,D2
     JMP    IsSeven
+    
+    
+IsZero
+
+IsOne
+
+IsTwo
+
+IsThree
+
+IsFour
+
+IsFive
+
+IsSix
+
+IsSeven
         
 
-   
+MOVEQ_PARSE
+    MOVE.L  D5,D2
     
-MoveDn
-    LEA     DnMessage, A1
-    MOVE    #14,D0
-    TRAP    #15
-    
-MoveAN
-    LEA     AnMessage, A1
-    MOVE    #14,D0
-    TRAP    #15
-    
-MoveAdr
-    LEA     AdrMessage, A1
-    MOVE    #14,D0
-    TRAP    #15
-    
-MoveAdrPost
-    LEA     AdrPostMessage, A1
-    MOVE    #14,D0
-    TRAP    #15
-
-MoveAdrPre
-    LEA     AdrPreMessage, A1
-    MOVE    #14,D0
-    TRAP    #15
-
-
-
-DnMessage      DC.B    'Destination is a data register',0
-AnMessage      DC.B    'Destination is an address register',0
-AdrMessage     DC.B    'Destination is an address',0
-AdrPostMessage DC.B    'Destination is a post-incremented address',0
-AdrPreMessage  DC.B    'Destination is a pre-incremented address',0
 
 
 ;move, size, destination, destination mode, source mode, source.

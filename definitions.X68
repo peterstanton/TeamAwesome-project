@@ -26,6 +26,7 @@ linebreak           DC.B    CR,LF,0
 *Printing out the Op-codes required
 Invalid_disp        DC.B    'DATA',0
 InvalidEA_disp      DC.B    'WRONGEA',0
+
 NOP_disp            DC.B    'NOP',0
 MOVE_disp           DC.B    'MOVE',0
 MOVEA_disp          DC.B    'MOVEA',0
@@ -54,6 +55,7 @@ BCC_disp            DC.B    'BCC',0
 BGT_disp            DC.B    'BGT',0    
 BLE_disp            DC.b    'BLE',0
 
+
 *Printing out the symbols needed
 hexaTable               DC.B    '0',0
                         DC.B    '1',0
@@ -80,9 +82,9 @@ backslashsigh           DC.B    '/',0
 openparen               DC.B    '(',0
 closeparen              DC.B    ')',0
 space                   DC.B    ' ',0   
-size_b                  DC.B    '.b',0
-size_w                  DC.B    '.w',0        
-size_l                  DC.B    '.l',0
+size_b                  DC.B    '.B',0
+size_w                  DC.B    '.W',0        
+size_l                  DC.B    '.L',0
 
 *Defining storage
 linecount               DS.B    1       *storeage for lines on a screen
@@ -91,21 +93,3 @@ location_startData      DS.L    1       *location on where to start reading data
 location_endData        DS.L    1       *location on where to end reading data
 table_length            DS.B    1       *Number of spaces in the table to print to console
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

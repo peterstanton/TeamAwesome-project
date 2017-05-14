@@ -28,7 +28,7 @@ IO_StartLoop    LEA     location_start_msg,A1       *Store the console message f
 
 *Convert ASCII input to hexadecimal
                 JSR     sub_AstoHeLoop              *conversion method for raw input characters
-                MOVE.L  D7, location_startData      *store hex value 
+                MOVE.L  D7, A2                       *store hex value 
                 
                 LEA     linebreak,A1                *appends a linefeed to the end of the user input
                 MOVE.B  #14,D0                      *no next line when displaying
@@ -131,34 +131,3 @@ IO_endProg      LEA     endTest_msg,A1
 *-----------------------------------------------------------                               
                 BRA     END_PROGRAM                 *else end program
                 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

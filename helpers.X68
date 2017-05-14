@@ -39,7 +39,7 @@ as_bigLetter            SUB.B   #$37,D0     *for leters A-F
 *-----------------------------------------------------------
 *start reading data helper method
 *check the data start address
-sub_StartReadingData    MOVE.L  location_startData,D0
+sub_StartReadingData    MOVE.L  location_startData,D1
     
                         BTST    #0,D0               *checks if LSB is 1, 
                         BNE     srdFailAddrOddB     *if 1, then address is odd and invalid
@@ -56,8 +56,8 @@ srdFailAddrOddB         LEA     addr_oddBit_msg,A1
 *-----------------------------------------------------------
 *end reading data helper method
 *check the data end address            
-sub_EndReadingData      MOVE.L  location_startData,D0
-                        MOVE.L  location_endData,D1
+sub_EndReadingData      MOVE.L  D1,A2
+                        MOVE.L  location_endData,A3
     
                         BTST    #0,D0               *checks if LSB is 1, 
                         BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
@@ -140,21 +140,3 @@ sub_PrintAddress    CLR.L   D7
                     RTS
 *-----------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

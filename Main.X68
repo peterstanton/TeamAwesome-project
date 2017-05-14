@@ -9,17 +9,18 @@
 START           ORG    $1000           * first instruction of program
     
                 INCLUDE 'IO_subroutine.x68'
+                INCLUDE 'OPCODES_subroutine.x68'
 
 END_PROGRAM     SIMHALT                *Stop the simulator
 
 *-----------------------------------------------------------
                 INCLUDE 'helpers.x68'
                 INCLUDE 'definitions.x68'
-                INCLUDE 'OpCode_subroutine.x68'
                 INCLUDE 'jumptable.x68'
                 INCLUDE 'TEST_CODE.x68'
                 
                 END    START        ; last line of source
+
 
 
 

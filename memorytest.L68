@@ -1,0 +1,111 @@
+00000400 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 5/7/2017 4:13:44 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Program    :Memory test program
+00000000                             3  * Description: This is a program to test memory from byte address $2000 to byte address $6000. 
+00000000                             4  * It uses four test patterns, 00, $FF. $AA, $55 and 
+00000000                             5  * it can store up to 10 bad address locations
+00000000                             6  
+00000000                             7  *-----------------------------------------------------------
+00000000                             8  
+00000000                             9  * System Equates
+00000000                            10  *
+00000000  =00000011                 11  end_test        EQU     $11     * Test pattern terminator
+00000000  =00000000                 12  test1           EQU     00      * First Test Pattern
+00000000  =000000FF                 13  test2           EQU     $FF     * Second test pattern
+00000000  =00000055                 14  test3           EQU     $55     * Third Test Pattern
+00000000  =000000AA                 15  test4           EQU     $AA     * Fourth test pattern
+00000000  =00002000                 16  st_addr         EQU     $2000   * Starting Address of Test
+00000000  =00002010                 17  end_addr        EQU     $2010   * Ending address of test
+00000000  =00007000                 18  stack           EQU     $7000   * Stack location
+00000000  =0000000A                 19  maxcnt          EQU     10      * Maximum number of bad addresses
+00000000                            20  
+00000400                            21                  ORG     $400            * Start of program
+00000400  4FF8 7000                 22  start           LEA     stack,SP        * Initialize the stack pointer
+00000404  4200                      23                  CLR.B   D0              * Initialize D0
+00000406  4239 0000047A             24                  CLR.B   bad_cnt         * Initialize the bad address counter
+0000040C  45F9 00000474             25                  LEA     tests,A2        * A2 points to the test patterns
+00000412  47F9 0000047C             26                  LEA     bad_addr,A3     * Pointer to bad count storage
+00000418  1C1A                      27  test_loop       MOVE.B  (A2)+,D6        * Let D6 test the patterns for done
+0000041A  0C06 0011                 28                  CMPI.B  #end_test,D6    * Are we done?
+0000041E  6700 001C                 29                  BEQ     done            * Yes, quit
+00000422  41F8 2000                 30                  LEA     st_addr,A0      * Set up the starting address in A0
+00000426  43F8 2010                 31                  LEA     end_addr,A1     * Set up the ending address in A1
+0000042A  4EB9 00000440             32                  JSR     do_test         * Go to the test
+00000430  1E39 0000047A             33                  MOVE.B  bad_cnt,D7      * Get the current count
+00000436  0C07 000A                 34                  CMPI.B  #maxcnt,D7      * Have we max'ed out yet?
+0000043A  6DDC                      35                  BLT     test_loop       * Quit or keep going?
+0000043C  4E72 2700                 36  done            STOP    #$2700  * Return to the simulator
+00000440                            37  
+00000440                            38  
+00000440                            39  ****************************************************************
+00000440                            40  *
+00000440                            41  * Subroutine do_test
+00000440                            42  *
+00000440                            43  * This subroutine does the actual testing.
+00000440                            44  * A0 holds the starting address.
+00000440                            45  * A1 holds the ending address. A2 points to the test pattern to use in
+00000440                            46  * this test.
+00000440                            47  * Registers A5,D1 and D7 are used internally by the subroutine and are
+00000440                            48  * saved.
+00000440                            49  * This routine will test the memory locations from A0 to A1 and put the
+00000440                            50  * address of any failed memory locations in bad_addr and will also
+00000440                            51  * increment the count in bad_cnt. If the count exceeds 10
+00000440                            52  * the test will stop
+00000440                            53  *
+00000440                            54  ***********************************************************************
+00000440  48A7 4110                 55  do_test         MOVEM.W         A3/D1/D7,-(SP)          * Save the registers
+00000444  1092                      56  check_loop      MOVE.B          (A2),(A0)               * Write the byte
+00000446  1210                      57                  MOVE.B          (A0),D1         * D1 holds the value written
+00000448  B212                      58                  CMP.B           (A2),D1         * Do the comparison
+0000044A  6600 0006                 59                  BNE             error_byte      * Update counter
+0000044E  6000 0018                 60                  BRA             next_test       * OK, test again
+00000452  36C8                      61  error_byte      MOVE.W          A0,(A3)+        * Store address and increment ptr
+00000454  5239 0000047A             62                  ADDI.B          #01,bad_cnt     * Increment bad count location
+0000045A  1E39 0000047A             63                  MOVE.B          bad_cnt,D7      * Have we maxed out?
+00000460  0C07 000A                 64                  CMPI.B          #maxcnt,D7      * Check it
+00000464  6C00 0008                 65                  BGE             exit            * Return, we're done.
+00000468  5248                      66  next_test       ADDA.W          #01,A0          * Increment A0
+0000046A                            67  
+0000046A  B2C8                      68                  CMPA.W          A0,A1           * Test if we're done
+0000046C  6CD6                      69                  BGE             check_loop      * go back and test the next addr
+0000046E  4C9F 0882                 70  exit            MOVEM.W        (SP)+,   A3/D1/D7  * Restore the registers
+00000472  4E75                      71                  RTS                             * return to test program
+00000474                            72  
+00000474                            73  * Data storage region
+00000474= 00 FF 55 AA 11            74  tests           DC.B  test1,test2,test3,test4,end_test        * tests
+00000479= 00                        75  padding         DC.B  00                        * filler
+0000047A                            76  bad_cnt         DS.W  1                * counter for bad locations
+0000047C                            77  bad_addr        DS.W  10 * save space for 10 locations       
+00000490                            78                  END     $400 * end of program and load address
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BAD_ADDR            47C
+BAD_CNT             47A
+CHECK_LOOP          444
+DONE                43C
+DO_TEST             440
+END_ADDR            2010
+END_TEST            11
+ERROR_BYTE          452
+EXIT                46E
+MAXCNT              A
+NEXT_TEST           468
+PADDING             479
+STACK               7000
+START               400
+ST_ADDR             2000
+TEST1               0
+TEST2               FF
+TEST3               55
+TEST4               AA
+TESTS               474
+TEST_LOOP           418

@@ -32,21 +32,21 @@ LATE_MODE
     
 DataRegister
     LEA     DnMessage, A1
-    MOVE    #14,D0
+    MOVE.B    #14,D0
     TRAP    #15
     BRA     FIND_DEST
 
 
 AddressRegister
     LEA     AnMessage, A1
-    MOVE    #14,D0
+    MOVE.B    #14,D0
     TRAP    #15
     BRA     FIND_DEST
 
 
 AddressRaw
     LEA     AdrMessage, A1
-    MOVE    #14,D0
+    MOVE.B    #14,D0
     TRAP    #15
     BRA     FIND_DEST
 
@@ -54,14 +54,14 @@ AddressRaw
 
 AdrPostIncr
     LEA     AdrPostMessage, A1
-    MOVE    #14,D0
+    MOVE.B    #14,D0
     TRAP    #15
     BRA     FIND_DEST
 
 
 AdrPreDecr
     LEA     AdrPreMessage, A1
-    MOVE    #14,D0
+    MOVE.B    #14,D0
     TRAP    #15
     BRA     FIND_DEST
 
@@ -107,22 +107,47 @@ FIND_DEST
     CMP    #%0000000000000111,D2
     JMP    IsSeven
     
-    
+    ;this doesn't work
 IsZero
+    MOVE.B  #0,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
 
 IsOne
+    MOVE.B  #1,A1
+    MOVE.B  #14,D0
+    TRAP    #15
 
 IsTwo
+    MOVE.B  #2,A1
+    MOVE.B  #14,D0
+    TRAP    #15
 
 IsThree
+    MOVE.B  #3,A1
+    MOVE.B  #14,D0
+    TRAP    #15
 
 IsFour
-
+    MOVE.B  #4,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
 IsFive
-
+    MOVE.B  #5,A1
+    MOVE.B  #14,D0
+    TRAP    #15
+    
 IsSix
+    MOVE.B  #6,A1
+    MOVE.B  #14,D0
+    TRAP    #15
 
 IsSeven
+    MOVE.B  #7,A1
+    MOVE.B  #14,D0
+    TRAP    #15
         
 
 MOVEQ_PARSE

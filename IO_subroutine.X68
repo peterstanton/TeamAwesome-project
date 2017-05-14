@@ -27,9 +27,6 @@ IO_StartLoop    LEA     location_start_msg,A1       *Store the console message f
                 TRAP    #15                         *Get the user input from console
 
 *Convert ASCII input to hexadecimal
-                CLR.L   D0
-                CLR.L   D1
-
                 JSR     sub_AstoHeLoop              *conversion method for raw input characters
                 MOVE.L  D7, A2                       *store hex value 
                 
@@ -53,7 +50,7 @@ IO_EndLoop      LEA     location_end_msg,A1         *Store the console message f
 
 *Convert ASCII input to hexadecimal
                 CLR.L   D0
-                CLR.L   D1
+                CLR.B   D1
                 
                 JSR     sub_AstoHeLoop              *conversion method for raw input characters
                 MOVE.L  D7, location_endData        *store hex value 
@@ -69,20 +66,20 @@ IO_EndLoop      LEA     location_end_msg,A1         *Store the console message f
                 BRA     IO_commandPars
 *-----------------------------------------------------------
 *Parser through the various commands
-IO_commandPars  
-*                LEA     jumptable, A0                *goes to the jump table
-               ** MOVE.L  location_startData, A2
-              ***  MOVE.L  location_endData, A3  
+IO_commandPars  LEA     jumptable, A0                *goes to the jump table
+                MOVE.L  location_startData, A3
+                MOVE.L  location_endData, A4  
                 
 cmParsLoop      CMPI.B  #29, linecount              *will pause output if the screen lines equal 30
                 BEQ     IO_pause
 
-cmParsReturn    JSR     sub_PrintAddress            *goes to helper subroutine
+cmParsReturn    CLR.L   D7                          *clears what is in D7
+                JSR     sub_PrintAddress            *goes to helper subroutine
                 ADDQ.B  #1,linecount                increments screen line counter
                 
                 CLR.L   D7                          *clears D7 which holds the hex value
                     
-                MOVE.W  (A2),D7                     *puts the next opcode in D7
+                MOVE.W  (A3),D7                     *puts the next opcode in D7
                 MOVE.B  #12,D0                      *set to shift 12 bits
                 LSR.W   D0,D7                       *uses the shift call to isolate bits from root
                 
@@ -94,10 +91,10 @@ cmParsReturn    JSR     sub_PrintAddress            *goes to helper subroutine
                 
                 *MOVEA.L location_endData,A6
                 
-                CMPA.L  A6,A2                       *checks if the end of input is reached
+                CMP.L   A4,A3                       *checks if the end of input is reached
                 BGE     IO_endProg                  *if it is reached, then exits the loop
                 
-                ADDA.W  #2,A2                       *if not, it will go to the next opcode in test                      
+                ADDA.W  #2,A3                       *if not, it will go to the next opcode in test                      
                 BRA     cmParsLoop                  *continues the loop
 *-----------------------------------------------------------               
 *Pause the program
@@ -134,33 +131,3 @@ IO_endProg      LEA     endTest_msg,A1
 *-----------------------------------------------------------                               
                 BRA     END_PROGRAM                 *else end program
                 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

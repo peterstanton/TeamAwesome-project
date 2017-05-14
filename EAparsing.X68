@@ -1,6 +1,6 @@
 *-----------------------------------------------------------
-* Title      :
-* Written by :
+* Title      : EA decomposer
+* Written by : Peter Stanton
 * Date       :
 * Description:
 *-----------------------------------------------------------
@@ -9,66 +9,129 @@ START:                  ; first instruction of program
 
 * Put program code here
 
-    MOVE.W  (A1),D1
-    //do something to convert to a big string of bits
+    MOVE.L  #%0000000000111000,D5
+;Mode finding
+
+LATE_MODE
+    MOVE.L D5,D2
+    AND.L  #%0000000000111000,D2
+    CMP    #%0000000000000000,D2
+    JMP    DataRegister
+
+    CMP    #%0000000000001000,D2
+    JMP    AddressRegister
+
+    CMP    #%0000000000010000,D2
+    JMP    AddressRaw
+
+    CMP    #%0000000000011000,D2
+    JMP    AdrPostIncr
+
+    CMP    #%0000000000100000,D2
+    JMP    AdrPreDecr
     
-    //get the 4 right bits with AND 0F... or F0000000?
+DataRegister
+    LEA     DnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
+
+AddressRegister
+    LEA     AnMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
+
+AddressRaw
+    LEA     AdrMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
+
     
-    //grab 3 bits
 
-code0000
-//parse 000
-
-    ;parse next 3 digits
-    JMP 000
-    jmp 001
-    JMP 010
-    JMP 011
-    JMP 100
-    JMP 101
-    JMP 110
-    JMP 111
-
-code0001
-
-code0010
+AdrPostIncr
+    LEA     AdrPostMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
 
 
-code0011
+AdrPreDecr
+    LEA     AdrPreMessage, A1
+    MOVE    #14,D0
+    TRAP    #15
+    BRA     FIND_DEST
 
-code0100
 
-    ;parse the next 4 digits
-    JMP 0000
-    JMP 0001
-    JMP 0010
-    JMP 0011
-    JMP 0100
-    JMP 0101
-    JMP 0110
-    JMP 0111
-    JMP 1000
 
-code0101
 
-code0110
+DnMessage      DC.B    'Destination is a data register',0
+AnMessage      DC.B    'Destination is an address register',0
+AdrMessage     DC.B    'Destination is an address',0
+AdrPostMessage DC.B    'Destination is a post-incremented address',0
+AdrPreMessage  DC.B    'Destination is a pre-incremented address',0
 
-code0111
 
-code1000
 
-code1001
 
-code1011
+;JSR destination register.
+FIND_DEST
 
-code1100
+    MOVE.L D5,D2
+    AND.L  #%0000000000000111,D2
+    CMP    #%0000000000000000,D2
+    JMP    IsZero
 
-code1101
+    CMP    #%0000000000000001,D2
+    JMP    IsOne
 
-code1110
 
-code1111
+    CMP    #%0000000000000010,D2
+    JMP    IsTwo
+
+    CMP    #%0000000000000011,D2
+    JMP    IsThree
+
+    CMP    #%0000000000000100,D2
+    JMP    IsFour
+
+    CMP    #%0000000000000101,D2
+    JMP    IsFive
+
+    CMP    #%0000000000000110,D2
+    JMP    IsSix
+
+    CMP    #%0000000000000111,D2
+    JMP    IsSeven
     
+    
+IsZero
+
+IsOne
+
+IsTwo
+
+IsThree
+
+IsFour
+
+IsFive
+
+IsSix
+
+IsSeven
+        
+
+MOVEQ_PARSE
+    MOVE.L  D5,D2
+    
+
+
+;move, size, destination, destination mode, source mode, source.
+              
     
     
     
@@ -78,6 +141,8 @@ code1111
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
 
 
 

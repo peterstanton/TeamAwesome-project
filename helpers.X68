@@ -58,6 +58,7 @@ srdFailAddrOddB         LEA     addr_oddBit_msg,A1
 *check the data end address            
 sub_EndReadingData      MOVE.L  location_startData,D0
                         MOVE.L  location_endData,D1
+                        MOVE.L  D1, A4
     
                         BTST    #0,D0               *checks if LSB is 1, 
                         BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
@@ -138,6 +139,8 @@ sub_PrintAddress    CLR.L   D7
                     JSR     sub_PrintTable
                     RTS
 *-----------------------------------------------------------
+
+
 
 
 

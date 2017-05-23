@@ -155,7 +155,6 @@ FIND_XN
     JSR    IsSeven
     RTS
     
-    ;this doesn't work
 IsZero
     MOVE.W  #0,A1
     MOVE.B  #14,D0
@@ -200,7 +199,7 @@ IsSix
     RTS
 
 IsSeven
-    MOVE.B  #7,A1
+    MOVE.W  #7,A1
     MOVE.B  #14,D0
     TRAP    #15
     RTS

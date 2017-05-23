@@ -1,8 +1,9 @@
 START    ORG   $6000
                  LEA     $A000,SP        *Load the SP
                  LEA     jmp_table,A0    *Index into the table
+                 LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  #$48A7,D3       *We'll play with it here
+                 MOVE.W  #$4EB9,D3       *We'll play with it here
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
 
@@ -12,7 +13,7 @@ START    ORG   $6000
                  JSR     0(A0,D3)   *Jump indirect with index
                 
     INCLUDE 'definitions.x68'
-               
+           
 EXIT                 
        SIMHALT   
 
@@ -61,12 +62,12 @@ code0010       STOP        #$2700
 code0011       STOP        #$2700
 
 code0100       
-                MOVE.W  D5,D2
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
                 
-                *NOP
-                AND     #%0000111111111111,D2
-                CMP.L   #%0000111001111001, D2
-                BEQ     NOP
+               *NOP
+               AND     #%0000111111111111,D2
+               CMP.L   #%0000111001111001, D2
+               BEQ     NOP
                
                *RTS
                AND     #%0000111111111111,D2
@@ -75,25 +76,85 @@ code0100
 
                *JSR
                AND     #%0000111111000000,D2
-               CMP.L   #%0000111010000000, D2
+               CMP.L   #%0000111010000000,D2
                BEQ     JSR
                
-               * MOVE.M
+               * MOVEM
                 ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
-               AND     #%0000111110000000,D2
-               
+              ** AND     #%0000111110000000,D2
                * DATA REGISTER
-               CMP.L   #%0000100010000000, D2
-               JSR      MOVEM
-               
+              ** CMP.L   #%0000100010000000, D2
+               ** JSR      MOVEM
                * ADDRESS REGISTER (DECREMENTED)
-               CMP.L  #%0000110010000000, D2
-               JSR    MOVEM
+               ** CMP.L  #%0000110010000000, D2
+               ** JSR    MOVEM
+
+               *LEA
+               JSR      LEA_buffer
+               JSR      bits8to10   // 1 1 1
+               CMP      #7, D2
+               BNE      INVALID
+               JSR      bits11to13  // source mode
+               JSR      bits14to16  // source address
+               JSR      bits5to7    // destination register (will be address)
+               JSR      An_buffer
+              
+LEA_buffer 
+               MOVE.W   #'L',(A6)+
+               MOVE.W   #'E', (A6)+  
+               MOVE.W   #'A', (A6)+
+               MOVE.W   #' ', (A6)+
+               RTS
+        
+               
+bits5to7
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000111000000000, D2
+               ROR.L    #8, D2          // rotate bits so isolated at the end
+               ROR.L    #1, D2
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
+bits8to10
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000000111000000, D2
+               ROR.L    #6, D2          // rotate bits so isolated at the end
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS               
+           
+bits11to13
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000000000111000, D2
+               ROR.L    #3, D2          // rotate bits so isolated at the end
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
+           
+bits14to16
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000000000000111, D2
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
 
                
-               
-               *LEA
-               
+An_buffer
+               MOVE.W   #'A',(A6)+
+               MOVE.W   D6, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
+     
+               ** TODO: TRYING TO TEST PRINT!
+               LEA      BUFFER, A1
+               MOVE.W   #14,D0
+               TRAP     #15
+               RTS
+
+INVALID
+                *** CLEAR OUT A6
+                ** PUT INVALID MESSAGE INTO A6
+                BRA EXIT
+                            
+            
                
 
 code0101       STOP        #$2700
@@ -131,11 +192,18 @@ RTS
                     TRAP    #15 
                     BRA     EXIT
 JSR      
-                    LEA     JSR_disp,A1          
+                    LEA     BUFFER, A6
+                    MOVE.B #'J', (A6)+
+                    MOVE.B #'S', (A6)+
+                    MOVE.B #'R', (A6)+
+                    MOVE.B #' ', (A6)+
+                    LEA     BUFFER, A1
+                    ** BITS 10 - 12 MODE       
+                    ** BITS 13 - 16 REGISTER
                     MOVE.B  #14,D0
-                    TRAP    #15
-                    BRA     EXIT 
-
+                    TRAP    #15 
+                    BRA     EXIT
+                  
 MOVEM      
                    
                     ** SIZE SUBROUTINE
@@ -146,28 +214,39 @@ MOVEM
                     JSR     MOVEM_W 
                     *LONG
                     CMP.L   #%0000000001000000,D2 
-                    JSR     MOVEM_L
+                   ** JSR     MOVEM_L
                     MOVE.B  #14,D0
                     TRAP    #15
                     BRA     EXIT 
+                    
 MOVEM_W 
-         LEA     MOVEM_disp,A1
-        * PRINT MOVEM
-        MOVE.B  #14,D0
-        TRAP    #15
+                     LEA     MOVEM_disp,A1
+                    * PRINT MOVEM
+                     MOVE.B  #14,D0
+                     TRAP    #15
         
-        * PRINT WORD PORTION
-        LEA     size_w, A0
-        MOVE.B  #14,D0
-        TRAP    #15 
+                    * PRINT WORD PORTION
+                     LEA     size_w, A0
+                     MOVE.B  #14,D0
+                     TRAP    #15 
         
-        BRA     EXIT 
+                     BRA     EXIT 
+     
+   
+COPY_OPCODE 
+                     ** HOLDS COPY OF OPCODE TO BE MANIPULATED
+                     CLR    D2  
+                     MOVE.W D5,D2 
+                     RTS  
 
                 
-MOVEM_L
+     
+BUFFER DC.B '     ',0     
       
 
     END START 
+
+
 
 
 

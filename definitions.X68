@@ -31,7 +31,7 @@ NOP_disp            DC.B    'NOP',0
 MOVE_disp           DC.B    'MOVE',0
 MOVEA_disp          DC.B    'MOVEA',0
 MOVEQ_disp          DC.B    'MOVEQ',0
-MOVEM_disp          DC.B    'MOVEM'0
+MOVEM_disp          DC.B    'MOVEM',0
 ADD_disp            DC.B    'ADD',0
 ADDA_disp           DC.B    'ADDA',0
 ADDI_disp           DC.B    'ADDI',0
@@ -93,3 +93,8 @@ location_startData      DS.L    1       *location on where to start reading data
 location_endData        DS.L    1       *location on where to end reading data
 table_length            DS.B    1       *Number of spaces in the table to print to console
 
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~

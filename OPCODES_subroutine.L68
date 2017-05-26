@@ -1,6 +1,6 @@
 00006000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/26/2017 2:37:23 PM
+Created On: 5/26/2017 3:53:18 PM
 
 00000000                             1  *** D3 - ISOLATED BITS FOR COMPARISONS
 00000000                             2  *** D5 - CURRENT OPCODE
@@ -11,7 +11,7 @@ Created On: 5/26/2017 2:37:23 PM
 00006000                             7  START    ORG   $6000
 00006000  4FF9 000080FC              8                   LEA     $80FC,SP        *Load the SP
 00006006  41F9 0000602C              9                   LEA     jmp_table,A0    *Index into the table
-0000600C  4DF9 000063FE             10                   LEA     BUFFER, A6      * Load buffer into A6
+0000600C  4DF9 000064DA             10                   LEA     BUFFER, A6      * Load buffer into A6
 00006012  4283                      11                   CLR.L   D3              *Zero it
 00006014  363C 43D5                 12                   MOVE.W  #$43D5,D3       *We'll play with it here
 00006018  3A03                      13                   MOVE.W  D3,D5
@@ -31,506 +31,617 @@ Line 22 ERROR: Unable to access specified file
 0000602C                            26  
 0000602C  4EF9 0000608C             27  jmp_table      JMP         code0000
 00006032                            28  
-00006032  4EF9 00006090             29                 JMP         code0001
+00006032  4EF9 000060A0             29                 JMP         code0001
 00006038                            30  
-00006038  4EF9 00006094             31                 JMP         code0010
+00006038  4EF9 000060A4             31                 JMP         code0010
 0000603E                            32  
-0000603E  4EF9 00006098             33                 JMP         code0011
+0000603E  4EF9 000060A8             33                 JMP         code0011
 00006044                            34  
-00006044  4EF9 0000609C             35                 JMP         code0100
+00006044  4EF9 000060AC             35                 JMP         code0100
 0000604A                            36                             
-0000604A  4EF9 000062D2             37                 JMP         code0101
+0000604A  4EF9 00006300             37                 JMP         code0101
 00006050                            38  
-00006050  4EF9 000062D6             39                 JMP         code0110
+00006050  4EF9 00006304             39                 JMP         code0110
 00006056                            40  
-00006056  4EF9 000062DA             41                 JMP         code0111
+00006056  4EF9 00006308             41                 JMP         code0111
 0000605C                            42  
-0000605C  4EF9 000062DE             43                 JMP         code1000
+0000605C  4EF9 0000630C             43                 JMP         code1000
 00006062                            44                 
 00006062                            45                 * DIVU
 00006062                            46                 * OR
 00006062                            47  
-00006062  4EF9 0000635C             48                 JMP         code1001
+00006062  4EF9 00006438             48                 JMP         code1001
 00006068                            49  
-00006068  4EF9 00006360             50                 JMP         code1010
+00006068  4EF9 0000643C             50                 JMP         code1010
 0000606E                            51  
-0000606E  4EF9 00006364             52                 JMP         code1011
+0000606E  4EF9 00006440             52                 JMP         code1011
 00006074                            53  
-00006074  4EF9 00006366             54                 JMP         code1100
+00006074  4EF9 00006442             54                 JMP         code1100
 0000607A                            55  
-0000607A  4EF9 0000636A             56                 JMP         code1101
+0000607A  4EF9 00006446             56                 JMP         code1101
 00006080                            57  
-00006080  4EF9 0000636E             58                 JMP         code1110
+00006080  4EF9 0000644A             58                 JMP         code1110
 00006086                            59  
-00006086  4EF9 00006372             60                 JMP         code1111
+00006086  4EF9 0000644E             60                 JMP         code1111
 0000608C                            61  
 0000608C                            62  
-0000608C  4E72 2700                 63  code0000       STOP        #$2700
-00006090                            64  
-00006090  4E72 2700                 65  code0001       STOP        #$2700
-00006094                            66  
-00006094  4E72 2700                 67  code0010       STOP        #$2700
-00006098                            68  
-00006098  4E72 2700                 69  code0011       STOP        #$2700
-0000609C                            70  
-0000609C                            71  code0100       
-0000609C  4EB9 000063F8             72                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
-000060A2                            73                  
-000060A2                            74                 *NOP
-000060A2  C47C 0FFF                 75                 AND     #%0000111111111111,D2
-000060A6  B4BC 00000E79             76                 CMP.L   #%0000111001111001, D2
-000060AC  6700 02C8                 77                 BEQ     NOP
-000060B0                            78                 
-000060B0                            79                 *RTS
-000060B0  C47C 0FFF                 80                 AND     #%0000111111111111,D2
-000060B4  B4BC 00000E75             81                 CMP.L   #%0000111001110101, D2
-000060BA  6700 02CA                 82                 BEQ     RTS
-000060BE                            83  
-000060BE                            84                 *JSR
-000060BE  C47C 0FC0                 85                 AND     #%0000111111000000,D2
-000060C2  B4BC 00000E80             86                 CMP.L   #%0000111010000000,D2
-000060C8  6700 02CC                 87                 BEQ     JSR
-000060CC                            88                 
-000060CC                            89                 * MOVEM
-000060CC                            90                  ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
-000060CC                            91                ** AND     #%0000111110000000,D2
-000060CC                            92                 * DATA REGISTER
-000060CC                            93                ** CMP.L   #%0000100010000000, D2
-000060CC                            94                 ** JSR      MOVEM
-000060CC                            95                 * ADDRESS REGISTER (DECREMENTED)
-000060CC                            96                 ** CMP.L  #%0000110010000000, D2
-000060CC                            97                 ** JSR    MOVEM
-000060CC                            98                  
-000060CC  6000 0002                 99                  BRA     LEA
-000060D0                           100                 *LEA
-000060D0                           101                
-000060D0                           102  LEA
-000060D0  4EB9 00006202            103                 JSR      LEA_BUFFER
-000060D6  4EB9 00006228            104                 JSR      bits8to10   // 1 1 1
-000060DC  B47C 0007                105                 CMP      #7, D2
-000060E0  6600 01EC                106                 BNE      INVALID
-000060E4  4EB9 000060EA            107                 JSR      LEA_SRC
-000060EA                           108            
-000060EA                           109  LEA_SRC
-000060EA  4EB9 0000623A            110              JSR      bits11to13  // source mode - D3
-000060F0  B67C 0000                111              CMP      #%000, D3
-000060F4  6700 01D8                112              BEQ      INVALID
-000060F8  B67C 0001                113              CMP      #%001, D3
-000060FC  6700 01D0                114              BEQ      INVALID
-00006100  B67C 0003                115              CMP      #%011, D3
-00006104  6700 01C8                116              BEQ      INVALID
-00006108  B67C 0004                117              CMP      #%100, D3
-0000610C  6700 01C0                118              BEQ      INVALID
-00006110  B67C 0005                119              CMP      #%101, D3
-00006114  6700 01B8                120              BEQ      INVALID
-00006118  B67C 0006                121              CMP      #%110, D3
-0000611C  6700 01B0                122              BEQ      INVALID
-00006120                           123              
-00006120  4EB9 0000624C            124              JSR      bits14to16 // source register - d4
-00006126  B87C 0004                125              CMP      #%100, D4
-0000612A  6700 01A2                126              BEQ      INVALID
-0000612E  B87C 0002                127              CMP      #%010, D4
-00006132  6700 019A                128              BEQ      INVALID
-00006136  B87C 0003                129              CMP      #%011, D4
-0000613A  6700 0192                130              BEQ      INVALID
-0000613E                           131              
-0000613E  41F9 00006172            132               LEA     jmp_mode,A0    *Index into the table
-00006144  C6FC 0006                133               MULU    #6,D3       *Form offset     
-00006148  4EB0 3000                134               JSR     0(A0,D3)   *Jump indirect with index
-0000614C                           135               
-0000614C  1CFC 002C                136               MOVE.B     #',', (A6)+
-00006150  1CFC 0020                137               MOVE.B     #' ', (A6)+
-00006154                           138               
-00006154  4EB9 0000615C            139               JSR        LEA_DST
-0000615A  4E71                     140               NOP
-0000615C                           141               
-0000615C                           142  LEA_DST    
-0000615C  41F9 00006172            143               LEA     jmp_mode,A0    *Index into the table
-00006162  4243                     144               CLR     D3
-00006164  363C 0007                145               MOVE.W  #%111,D3    ;absolute address
-00006168  C6FC 0006                146               MULU    #6,D3       *Form offset     
-0000616C  4EB0 3000                147               JSR     0(A0,D3)   *Jump indirect with index
-00006170  4E75                     148               RTS
-00006172                           149       
-00006172                           150               
-00006172                           151  
-00006172                           152  jmp_mode
-00006172  4EF9 000061A2            153                  JMP     MODE000  ** DN
-00006178  4EF9 000061AA            154                  JMP     MODE001  ** AN
-0000617E  4EF9 000061B2            155                  JMP     MODE010  ** (AN)
-00006184  4EF9 000061BC            156                  JMP     MODE011  ** (AN)+   
-0000618A  4EF9 000061C4            157                  JMP     MODE100  ** -(AN)
-00006190  4EF9 000061CC            158                  JMP     MODE101  **INVALID
-00006196  4EF9 000061D4            159                  JMP     MODE110  **INVALID
-0000619C  4EF9 000061DC            160                  JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
-000061A2                           161   
-000061A2                           162              
-000061A2                           163  MODE000         
-000061A2  1CFC 0028                164                  MOVE.B  #'(', (A6)+
-000061A6  1CFC 0041                165                  MOVE.B  #'A',(A6)+     
-000061AA                           166  
-000061AA                           167  MODE001         
-000061AA  1CFC 0028                168                  MOVE.B  #'(', (A6)+
-000061AE  1CFC 0041                169                  MOVE.B  #'A',(A6)+        
-000061B2                           170  
-000061B2                           171  MODE010         
-000061B2  1CFC 0028                172                  MOVE.B  #'(', (A6)+
-000061B6  1CFC 0041                173                  MOVE.B  #'A',(A6)+  
-000061BA  4E75                     174                  RTS      
-000061BC                           175  
-000061BC                           176  MODE011         
-000061BC  1CFC 0028                177                  MOVE.B  #'(', (A6)+
-000061C0  1CFC 0041                178                  MOVE.B  #'A',(A6)+        
-000061C4                           179  
-000061C4                           180  MODE100         
-000061C4  1CFC 0028                181                  MOVE.B  #'(', (A6)+
-000061C8  1CFC 0041                182                  MOVE.B  #'A',(A6)+ 
-000061CC                           183                  
-000061CC                           184  MODE101         
-000061CC  1CFC 0028                185                  MOVE.B  #'(', (A6)+
-000061D0  1CFC 0041                186                  MOVE.B  #'A',(A6)+ 
-000061D4                           187  
-000061D4                           188  MODE110         
-000061D4  1CFC 0028                189                  MOVE.B  #'(', (A6)+
-000061D8  1CFC 0041                190                  MOVE.B  #'A',(A6)+              
-000061DC                           191  MODE111         
-000061DC  1CFC 0028                192                  MOVE.B  #'(', (A6)+
-000061E0  1CFC 0041                193                  MOVE.B  #'A',(A6)+                
-000061E4                           194                                 
-000061E4                           195  ***LOAD_LEA_SRC   
-000061E4                           196     ***            CMP      #%010, D3
-000061E4                           197        ***         CMP      #%111, D3
-000061E4                           198           ***      BNE      INVALID
-000061E4                           199              ***   JSR      LOAD_ADDRESS
-000061E4                           200                *** RTS
-000061E4                           201                 
-000061E4                           202  
-000061E4                           203  LOAD_LEA_DES
-000061E4  1CF8 002C                204                 MOVE.B   ',', (A6)+
-000061E8  1CF8 0020                205                 MOVE.B   ' ', (A6)+
-000061EC  4EB9 00006214            206                 JSR      bits5to7    // destination register (will be address) -D3
-000061F2  4EB9 0000625C            207                 JSR      AN_BUFFER
-000061F8  4EB9 0000624C            208                 JSR      bits14to16  // source REGISTER -D4
-000061FE  6000 00C0                209                 BRA      PRINT_BUFFER
-00006202                           210                    
-00006202                           211  LEA_BUFFER 
-00006202  1CFC 004C                212                 MOVE.B   #'L',(A6)+
-00006206  1CFC 0045                213                 MOVE.B   #'E', (A6)+  
-0000620A  1CFC 0041                214                 MOVE.B   #'A', (A6)+
-0000620E  1CFC 0020                215                 MOVE.B   #' ', (A6)+
-00006212  4E75                     216                 RTS
-00006214                           217          
-00006214                           218                 
-00006214                           219  bits5to7
-00006214  4245                     220                 CLR      D5
-00006216  4EB9 000063F8            221                 JSR      COPY_OPCODE  // opcode copied to D2
-0000621C  C47C 0E00                222                 AND      #%0000111000000000, D2
-00006220  E09A                     223                 ROR.L    #8, D2          // rotate bits so isolated at the end
-00006222  E29A                     224                 ROR.L    #1, D2
-00006224  3A02                     225                 MOVE.W   D2,D5 // moving isolated bits into d3
-00006226  4E75                     226                 RTS
-00006228                           227  bits8to10
-00006228  4246                     228                 CLR      D6
-0000622A  4EB9 000063F8            229                 JSR      COPY_OPCODE  // opcode copied to D2
-00006230  C47C 01C0                230                 AND      #%0000000111000000, D2
-00006234  EC9A                     231                 ROR.L    #6, D2          // rotate bits so isolated at the end
-00006236  3C02                     232                 MOVE.W   D2,D6 // moving isolated bits into d3
-00006238  4E75                     233                 RTS               
-0000623A                           234             
-0000623A                           235  bits11to13
-0000623A  4243                     236                 CLR      D3
-0000623C  4EB9 000063F8            237                 JSR      COPY_OPCODE  // opcode copied to D2
-00006242  C47C 0038                238                 AND      #%0000000000111000, D2
-00006246  E69A                     239                 ROR.L    #3, D2          // rotate bits so isolated at the end
-00006248  3602                     240                 MOVE.W   D2,D3 // moving isolated bits into d3
-0000624A  4E75                     241                 RTS
-0000624C                           242             
-0000624C                           243  bits14to16
-0000624C  4244                     244                 CLR      D4
-0000624E  4EB9 000063F8            245                 JSR      COPY_OPCODE  // opcode copied to D2
-00006254  C47C 0007                246                 AND      #%0000000000000111, D2
-00006258  3802                     247                 MOVE.W   D2,D4 // moving isolated bits into d3
-0000625A  4E75                     248                 RTS
-0000625C                           249  
-0000625C                           250                 
-0000625C                           251  AN_BUFFER
-0000625C  1CFC 0041                252                 MOVE.B   #'A',(A6)+
-00006260  1CC3                     253                 MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
-00006262  4E75                     254                 RTS
-00006264                           255                 
-00006264                           256  LEA_AN_PAREN_BUFFER
-00006264  1CFC 0028                257                 MOVE.B   #'(',(A6)+
-00006268  1CFC 0041                258                 MOVE.B   #'A',(A6)+
-0000626C                           259               **  MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
-0000626C  1CFC 0029                260                 MOVE.B   #')',(A6)+
-00006270  6000 FF72                261                 BRA      LOAD_LEA_DES
-00006274                           262  
-00006274                           263  LEA_ABSOLUTE_BUFFER
-00006274  1CFC 0028                264                 MOVE.B   #'(',(A6)+
-00006278  1CFC 0041                265                 MOVE.B   #'A',(A6)+
-0000627C                           266                 ** MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
-0000627C  1CFC 0029                267                 MOVE.B   #')',(A6)+
-00006280  6000 FF62                268                 BRA      LOAD_LEA_DES
-00006284                           269                 
-00006284                           270                 
-00006284                           271  ABSOLUTE_BUFFER
-00006284  4243                     272                 CLR      D3
-00006286  3604                     273                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON
-00006288  1CF8 0024                274                 MOVE.B   '$', (A6)+
-0000628C  B67C 0000                275                 CMP.W    #%000, D3
-00006290  6700 000E                276                 BEQ      ABSOLUTE_WORD_BUFFER
-00006294  4243                     277                 CLR      D3
-00006296  3604                     278                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
-00006298  B67C 0001                279                 CMP.W    #%001, D3
-0000629C  6700 0012                280                 BEQ      ABSOLUTE_LONG_BUFFER
-000062A0                           281                 
-000062A0                           282  ABSOLUTE_WORD_BUFFER
-000062A0                           283                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
-000062A0                           284                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
-000062A0  1CFC 0046                285                         MOVE.B #'F', (A6)+ 
-000062A4  1CFC 0046                286                         MOVE.B #'F', (A6)+ 
-000062A8  1CFC 0046                287                         MOVE.B #'F', (A6)+ 
-000062AC  1CFC 0046                288                         MOVE.B #'F', (A6)+   
-000062B0                           289  ABSOLUTE_LONG_BUFFER       
-000062B0                           290                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
-000062B0                           291                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
-000062B0  1CFC 0047                292                         MOVE.B #'G', (A6)+ 
-000062B4  1CFC 0047                293                         MOVE.B #'G', (A6)+ 
-000062B8  1CFC 0047                294                         MOVE.B #'G', (A6)+ 
-000062BC  1CFC 0047                295                         MOVE.B #'G', (A6)+ 
-000062C0                           296                                                      
-000062C0                           297  
-000062C0                           298  PRINT_BUFFER             
-000062C0  43F9 000063FE            299                 LEA      BUFFER, A1
-000062C6  303C 000E                300                 MOVE.W   #14,D0
-000062CA  4E4F                     301                 TRAP     #15
-000062CC  4E75                     302                 RTS
-000062CE                           303                 
-000062CE                           304                 
-000062CE                           305  
-000062CE                           306  INVALID
-000062CE                           307                  *** CLEAR OUT A6
-000062CE                           308                  ** PUT INVALID MESSAGE INTO A6
-000062CE  6000 FD58                309                  BRA EXIT
-000062D2                           310                              
-000062D2                           311              
-000062D2                           312                 
-000062D2                           313  
-000062D2  4E72 2700                314  code0101       STOP        #$2700
-000062D6                           315  
-000062D6  4E72 2700                316  code0110       STOP        #$2700
-000062DA                           317  
-000062DA  4E72 2700                318  code0111       STOP        #$2700
-000062DE                           319  
-000062DE                           320  code1000
-000062DE  4EB9 000063F8            321                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
-000062E4                           322                 
-000062E4                           323                                *DIVU*
-000062E4  C47C 00C0                324                 AND     #%0000000011000000,D2
-000062E8  B4BC 000000C0            325                 CMP.L   #%0000000011000000,D2
-000062EE  6700 0006                326                 BEQ     DIVU
-000062F2                           327                
-000062F2                           328                             
-Line 329 ERROR: Undefined symbol
-000062F2  6000 589A                329                 BRA     OR
-000062F6                           330                 *OR
-000062F6                           331                 
-000062F6                           332                 
-000062F6                           333  DIVU
-000062F6  4EB9 00006346            334                 JSR      DIVU_BUFFER
-000062FC                           335                 ;JSR      bits8to10   // 1 1 1
-000062FC                           336                 ;CMP      #7, D2
-000062FC                           337                 ;BNE      INVALID
-000062FC  4EB9 00006302            338                 JSR      DIVU_SRC
-00006302                           339                 
-00006302                           340  DIVU_SRC
-00006302  4EB8 623A                341              JSR      bits11to13  // source mode - D3   keep working from here. 
-00006306  B67C 0001                342              CMP      #%001, D3
-0000630A  67C2                     343              BEQ      INVALID
-0000630C                           344              
-0000630C  41F8 6172                345               LEA     jmp_mode,A0    *Index into the table
-00006310  C6FC 0006                346               MULU    #6,D3       *Form offset     
-00006314  4EB0 3000                347               JSR     0(A0,D3)   *Jump indirect with index
-00006318                           348               
-00006318  1CFC 002C                349               MOVE.B     #',', (A6)+
-0000631C  1CFC 0020                350               MOVE.B     #' ', (A6)+
-00006320                           351               
-00006320  4EB9 00006328            352               JSR        DIVU_DST
-00006326  4E71                     353               NOP
-00006328                           354               
-00006328                           355               
-00006328                           356               
-00006328                           357  DIVU_DST    
-00006328  4EB8 6228                358              JSR     bits8to10 //check validity 
-0000632C  B67C 0001                359              CMP     #%001,D3
-00006330  669C                     360              BNE     INVALID
-00006332                           361                  
-00006332                           362                  
-00006332  41F8 6172                363               LEA     jmp_mode,A0    *Index into the table
-00006336  4243                     364               CLR     D3
-00006338  363C 0000                365               MOVE.W  #%000,D3
-0000633C  C6FC 0006                366               MULU    #6,D3       *Form offset     
-00006340  4EB0 3000                367               JSR     0(A0,D3)   *Jump indirect with index
-00006344  4E75                     368               RTS
-00006346                           369       
-00006346                           370  
-00006346                           371                 
-00006346                           372                 
-00006346                           373  DIVU_BUFFER 
-00006346  1CFC 0044                374                 MOVE.B   #'D', (A6)+
-0000634A  1CFC 0049                375                 MOVE.B   #'I', (A6)+  
-0000634E  1CFC 0056                376                 MOVE.B   #'V', (A6)+
-00006352  1CFC 0055                377                 MOVE.B   #'U', (A6)+
-00006356  1CFC 0020                378                 MOVE.B   #' ', (A6)+
-0000635A  4E75                     379                 RTS
-0000635C                           380                
-0000635C                           381  
-0000635C                           382  
-0000635C  4E72 2700                383  code1001       STOP        #$2700
-00006360                           384  
-00006360  4E72 2700                385  code1010       STOP        #$2700
-00006364                           386  
-00006364  60FE                     387  code1011       BRA        code1011
-00006366                           388  
-00006366                           389    
-00006366                           390  
-00006366  4E72 2700                391  code1100       STOP        #$2700
-0000636A                           392  
-0000636A  4E72 2700                393  code1101       STOP        #$2700
-0000636E                           394  
-0000636E  4E72 2700                395  code1110       STOP        #$2700
-00006372                           396  
-00006372  4E72 2700                397  code1111       STOP        #$2700
-00006376                           398  
-Line 399 ERROR: Undefined symbol
-00006376  43F9 004DBB8E            399  NOP                 LEA     NOP_disp,A1          
-0000637C  103C 000E                400                      MOVE.B  #14,D0
-00006380  4E4F                     401                      TRAP    #15
-00006382  6000 FCA4                402                      BRA     EXIT
-00006386                           403                   
-00006386                           404  RTS      
-Line 405 ERROR: Undefined symbol
-00006386  43F9 004DBB8E            405                      LEA     RTS_disp,A1          
-0000638C  103C 000E                406                      MOVE.B  #14,D0
-00006390  4E4F                     407                      TRAP    #15 
-00006392  6000 FC94                408                      BRA     EXIT
-00006396                           409  JSR      
-00006396  4DF9 000063FE            410                      LEA     BUFFER, A6
-0000639C  1CFC 004A                411                      MOVE.B #'J', (A6)+
-000063A0  1CFC 0053                412                      MOVE.B #'S', (A6)+
-000063A4  1CFC 0052                413                      MOVE.B #'R', (A6)+
-000063A8  1CFC 0020                414                      MOVE.B #' ', (A6)+
-000063AC  43F9 000063FE            415                      LEA     BUFFER, A1
-000063B2                           416                      ** BITS 10 - 12 MODE       
-000063B2                           417                      ** BITS 13 - 16 REGISTER
-000063B2  103C 000E                418                      MOVE.B  #14,D0
-000063B6  4E4F                     419                      TRAP    #15 
-000063B8  6000 FC6E                420                      BRA     EXIT
-000063BC                           421                    
-000063BC                           422  MOVEM      
-000063BC                           423                     
-000063BC                           424                      ** SIZE SUBROUTINE
-000063BC                           425                      ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
-000063BC  C47C 0040                426                      AND #%0000000001000000,D2 
-000063C0                           427                      * WORD
-000063C0  B4BC 00000040            428                      CMP.L   #%0000000001000000,D2
-000063C6  4EB9 000063DC            429                      JSR     MOVEM_W 
-000063CC                           430                      *LONG
-000063CC  B4BC 00000040            431                      CMP.L   #%0000000001000000,D2 
-000063D2                           432                     ** JSR     MOVEM_L
-000063D2  103C 000E                433                      MOVE.B  #14,D0
-000063D6  4E4F                     434                      TRAP    #15
-000063D8  6000 FC4E                435                      BRA     EXIT 
-000063DC                           436                      
-000063DC                           437  MOVEM_W 
-Line 438 ERROR: Undefined symbol
-000063DC  43F9 004DBB8E            438                       LEA     MOVEM_disp,A1
-000063E2                           439                      * PRINT MOVEM
-000063E2  103C 000E                440                       MOVE.B  #14,D0
-000063E6  4E4F                     441                       TRAP    #15
-000063E8                           442          
-000063E8                           443                      * PRINT WORD PORTION
-Line 444 ERROR: Undefined symbol
-000063E8  41F9 004DBB8E            444                       LEA     size_w, A0
-000063EE  103C 000E                445                       MOVE.B  #14,D0
-000063F2  4E4F                     446                       TRAP    #15 
-000063F4                           447          
-000063F4  6000 FC32                448                       BRA     EXIT 
-000063F8                           449       
-000063F8                           450     
-000063F8                           451  COPY_OPCODE 
-000063F8                           452                       ** HOLDS COPY OF OPCODE TO BE MANIPULATED
-000063F8  4242                     453                       CLR    D2  
-000063FA  3405                     454                       MOVE.W D5,D2 
-000063FC  4E75                     455                       RTS  
-000063FE                           456  
-000063FE                           457                  
-000063FE                           458       
-000063FE= 20 20 20 20 20 00        459  BUFFER DC.B '     ',0     
-00006404                           460        
-00006404                           461  
-00006404                           462      END START 
+0000608C                            63  code0000    
+0000608C                            64                 *ADDI
+0000608C  C47C 0600                 65                 AND      #%0000011000000000,D2
+00006090  B4BC 00000600             66                 CMP.L    #%0000011000000000,D2
+00006096  6700 02F2                 67                 BEQ      ADDI
+0000609A  4EF9 000062FC             68                 JMP      INVALID
+000060A0                            69  
+000060A0  4E72 2700                 70  code0001       STOP        #$2700
+000060A4                            71  
+000060A4  4E72 2700                 72  code0010       STOP        #$2700
+000060A8                            73  
+000060A8  4E72 2700                 74  code0011       STOP        #$2700
+000060AC                            75  
+000060AC                            76  code0100       
+000060AC  4EB9 000064D4             77                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
+000060B2                            78                  
+000060B2                            79                 *NOP
+000060B2  C47C 0FFF                 80                 AND     #%0000111111111111,D2
+000060B6  B4BC 00000E79             81                 CMP.L   #%0000111001111001, D2
+000060BC  6700 0394                 82                 BEQ     NOP
+000060C0                            83                 
+000060C0                            84                 *RTS
+000060C0  C47C 0FFF                 85                 AND     #%0000111111111111,D2
+000060C4  B4BC 00000E75             86                 CMP.L   #%0000111001110101, D2
+000060CA  6700 0396                 87                 BEQ     RTS
+000060CE                            88  
+000060CE                            89                 *JSR
+000060CE  C47C 0FC0                 90                 AND     #%0000111111000000,D2
+000060D2  B4BC 00000E80             91                 CMP.L   #%0000111010000000,D2
+000060D8  6700 0398                 92                 BEQ     JSR
+000060DC                            93                 
+000060DC                            94                 *CLR
+000060DC  C47C 0F00                 95                 AND     #%0000111100000000,D2
+000060E0  B4BC 00000200             96                 CMP.L   #%0000001000000000,D2
+000060E6  6700 02F6                 97                 BEQ     CLR
+000060EA                            98                 
+000060EA                            99                 * MOVEM
+000060EA                           100                  ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
+000060EA                           101                ** AND     #%0000111110000000,D2
+000060EA                           102                 * DATA REGISTER
+000060EA                           103                ** CMP.L   #%0000100010000000, D2
+000060EA                           104                 ** JSR      MOVEM
+000060EA                           105                 * ADDRESS REGISTER (DECREMENTED)
+000060EA                           106                 ** CMP.L  #%0000110010000000, D2
+000060EA                           107                 ** JSR    MOVEM
+000060EA                           108                  
+000060EA  6000 0002                109                  BRA     LEA
+000060EE                           110                 *LEA
+000060EE                           111                
+000060EE                           112  LEA
+000060EE  4EB9 00006230            113                 JSR      LEA_BUFFER
+000060F4  4EB9 00006256            114                 JSR      bits8to10   // 1 1 1
+000060FA  B47C 0007                115                 CMP      #7, D2
+000060FE  6600 01FC                116                 BNE      INVALID
+00006102  4EB9 00006108            117                 JSR      LEA_SRC
+00006108                           118            
+00006108                           119  LEA_SRC
+00006108  4EB9 00006268            120              JSR      bits11to13  // source mode - D3
+0000610E  B67C 0000                121              CMP      #%000, D3
+00006112  6700 01E8                122              BEQ      INVALID
+00006116  B67C 0001                123              CMP      #%001, D3
+0000611A  6700 01E0                124              BEQ      INVALID
+0000611E  B67C 0003                125              CMP      #%011, D3
+00006122  6700 01D8                126              BEQ      INVALID
+00006126  B67C 0004                127              CMP      #%100, D3
+0000612A  6700 01D0                128              BEQ      INVALID
+0000612E  B67C 0005                129              CMP      #%101, D3
+00006132  6700 01C8                130              BEQ      INVALID
+00006136  B67C 0006                131              CMP      #%110, D3
+0000613A  6700 01C0                132              BEQ      INVALID
+0000613E                           133              
+0000613E  4EB9 0000627A            134              JSR      bits14to16 // source register - d4
+00006144  B87C 0004                135              CMP      #%100, D4
+00006148  6700 01B2                136              BEQ      INVALID
+0000614C  B87C 0002                137              CMP      #%010, D4
+00006150  6700 01AA                138              BEQ      INVALID
+00006154  B87C 0003                139              CMP      #%011, D4
+00006158  6700 01A2                140              BEQ      INVALID
+0000615C                           141              
+0000615C  41F9 00006190            142               LEA     jmp_mode,A0    *Index into the table
+00006162  C6FC 0006                143               MULU    #6,D3       *Form offset     
+00006166  4EB0 3000                144               JSR     0(A0,D3)   *Jump indirect with index
+0000616A                           145               
+0000616A  1CFC 002C                146               MOVE.B     #',', (A6)+
+0000616E  1CFC 0020                147               MOVE.B     #' ', (A6)+
+00006172                           148               
+00006172  4EB9 0000617A            149               JSR        LEA_DST
+00006178  4E71                     150               NOP
+0000617A                           151               
+0000617A                           152  LEA_DST    
+0000617A  41F9 00006190            153               LEA     jmp_mode,A0    *Index into the table
+00006180  4243                     154               CLR     D3
+00006182  363C 0007                155               MOVE.W  #%111,D3    ;absolute address
+00006186  C6FC 0006                156               MULU    #6,D3       *Form offset     
+0000618A  4EB0 3000                157               JSR     0(A0,D3)   *Jump indirect with index
+0000618E  4E75                     158               RTS
+00006190                           159       
+00006190                           160               
+00006190                           161  
+00006190                           162  jmp_mode
+00006190  4EF9 000061D8            163                  JMP     MODE000  ** DN
+00006196  4EF9 000061DC            164                  JMP     MODE001  ** AN
+0000619C  4EF9 000061E0            165                  JMP     MODE010  ** (AN)
+000061A2  4EF9 000061EA            166                  JMP     MODE011  ** (AN)+   
+000061A8  4EF9 000061F2            167                  JMP     MODE100  ** -(AN)
+000061AE  4EF9 000061FE            168                  JMP     MODE101  **INVALID
+000061B4  4EF9 00006206            169                  JMP     MODE110  **INVALID
+000061BA  4EF9 0000620E            170                  JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
+000061C0                           171                  
+000061C0                           172  ADDB
+000061C0  1CFC 002E                173      MOVE.B  #'.',(A6)+
+000061C4  1CFC 0042                174      MOVE.B  #'B',(A6)+
+000061C8                           175  
+000061C8                           176  
+000061C8                           177  ADDW
+000061C8  1CFC 002E                178      MOVE.B  #'.',(A6)+
+000061CC  1CFC 0057                179      MOVE.B  #'W',(A6)+
+000061D0                           180  
+000061D0                           181  ADDL
+000061D0  1CFC 002E                182      MOVE.B  #'.',(A6)+
+000061D4  1CFC 004C                183      MOVE.B  #'L',(A6)+
+000061D8                           184  
+000061D8                           185  
+000061D8                           186   
+000061D8                           187              
+000061D8                           188  MODE000         
+000061D8                           189                  ;MOVE.B  #'(', (A6)+
+000061D8  1CFC 0044                190                  MOVE.B  #'D',(A6)+     
+000061DC                           191  
+000061DC                           192  MODE001         
+000061DC                           193                  ;MOVE.B  #'(', (A6)+
+000061DC  1CFC 0041                194                  MOVE.B  #'A',(A6)+        
+000061E0                           195  
+000061E0                           196  MODE010         
+000061E0  1CFC 0028                197                  MOVE.B  #'(', (A6)+
+000061E4  1CFC 0041                198                  MOVE.B  #'A',(A6)+  
+000061E8  4E75                     199                  RTS      
+000061EA                           200  
+000061EA                           201  MODE011         
+000061EA  1CFC 0028                202                  MOVE.B  #'(', (A6)+
+000061EE  1CFC 0041                203                  MOVE.B  #'A',(A6)+        
+000061F2                           204  
+000061F2                           205  MODE100         
+000061F2  1CFC 002D                206                  MOVE.B  #'-', (A6)+
+000061F6  1CFC 0028                207                  MOVE.B  #'(', (A6)+
+000061FA  1CFC 0041                208                  MOVE.B  #'A',(A6)+ 
+000061FE                           209                  
+000061FE                           210  MODE101         
+000061FE  1CFC 0028                211                  MOVE.B  #'(', (A6)+
+00006202  1CFC 0041                212                  MOVE.B  #'A',(A6)+ 
+00006206                           213  
+00006206                           214  MODE110         
+00006206  1CFC 0028                215                  MOVE.B  #'(', (A6)+
+0000620A  1CFC 0041                216                  MOVE.B  #'A',(A6)+              
+0000620E                           217  MODE111         
+0000620E                           218                  ;MOVE.B  #'(', (A6)+   ;We need to find a way to grab immediate data at the end of the command in memory.
+0000620E  1CFC 0023                219                  MOVE.B  #'#',(A6)+                
+00006212                           220                                 
+00006212                           221  ***LOAD_LEA_SRC   
+00006212                           222     ***            CMP      #%010, D3
+00006212                           223        ***         CMP      #%111, D3
+00006212                           224           ***      BNE      INVALID
+00006212                           225              ***   JSR      LOAD_ADDRESS
+00006212                           226                *** RTS
+00006212                           227                 
+00006212                           228  
+00006212                           229  LOAD_LEA_DES
+00006212  1CF8 002C                230                 MOVE.B   ',', (A6)+
+00006216  1CF8 0020                231                 MOVE.B   ' ', (A6)+
+0000621A  4EB9 00006242            232                 JSR      bits5to7    // destination register (will be address) -D3
+00006220  4EB9 0000628A            233                 JSR      AN_BUFFER
+00006226  4EB9 0000627A            234                 JSR      bits14to16  // source REGISTER -D4
+0000622C  6000 00C0                235                 BRA      PRINT_BUFFER
+00006230                           236                    
+00006230                           237  LEA_BUFFER 
+00006230  1CFC 004C                238                 MOVE.B   #'L',(A6)+
+00006234  1CFC 0045                239                 MOVE.B   #'E', (A6)+  
+00006238  1CFC 0041                240                 MOVE.B   #'A', (A6)+
+0000623C  1CFC 0020                241                 MOVE.B   #' ', (A6)+
+00006240  4E75                     242                 RTS
+00006242                           243          
+00006242                           244                 
+00006242                           245  bits5to7
+00006242  4245                     246                 CLR      D5
+00006244  4EB9 000064D4            247                 JSR      COPY_OPCODE  // opcode copied to D2
+0000624A  C47C 0E00                248                 AND      #%0000111000000000, D2
+0000624E  E09A                     249                 ROR.L    #8, D2          // rotate bits so isolated at the end
+00006250  E29A                     250                 ROR.L    #1, D2
+00006252  3A02                     251                 MOVE.W   D2,D5 // moving isolated bits into d3
+00006254  4E75                     252                 RTS
+00006256                           253  bits8to10
+00006256  4246                     254                 CLR      D6
+00006258  4EB9 000064D4            255                 JSR      COPY_OPCODE  // opcode copied to D2
+0000625E  C47C 01C0                256                 AND      #%0000000111000000, D2
+00006262  EC9A                     257                 ROR.L    #6, D2          // rotate bits so isolated at the end
+00006264  3C02                     258                 MOVE.W   D2,D6 // moving isolated bits into d3
+00006266  4E75                     259                 RTS               
+00006268                           260             
+00006268                           261  bits11to13
+00006268  4243                     262                 CLR      D3
+0000626A  4EB9 000064D4            263                 JSR      COPY_OPCODE  // opcode copied to D2
+00006270  C47C 0038                264                 AND      #%0000000000111000, D2
+00006274  E69A                     265                 ROR.L    #3, D2          // rotate bits so isolated at the end
+00006276  3602                     266                 MOVE.W   D2,D3 // moving isolated bits into d3
+00006278  4E75                     267                 RTS
+0000627A                           268             
+0000627A                           269  bits14to16
+0000627A  4244                     270                 CLR      D4
+0000627C  4EB9 000064D4            271                 JSR      COPY_OPCODE  // opcode copied to D2
+00006282  C47C 0007                272                 AND      #%0000000000000111, D2
+00006286  3802                     273                 MOVE.W   D2,D4 // moving isolated bits into d3
+00006288  4E75                     274                 RTS
+0000628A                           275  
+0000628A                           276                 
+0000628A                           277  AN_BUFFER
+0000628A  1CFC 0041                278                 MOVE.B   #'A',(A6)+
+0000628E  1CC3                     279                 MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
+00006290  4E75                     280                 RTS
+00006292                           281                 
+00006292                           282  LEA_AN_PAREN_BUFFER
+00006292  1CFC 0028                283                 MOVE.B   #'(',(A6)+
+00006296  1CFC 0041                284                 MOVE.B   #'A',(A6)+
+0000629A                           285               **  MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
+0000629A  1CFC 0029                286                 MOVE.B   #')',(A6)+
+0000629E  6000 FF72                287                 BRA      LOAD_LEA_DES
+000062A2                           288  
+000062A2                           289  LEA_ABSOLUTE_BUFFER
+000062A2  1CFC 0028                290                 MOVE.B   #'(',(A6)+
+000062A6  1CFC 0041                291                 MOVE.B   #'A',(A6)+
+000062AA                           292                 ** MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
+000062AA  1CFC 0029                293                 MOVE.B   #')',(A6)+
+000062AE  6000 FF62                294                 BRA      LOAD_LEA_DES
+000062B2                           295                 
+000062B2                           296                 
+000062B2                           297  ABSOLUTE_BUFFER
+000062B2  4243                     298                 CLR      D3
+000062B4  3604                     299                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON
+000062B6  1CF8 0024                300                 MOVE.B   '$', (A6)+
+000062BA  B67C 0000                301                 CMP.W    #%000, D3
+000062BE  6700 000E                302                 BEQ      ABSOLUTE_WORD_BUFFER
+000062C2  4243                     303                 CLR      D3
+000062C4  3604                     304                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
+000062C6  B67C 0001                305                 CMP.W    #%001, D3
+000062CA  6700 0012                306                 BEQ      ABSOLUTE_LONG_BUFFER
+000062CE                           307                 
+000062CE                           308  ABSOLUTE_WORD_BUFFER
+000062CE                           309                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
+000062CE                           310                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
+000062CE  1CFC 0046                311                         MOVE.B #'F', (A6)+ 
+000062D2  1CFC 0046                312                         MOVE.B #'F', (A6)+ 
+000062D6  1CFC 0046                313                         MOVE.B #'F', (A6)+ 
+000062DA  1CFC 0046                314                         MOVE.B #'F', (A6)+   
+000062DE                           315  ABSOLUTE_LONG_BUFFER       
+000062DE                           316                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
+000062DE                           317                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
+000062DE  1CFC 0047                318                         MOVE.B #'G', (A6)+ 
+000062E2  1CFC 0047                319                         MOVE.B #'G', (A6)+ 
+000062E6  1CFC 0047                320                         MOVE.B #'G', (A6)+ 
+000062EA  1CFC 0047                321                         MOVE.B #'G', (A6)+ 
+000062EE                           322                                                      
+000062EE                           323  
+000062EE                           324  PRINT_BUFFER             
+000062EE  43F9 000064DA            325                 LEA      BUFFER, A1
+000062F4  303C 000E                326                 MOVE.W   #14,D0
+000062F8  4E4F                     327                 TRAP     #15
+000062FA  4E75                     328                 RTS
+000062FC                           329                 
+000062FC                           330                 
+000062FC                           331  
+000062FC                           332  INVALID
+000062FC                           333                  *** CLEAR OUT A6
+000062FC                           334                  ** PUT INVALID MESSAGE INTO A6
+000062FC  6000 FD2A                335                  BRA EXIT
+00006300                           336                              
+00006300                           337              
+00006300                           338                 
+00006300                           339  
+00006300  4E72 2700                340  code0101       STOP        #$2700
+00006304                           341  
+00006304  4E72 2700                342  code0110       STOP        #$2700
+00006308                           343  
+00006308  4E72 2700                344  code0111       STOP        #$2700
+0000630C                           345  
+0000630C                           346  code1000
+0000630C  4EB9 000064D4            347                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
+00006312                           348                 
+00006312                           349                                *DIVU*
+00006312  C47C 00C0                350                 AND     #%0000000011000000,D2
+00006316  B4BC 000000C0            351                 CMP.L   #%0000000011000000,D2
+0000631C  6700 0006                352                 BEQ     DIVU
+00006320                           353                
+00006320                           354                             
+Line 355 ERROR: Undefined symbol
+00006320  6000 586C                355                 BRA     OR
+00006324                           356                 *OR
+00006324                           357                 
+00006324                           358                 
+00006324                           359  DIVU
+00006324  4EB9 00006374            360                 JSR      DIVU_BUFFER
+0000632A                           361                 ;JSR      bits8to10   // 1 1 1
+0000632A                           362                 ;CMP      #7, D2
+0000632A                           363                 ;BNE      INVALID
+0000632A  4EB9 00006330            364                 JSR      DIVU_SRC
+00006330                           365                 
+00006330                           366  DIVU_SRC
+00006330  4EB8 6268                367              JSR      bits11to13  // source mode - D3   keep working from here. 
+00006334  B67C 0001                368              CMP      #%001, D3
+00006338  67C2                     369              BEQ      INVALID
+0000633A                           370              
+0000633A  41F8 6190                371               LEA     jmp_mode,A0    *Index into the table
+0000633E  C6FC 0006                372               MULU    #6,D3       *Form offset     
+00006342  4EB0 3000                373               JSR     0(A0,D3)   *Jump indirect with index
+00006346                           374               
+00006346  1CFC 002C                375               MOVE.B     #',', (A6)+
+0000634A  1CFC 0020                376               MOVE.B     #' ', (A6)+
+0000634E                           377               
+0000634E  4EB9 00006356            378               JSR        DIVU_DST
+00006354  4E71                     379               NOP
+00006356                           380               
+00006356                           381               
+00006356                           382               
+00006356                           383  DIVU_DST    
+00006356  4EB8 6256                384              JSR     bits8to10 //check validity 
+0000635A  B67C 0001                385              CMP     #%001,D3
+0000635E  669C                     386              BNE     INVALID
+00006360                           387                  
+00006360                           388                  
+00006360  41F8 6190                389               LEA     jmp_mode,A0    *Index into the table
+00006364  4243                     390               CLR     D3
+00006366  363C 0000                391               MOVE.W  #%000,D3
+0000636A  C6FC 0006                392               MULU    #6,D3       *Form offset     
+0000636E  4EB0 3000                393               JSR     0(A0,D3)   *Jump indirect with index
+00006372  4E75                     394               RTS
+00006374                           395       
+00006374                           396  
+00006374                           397                 
+00006374                           398                 
+00006374                           399  DIVU_BUFFER 
+00006374  1CFC 0044                400                 MOVE.B   #'D', (A6)+
+00006378  1CFC 0049                401                 MOVE.B   #'I', (A6)+  
+0000637C  1CFC 0056                402                 MOVE.B   #'V', (A6)+
+00006380  1CFC 0055                403                 MOVE.B   #'U', (A6)+
+00006384  1CFC 0020                404                 MOVE.B   #' ', (A6)+
+00006388  4E75                     405                 RTS
+0000638A                           406                 
+0000638A                           407                 
+0000638A                           408                 
+0000638A                           409  ADDI
+0000638A  4EB9 000063C8            410                 JSR      ADDI_BUFFER
+00006390  4EB9 00006396            411                 JSR      ADDI_SRC
+00006396                           412                 
+00006396                           413                 
+00006396                           414  ADDI_SRC
+00006396  4EF8 006F                415              JMP      111        ;Source mode is always immediate
+0000639A  4EB8 6256                416              JSR      bits8to10  ;this is the size. I will need to use this to get the trailing immediate value from memory.
+0000639E                           417              ;Based on the received size, jump forward and read in more memory of that size, and add it to the buffer.
+0000639E                           418               
+0000639E  1CFC 002C                419               MOVE.B     #',', (A6)+
+000063A2  1CFC 0020                420               MOVE.B     #' ', (A6)+
+000063A6                           421               
+000063A6  4EB9 000063AE            422               JSR        ADDI_DST
+000063AC  4E71                     423               NOP
+000063AE                           424               
+000063AE                           425               
+000063AE                           426  ADDI_DST    
+000063AE  4EB8 6268                427              JSR     bits11to13  //check validity 
+000063B2  B67C 0001                428              CMP     #%001,D3
+000063B6  6700 FF44                429              BEQ     INVALID
+000063BA                           430                  
+000063BA                           431                  
+000063BA  41F8 6190                432               LEA     jmp_mode,A0    *Index into the table
+000063BE                           433               ;CLR     D3
+000063BE                           434               ;MOVE.W  #%000,D3  
+000063BE  C6FC 0006                435               MULU    #6,D3       *Form offset     
+000063C2  4EB0 3000                436               JSR     0(A0,D3)   *Jump indirect with index
+000063C6  4E75                     437               RTS               
+000063C8                           438                 
+000063C8                           439                 
+000063C8                           440  ADDI_BUFFER 
+000063C8  1CFC 0041                441                 MOVE.B   #'A', (A6)+
+000063CC  1CFC 0044                442                 MOVE.B   #'D', (A6)+  
+000063D0  1CFC 0044                443                 MOVE.B   #'D', (A6)+
+000063D4  1CFC 0049                444                 MOVE.B   #'I', (A6)+
+000063D8  1CFC 0020                445                 MOVE.B   #' ', (A6)+
+000063DC  4E75                     446                 RTS
+000063DE                           447                 
+000063DE                           448  CLR
+000063DE  4EB8 6242                449                 JSR      bits5to7   // 0 0 1
+000063E2  B47C 0001                450                 CMP      #1, D2
+000063E6  6600 FF14                451                 BNE      INVALID
+000063EA  4EB9 00006426            452                 JSR      CLR_BUFFER
+000063F0  4EB8 6256                453                 JSR     bits8to10
+000063F4                           454               ;size is now a 3 bit value in D3. Based on that, go to ADDB, ADDW, or ADDL
+000063F4  B67C 0000                455               CMP    #0,D3
+000063F8  6700 FDC6                456               BEQ    ADDB
+000063FC  B67C 0001                457               CMP    #1,D3
+00006400  6700 FDC6                458               BEQ    ADDW
+00006404  B67C 0002                459               CMP    #2,D3
+00006408  6700 FDC6                460               BEQ    ADDL
+Line 461 ERROR: Undefined symbol
+0000640C  4EB9 004DBB8E            461               JSR      CLR_DEST              
+00006412                           462                 
+00006412                           463  CLR_DST    
+00006412                           464  
+00006412  41F8 6190                465               LEA     jmp_mode,A0    *Index into the table             
+00006416  4243                     466               CLR     D3
+00006418  4EB8 6268                467               JSR     bits11to13  ;get destinatiom mode bits                          
+0000641C                           468               ;MOVE.W  #%111,D3    ;absolute address
+0000641C  C6FC 0006                469               MULU    #6,D3       *Form offset     
+00006420  4EB0 3000                470               JSR     0(A0,D3)   *Jump indirect with index
+00006424  4E75                     471               RTS
+00006426                           472       
+00006426                           473               
+00006426                           474  CLR_BUFFER 
+00006426  1CFC 0043                475                 MOVE.B   #'C', (A6)+
+0000642A  1CFC 004C                476                 MOVE.B   #'L', (A6)+  
+0000642E  1CFC 0052                477                 MOVE.B   #'R', (A6)+
+00006432  1CFC 0020                478                 MOVE.B   #' ', (A6)+
+00006436  4E75                     479                 RTS
+00006438                           480                
+00006438                           481  
+00006438                           482  
+00006438  4E72 2700                483  code1001       STOP        #$2700
+0000643C                           484  
+0000643C  4E72 2700                485  code1010       STOP        #$2700
+00006440                           486  
+00006440  60FE                     487  code1011       BRA        code1011
+00006442                           488  
+00006442                           489    
+00006442                           490  
+00006442  4E72 2700                491  code1100       STOP        #$2700
+00006446                           492  
+00006446  4E72 2700                493  code1101       STOP        #$2700
+0000644A                           494  
+0000644A  4E72 2700                495  code1110       STOP        #$2700
+0000644E                           496  
+0000644E  4E72 2700                497  code1111       STOP        #$2700
+00006452                           498  
+Line 499 ERROR: Undefined symbol
+00006452  43F9 004DBB8E            499  NOP                 LEA     NOP_disp,A1          
+00006458  103C 000E                500                      MOVE.B  #14,D0
+0000645C  4E4F                     501                      TRAP    #15
+0000645E  6000 FBC8                502                      BRA     EXIT
+00006462                           503                   
+00006462                           504  RTS      
+Line 505 ERROR: Undefined symbol
+00006462  43F9 004DBB8E            505                      LEA     RTS_disp,A1          
+00006468  103C 000E                506                      MOVE.B  #14,D0
+0000646C  4E4F                     507                      TRAP    #15 
+0000646E  6000 FBB8                508                      BRA     EXIT
+00006472                           509  JSR      
+00006472  4DF9 000064DA            510                      LEA     BUFFER, A6
+00006478  1CFC 004A                511                      MOVE.B #'J', (A6)+
+0000647C  1CFC 0053                512                      MOVE.B #'S', (A6)+
+00006480  1CFC 0052                513                      MOVE.B #'R', (A6)+
+00006484  1CFC 0020                514                      MOVE.B #' ', (A6)+
+00006488  43F9 000064DA            515                      LEA     BUFFER, A1
+0000648E                           516                      ** BITS 10 - 12 MODE       
+0000648E                           517                      ** BITS 13 - 16 REGISTER
+0000648E  103C 000E                518                      MOVE.B  #14,D0
+00006492  4E4F                     519                      TRAP    #15 
+00006494  6000 FB92                520                      BRA     EXIT
+00006498                           521                    
+00006498                           522  MOVEM      
+00006498                           523                     
+00006498                           524                      ** SIZE SUBROUTINE
+00006498                           525                      ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
+00006498  C47C 0040                526                      AND #%0000000001000000,D2 
+0000649C                           527                      * WORD
+0000649C  B4BC 00000040            528                      CMP.L   #%0000000001000000,D2
+000064A2  4EB9 000064B8            529                      JSR     MOVEM_W 
+000064A8                           530                      *LONG
+000064A8  B4BC 00000040            531                      CMP.L   #%0000000001000000,D2 
+000064AE                           532                     ** JSR     MOVEM_L
+000064AE  103C 000E                533                      MOVE.B  #14,D0
+000064B2  4E4F                     534                      TRAP    #15
+000064B4  6000 FB72                535                      BRA     EXIT 
+000064B8                           536                      
+000064B8                           537  MOVEM_W 
+Line 538 ERROR: Undefined symbol
+000064B8  43F9 004DBB8E            538                       LEA     MOVEM_disp,A1
+000064BE                           539                      * PRINT MOVEM
+000064BE  103C 000E                540                       MOVE.B  #14,D0
+000064C2  4E4F                     541                       TRAP    #15
+000064C4                           542          
+000064C4                           543                      * PRINT WORD PORTION
+Line 544 ERROR: Undefined symbol
+000064C4  41F9 004DBB8E            544                       LEA     size_w, A0
+000064CA  103C 000E                545                       MOVE.B  #14,D0
+000064CE  4E4F                     546                       TRAP    #15 
+000064D0                           547          
+000064D0  6000 FB56                548                       BRA     EXIT 
+000064D4                           549       
+000064D4                           550     
+000064D4                           551  COPY_OPCODE 
+000064D4                           552                       ** HOLDS COPY OF OPCODE TO BE MANIPULATED
+000064D4  4242                     553                       CLR    D2  
+000064D6  3405                     554                       MOVE.W D5,D2 
+000064D8  4E75                     555                       RTS  
+000064DA                           556  
+000064DA                           557                  
+000064DA                           558       
+000064DA= 20 20 20 20 20 00        559  BUFFER DC.B '     ',0     
+000064E0                           560        
+000064E0                           561  
+000064E0                           562      END START 
 
-6 errors detected
+7 errors detected
 No warnings generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ABSOLUTE_BUFFER     6284
-ABSOLUTE_LONG_BUFFER  62B0
-ABSOLUTE_WORD_BUFFER  62A0
-AN_BUFFER           625C
-BITS11TO13          623A
-BITS14TO16          624C
-BITS5TO7            6214
-BITS8TO10           6228
-BUFFER              63FE
+ABSOLUTE_BUFFER     62B2
+ABSOLUTE_LONG_BUFFER  62DE
+ABSOLUTE_WORD_BUFFER  62CE
+ADDB                61C0
+ADDI                638A
+ADDI_BUFFER         63C8
+ADDI_DST            63AE
+ADDI_SRC            6396
+ADDL                61D0
+ADDW                61C8
+AN_BUFFER           628A
+BITS11TO13          6268
+BITS14TO16          627A
+BITS5TO7            6242
+BITS8TO10           6256
+BUFFER              64DA
+CLR                 63DE
+CLR_BUFFER          6426
+CLR_DST             6412
 CODE0000            608C
-CODE0001            6090
-CODE0010            6094
-CODE0011            6098
-CODE0100            609C
-CODE0101            62D2
-CODE0110            62D6
-CODE0111            62DA
-CODE1000            62DE
-CODE1001            635C
-CODE1010            6360
-CODE1011            6364
-CODE1100            6366
-CODE1101            636A
-CODE1110            636E
-CODE1111            6372
-COPY_OPCODE         63F8
-DIVU                62F6
-DIVU_BUFFER         6346
-DIVU_DST            6328
-DIVU_SRC            6302
+CODE0001            60A0
+CODE0010            60A4
+CODE0011            60A8
+CODE0100            60AC
+CODE0101            6300
+CODE0110            6304
+CODE0111            6308
+CODE1000            630C
+CODE1001            6438
+CODE1010            643C
+CODE1011            6440
+CODE1100            6442
+CODE1101            6446
+CODE1110            644A
+CODE1111            644E
+COPY_OPCODE         64D4
+DIVU                6324
+DIVU_BUFFER         6374
+DIVU_DST            6356
+DIVU_SRC            6330
 EXIT                6028
-INVALID             62CE
-JMP_MODE            6172
+INVALID             62FC
+JMP_MODE            6190
 JMP_TABLE           602C
-JSR                 6396
-LEA                 60D0
-LEA_ABSOLUTE_BUFFER  6274
-LEA_AN_PAREN_BUFFER  6264
-LEA_BUFFER          6202
-LEA_DST             615C
-LEA_SRC             60EA
-LOAD_LEA_DES        61E4
-MODE000             61A2
-MODE001             61AA
-MODE010             61B2
-MODE011             61BC
-MODE100             61C4
-MODE101             61CC
-MODE110             61D4
-MODE111             61DC
-MOVEM               63BC
-MOVEM_W             63DC
-NOP                 6376
-PRINT_BUFFER        62C0
-RTS                 6386
+JSR                 6472
+LEA                 60EE
+LEA_ABSOLUTE_BUFFER  62A2
+LEA_AN_PAREN_BUFFER  6292
+LEA_BUFFER          6230
+LEA_DST             617A
+LEA_SRC             6108
+LOAD_LEA_DES        6212
+MODE000             61D8
+MODE001             61DC
+MODE010             61E0
+MODE011             61EA
+MODE100             61F2
+MODE101             61FE
+MODE110             6206
+MODE111             620E
+MOVEM               6498
+MOVEM_W             64B8
+NOP                 6452
+PRINT_BUFFER        62EE
+RTS                 6462
 START               6000

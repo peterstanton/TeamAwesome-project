@@ -90,6 +90,11 @@ code0100
                CMP.L   #%0000111010000000,D2
                BEQ     JSR
                
+               *CLR
+               AND     #%0000111100000000,D2
+               CMP.L   #%0000001000000000,D2
+               BEQ     CLR
+               
                * MOVEM
                 ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
               ** AND     #%0000111110000000,D2
@@ -162,6 +167,21 @@ jmp_mode
                 JMP     MODE101  **INVALID
                 JMP     MODE110  **INVALID
                 JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
+                
+ADDB
+    MOVE.B  #'.',(A6)+
+    MOVE.B  #'B',(A6)+
+
+
+ADDW
+    MOVE.B  #'.',(A6)+
+    MOVE.B  #'W',(A6)+
+
+ADDL
+    MOVE.B  #'.',(A6)+
+    MOVE.B  #'L',(A6)+
+
+
  
             
 MODE000         
@@ -424,7 +444,38 @@ ADDI_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
                
+CLR
+               JSR      bits5to7   // 0 0 1
+               CMP      #1, D2
+               BNE      INVALID
+               JSR      CLR_BUFFER
+               JSR     bits8to10
+             ;size is now a 3 bit value in D3. Based on that, go to ADDB, ADDW, or ADDL
+             CMP    #0,D3
+             BEQ    ADDB
+             CMP    #1,D3
+             BEQ    ADDW
+             CMP    #2,D3
+             BEQ    ADDL
+             JSR      CLR_DEST              
+               
+CLR_DST    
 
+             LEA     jmp_mode,A0    *Index into the table             
+             CLR     D3
+             JSR     bits11to13  ;get destinatiom mode bits                          
+             ;MOVE.W  #%111,D3    ;absolute address
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             RTS
+     
+             
+CLR_BUFFER 
+               MOVE.B   #'C', (A6)+
+               MOVE.B   #'L', (A6)+  
+               MOVE.B   #'R', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
               
 
 

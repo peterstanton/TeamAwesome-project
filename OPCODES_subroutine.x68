@@ -160,11 +160,11 @@ jmp_mode
  
             
 MODE000         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+     
+                ;MOVE.B  #'(', (A6)+
+                MOVE.B  #'D',(A6)+     
 
 MODE001         
-                MOVE.B  #'(', (A6)+
+                ;MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+        
 
 MODE010         
@@ -177,6 +177,7 @@ MODE011
                 MOVE.B  #'A',(A6)+        
 
 MODE100         
+                MOVE.B  #'-', (A6)+
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+ 
                 
@@ -472,6 +473,7 @@ BUFFER DC.B '     ',0
 *~Font size~10~
 *~Tab type~1~
 *~Tab size~4~
+
 
 *~Font name~Courier New~
 *~Font size~10~

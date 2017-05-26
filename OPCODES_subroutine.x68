@@ -5,7 +5,7 @@
 
 
 START    ORG   $6000
-                 LEA     $A000,SP        *Load the SP
+                 LEA     $80FC,SP        *Load the SP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
@@ -141,7 +141,7 @@ LEA_SRC
 LEA_DST    
              LEA     jmp_mode,A0    *Index into the table
              CLR     D3
-             MOVE.W  #%111,D3
+             MOVE.W  #%111,D3    ;absolute address
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
              RTS
@@ -316,7 +316,68 @@ code0110       STOP        #$2700
 
 code0111       STOP        #$2700
 
-code1000       STOP        #$2700
+code1000
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
+               
+                              *DIVU*
+               AND     #%0000000011000000,D2
+               CMP.L   #%0000000011000000,D2
+               BEQ     DIVU
+              
+                           
+               BRA     OR
+               *OR
+               
+               
+DIVU
+               JSR      DIVU_BUFFER
+               ;JSR      bits8to10   // 1 1 1
+               ;CMP      #7, D2
+               ;BNE      INVALID
+               JSR      DIVU_SRC
+               
+DIVU_SRC
+            JSR      bits11to13  // source mode - D3   keep working from here. 
+            CMP      #%001, D3
+            BEQ      INVALID
+            
+             LEA     jmp_mode,A0    *Index into the table
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             
+             MOVE.B     #',', (A6)+
+             MOVE.B     #' ', (A6)+
+             
+             JSR        DIVU_DST
+             NOP
+             
+             
+             
+DIVU_DST    
+            JSR     bits8to10 //check validity 
+            CMP     #%001,D3
+            BNE     INVALID
+                
+                
+             LEA     jmp_mode,A0    *Index into the table
+             CLR     D3
+             MOVE.W  #%000,D3
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             RTS
+     
+
+               
+               
+DIVU_BUFFER 
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'I', (A6)+  
+               MOVE.B   #'V', (A6)+
+               MOVE.B   #'U', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
+              
+
 
 code1001       STOP        #$2700
 
@@ -406,6 +467,11 @@ BUFFER DC.B '     ',0
 
 
 
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~
 
 *~Font name~Courier New~
 *~Font size~10~

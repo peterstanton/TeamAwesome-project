@@ -108,9 +108,7 @@ code0100
                 BRA     LEA
                *LEA
               
-code1101
-                ;adda should go here and check for the S | 11
-               JMP      ADD
+
                
 LEA
                JSR      LEA_BUFFER
@@ -517,12 +515,14 @@ ADD_SRC
              CMP      #6,D3
              BEQ      ADDLONG
                                    
-             
-             CLR     D3
-             JSR     bits5to7
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
+             CLR     D3
+             
+             JSR     bits5to7
+             MOVE.B  D3,(A6)+
+ 
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
              
@@ -561,8 +561,11 @@ code1011       BRA        code1011
 
 code1100       STOP        #$2700
 
-code1101       STOP        #$2700
-
+code1101       
+                ;adda should go here and check for the S | 11
+               JMP      ADD
+               
+               
 code1110       STOP        #$2700
 
 code1111       STOP        #$2700

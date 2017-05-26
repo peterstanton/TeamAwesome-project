@@ -59,7 +59,12 @@ jmp_table      JMP         code0000
                JMP         code1111
 
 
-code0000       STOP        #$2700
+code0000    
+               *ADDI
+               AND      #%0000011000000000,D2
+               CMP.L    #%0000011000000000,D2
+               BEQ      ADDI
+               JMP      INVALID
 
 code0001       STOP        #$2700
 
@@ -189,8 +194,8 @@ MODE110
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+              
 MODE111         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+                
+                ;MOVE.B  #'(', (A6)+   ;We need to find a way to grab immediate data at the end of the command in memory.
+                MOVE.B  #'#',(A6)+                
                                
 ***LOAD_LEA_SRC   
    ***            CMP      #%010, D3
@@ -377,6 +382,49 @@ DIVU_BUFFER
                MOVE.B   #'U', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
+               
+               
+               
+ADDI
+               JSR      ADDI_BUFFER
+               JSR      ADDI_SRC
+               
+               
+ADDI_SRC
+            JMP      111        ;Source mode is always immediate
+            JSR      bits8to10  ;this is the size. I will need to use this to get the trailing immediate value from memory.
+            ;Based on the received size, jump forward and read in more memory of that size, and add it to the buffer.
+             
+             MOVE.B     #',', (A6)+
+             MOVE.B     #' ', (A6)+
+             
+             JSR        ADDI_DST
+             NOP
+             
+             
+ADDI_DST    
+            JSR     bits11to13  //check validity 
+            CMP     #%001,D3
+            BEQ     INVALID
+                
+                
+             LEA     jmp_mode,A0    *Index into the table
+             ;CLR     D3
+             ;MOVE.W  #%000,D3  
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             RTS               
+               
+               
+ADDI_BUFFER 
+               MOVE.B   #'A', (A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'I', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
+               
+
               
 
 

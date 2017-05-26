@@ -108,6 +108,10 @@ code0100
                 BRA     LEA
                *LEA
               
+code1101
+                ;adda should go here and check for the S | 11
+               JMP      ADD
+               
 LEA
                JSR      LEA_BUFFER
                JSR      bits8to10   // 1 1 1
@@ -449,7 +453,7 @@ CLR
                CMP      #1, D2
                BNE      INVALID
                JSR      CLR_BUFFER
-               JSR     bits8to10
+               JSR      bits8to10 
              ;size is now a 3 bit value in D3. Based on that, go to ADDB, ADDW, or ADDL
              CMP    #0,D3
              BEQ    ADDB
@@ -476,6 +480,74 @@ CLR_BUFFER
                MOVE.B   #'R', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+ADD
+               JSR      ADD_BUFFER
+               
+               JSR      ADD_SRC
+               
+               
+ADD_SRC
+
+             JSR      bits8to10  ;opcode field for add.
+             
+             CMP      #0,D3
+             BEQ      ADDBYTE
+             CMP      #4,D3
+             BEQ      ADDBYTE
+             
+             CMP      #1,D3
+             BEQ      ADDWORD
+             CMP      #5,D3
+             BEQ      ADDWORD
+             
+             CMP      #2,D3
+             BEQ      ADDLONG
+             CMP      #6,D3
+             BEQ      ADDLONG
+                                   
+             
+             CLR     D3
+             JSR     bits5to7
+             LEA     jmp_mode,A0    *Index into the table
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             MOVE.B     #',', (A6)+
+             MOVE.B     #' ', (A6)+
+             
+             JSR        ADD_DST
+             NOP
+             
+             
+ADD_DST    
+            JSR     bits11to13  //check validity                 
+                
+             LEA     jmp_mode,A0    *Index into the table
+             ;CLR     D3
+             ;MOVE.W  #%000,D3  
+             MULU    #6,D3       *Form offset     
+             JSR     0(A0,D3)   *Jump indirect with index
+             RTS               
+               
+               
+ADD_BUFFER 
+               MOVE.B   #'A', (A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
+
               
 
 

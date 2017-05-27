@@ -215,7 +215,6 @@ LEA_SRC
              
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
-             JSR     PRINT_BUFFER
 
              RTS
              
@@ -224,6 +223,10 @@ LEA_DEST
                 MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
+                
+                JSR     bits5to7
+                JSR     insert_num
+                
                 RTS
  
                   

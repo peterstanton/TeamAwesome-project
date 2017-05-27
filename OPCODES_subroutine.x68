@@ -4,12 +4,19 @@
 ***
 
 
-START    ORG   $6000
-                 LEA     $A000,SP        *Load the SP
+START    ORG   $6000                 LEA     $A000,SP        *Load the SP
+                 
+                 LEA     (A7), A2
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  #$43D5,D3       *We'll play with it here
+                 * TEST OPCODES
+                 ; MOVE.W  #$45D7,D3 * LEA (A7), A2
+                 ;MOVE.W  #$4E71,D3 * NOP
+                 ; MOVE.W  #$4E75,D3 * RTS
+                 ; MOVE.W  #$4EB0,D3 * JSR
+                 MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
 
@@ -24,6 +31,7 @@ EXIT
        SIMHALT   
 
 jmp_table      JMP         code0000
+                *ADDI
 
                JMP         code0001
 
@@ -59,7 +67,11 @@ jmp_table      JMP         code0000
                JMP         code1111
 
 
-code0000       STOP        #$2700
+code0000      
+               JSR          bits5to8 // RETURNS INTO D5
+               CMP.L        #%0110, D3
+               BNE          INVALID_OP
+               BRA          ADDI  
 
 code0001       STOP        #$2700
 
@@ -72,7 +84,7 @@ code0100
                 
                *NOP
                AND     #%0000111111111111,D2
-               CMP.L   #%0000111001111001, D2
+               CMP.L   #%000111001110001, D2
                BEQ     NOP
                
                *RTS
@@ -95,59 +107,117 @@ code0100
                ** CMP.L  #%0000110010000000, D2
                ** JSR    MOVEM
                 
+                *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
-               *LEA
-              
+ADDI
+                JSR     ADDI_BUFFER
+                JSR     ADDI_SRC
+                JSR     ADDI_DES
+                BRA     PRINT_BUFFER
+                
+ADDI_SRC                        
+                MOVE.B  #'#', (A6)+
+                  ** TODO: IMPLEMENT THIS IN EA
+                ** Immediate field—Data immediately following the instruction.
+                **If size = 00, the data is the low-order byte of the immediate word.
+                **If size = 01, the data is the entire immediate word.
+                **If size = 10, the data is the next two immediate words. 
+ADDI_DES
+                * LATER BITS ARE DESTINATION (11 TO 13 FOR MODE, 14 TO 16 FOR REGISTER)
+                ** INVALID INCLUDE AN, IMMEDIATE AND TYPICAL INVALIDS
+               JSR      bits11to13
+               CMP      #%001, D3 **AN
+               BEQ      INVALID_EA
+               CMP      #%101, D3 **COMPLICATED
+               BEQ      INVALID_EA
+               CMP      #%110, D3 **COMPLICATED
+               BEQ      INVALID_EA
+               
+               JSR      bits14to16
+               CMP      #%100,D3  ** IMMEDIATE
+               BEQ      INVALID_EA
+               CMP      #%010,D3 ** COMPLICATED
+               BEQ      INVALID_EA
+               CMP      #%011,D3 ** COMPLICATED
+               BEQ      INVALID_EA
+               
+               JSR      bits11to13 ** grab bits to jump with
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index
+               RTS
+               
+                           
+ADDI_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'I', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 9 TO 10
+               ** VALID SIZES ARE B (00),W (01) ,L (10)
+               MOVE.B   #' ', (A6)+
+               RTS
+                            
 LEA
-               JSR      LEA_BUFFER
                JSR      bits8to10   // 1 1 1
-               CMP      #7, D2
-               BNE      INVALID
+               CMP      #7, D2 // if the returned bits are not 7, it's not LEA
+               BNE      INVALID_OP
+               JSR      LEA_BUFFER
                JSR      LEA_SRC
+               JSR      LEA_DEST
+               BRA      PRINT_BUFFER
+               
+LEA_BUFFER 
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #'E', (A6)+  
+               MOVE.B   #'A', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
           
 LEA_SRC
+            *INVALID SRCS ARE DN, AN, (AN)+, -(AN), 101 (COMPLICATED, 110, #DATA
             JSR      bits11to13  // source mode - D3
             CMP      #%000, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             CMP      #%001, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             CMP      #%011, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             CMP      #%100, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             CMP      #%101, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             CMP      #%110, D3
-            BEQ      INVALID
+            BEQ      INVALID_EA
             
+            * CHECK ON REGISTER BITS TO SEE IF NOW ABSOLUTE WORD OR LONG
             JSR      bits14to16 // source register - d4
-            CMP      #%100, D4
-            BEQ      INVALID
-            CMP      #%010, D4
-            BEQ      INVALID
-            CMP      #%011, D4
-            BEQ      INVALID
+            CMP      #%100, D3
+            BEQ      INVALID_EA
+            CMP      #%010, D3
+            BEQ      INVALID_EA
+            CMP      #%011, D3
+            BEQ      INVALID_EA
             
+            
+             JSR      bits11to13 ** grab mode bits to jump with
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
              
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
-             
-             JSR        LEA_DST
-             NOP
-             
-LEA_DST    
-             LEA     jmp_mode,A0    *Index into the table
-             CLR     D3
-             MOVE.W  #%111,D3
-             MULU    #6,D3       *Form offset     
-             JSR     0(A0,D3)   *Jump indirect with index
              RTS
-     
              
-
+LEA_DEST    
+                LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING             
+                MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index
+                RTS
+ 
+                  
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -157,78 +227,31 @@ jmp_mode
                 JMP     MODE101  **INVALID
                 JMP     MODE110  **INVALID
                 JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
- 
-            
-MODE000         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+     
-
-MODE001         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+        
-
-MODE010         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+  
-                RTS      
-
-MODE011         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+        
-
-MODE100         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+ 
-                
-MODE101         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+ 
-
-MODE110         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+              
-MODE111         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+                
-                               
-***LOAD_LEA_SRC   
-   ***            CMP      #%010, D3
-      ***         CMP      #%111, D3
-         ***      BNE      INVALID
-            ***   JSR      LOAD_ADDRESS
-              *** RTS
-               
-
-LOAD_LEA_DES
-               MOVE.B   ',', (A6)+
-               MOVE.B   ' ', (A6)+
-               JSR      bits5to7    // destination register (will be address) -D3
-               JSR      AN_BUFFER
-               JSR      bits14to16  // source REGISTER -D4
-               BRA      PRINT_BUFFER
-                  
-LEA_BUFFER 
-               MOVE.B   #'L',(A6)+
-               MOVE.B   #'E', (A6)+  
-               MOVE.B   #'A', (A6)+
-               MOVE.B   #' ', (A6)+
-               RTS
         
                
 bits5to7
-               CLR      D5
+               CLR      D3
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%0000111000000000, D2
                ROR.L    #8, D2          // rotate bits so isolated at the end
                ROR.L    #1, D2
-               MOVE.W   D2,D5 // moving isolated bits into d3
+               MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
+               
+bits5to8
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000111100000000, D2
+               ROR.L    #8, D2          // rotate bits so isolated at the end
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
+               
 bits8to10
-               CLR      D6
+               CLR      D3
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%0000000111000000, D2
                ROR.L    #6, D2          // rotate bits so isolated at the end
-               MOVE.W   D2,D6 // moving isolated bits into d3
+               MOVE.W   D2,D3 // moving isolated bits into d3
                RTS               
            
 bits11to13
@@ -240,32 +263,58 @@ bits11to13
                RTS
            
 bits14to16
-               CLR      D4
+               CLR      D3
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%0000000000000111, D2
-               MOVE.W   D2,D4 // moving isolated bits into d3
-               RTS
-
-               
-AN_BUFFER
-               MOVE.B   #'A',(A6)+
-               MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
+               MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
                
-LEA_AN_PAREN_BUFFER
-               MOVE.B   #'(',(A6)+
-               MOVE.B   #'A',(A6)+
-             **  MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
-               MOVE.B   #')',(A6)+
-               BRA      LOAD_LEA_DES
+** DN       
+MODE000         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+     
 
-LEA_ABSOLUTE_BUFFER
-               MOVE.B   #'(',(A6)+
-               MOVE.B   #'A',(A6)+
-               ** MOVE.B   D3, (A6)+  ** TODO: TRYING TO MOVE DECIMAL REPRESENTATION
-               MOVE.B   #')',(A6)+
-               BRA      LOAD_LEA_DES
-               
+** AN
+MODE001         
+                JSR ADDRESS_BUFFER  
+                RTS      
+
+ ** (AN)
+MODE010         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+  
+                RTS      
+
+** (AN)+ 
+MODE011         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+        
+
+ ** -(AN)
+MODE100         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+
+                
+**INVALID               
+MODE101         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+ 
+                
+**INVALID
+MODE110         
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+  
+
+** ABSOLUTE AND IMMEDIATE            
+MODE111         
+                *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
+               JSR ABSOLUTE_BUFFER  
+               RTS            
+                                        
+ADDRESS_BUFFER
+                MOVE.B  #'A',(A6)+ 
+                ** TO DO : FIGURE OUT HOW TO PRINT THE REGISTER NUMBER
+                RTS
                
 ABSOLUTE_BUFFER
                CLR      D3
@@ -294,19 +343,25 @@ ABSOLUTE_LONG_BUFFER
                        MOVE.B #'G', (A6)+ 
                                                     
 
-PRINT_BUFFER             
+PRINT_BUFFER    
+                * TOD0: FIGURE OUT WHY IT HANGS AFTER TRAP 15         
                LEA      BUFFER, A1
                MOVE.W   #14,D0
                TRAP     #15
-               RTS
+               BRA EXIT
                
                
 
-INVALID
+INVALID_EA  
+                * TODO: IMPLEMENT
                 *** CLEAR OUT A6
                 ** PUT INVALID MESSAGE INTO A6
                 BRA EXIT
-                            
+INVALID_OP  
+                ** TODO: IMPLEMENT
+               *** CLEAR OUT A6
+                ** PUT INVALID MESSAGE INTO A6
+                BRA EXIT             
             
                
 
@@ -407,7 +462,4 @@ BUFFER DC.B '     ',0
 
 
 
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~
+

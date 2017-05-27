@@ -525,10 +525,7 @@ COPY_OPCODE
 
                 
      
-BUFFER DC.B '     ',0     
-
-P   DC.W    0
-      
+BUFFER DC.B '     ',0           
 
     END START 
 

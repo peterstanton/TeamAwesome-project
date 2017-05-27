@@ -5,8 +5,8 @@
 
 
 START    ORG   $6000                 LEA     $A000,SP        *Load the SP
-                    
-                
+                   ADDQ.B  #$1,D1      
+                 
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
@@ -19,6 +19,8 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ; MOVE.W    #$5201,D3    *ADDQ
+                 MOVE.W     #$7E70, D3
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
@@ -45,16 +47,18 @@ jmp_table      JMP         code0000
                JMP         code0100
                            
                JMP         code0101
+               * ADDQ
+                
       
                JMP         code0110
-               * ADDQ
+               * BCC
                * BGT
                * BLE
+               
                JMP         code0111
                * MOVEQ
 
                JMP         code1000
-               
                * DIVU
                * OR
 
@@ -125,11 +129,13 @@ code0100
                 ** TO DO: BRANCH IF INVALID OPCODE
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
-code0101       STOP        #$2700
+code0101      
+              JSR   ADDQ
 
 code0110       STOP        #$2700
 
-code0111       STOP        #$2700
+code0111       
+               JSR       MOVEQ
 
 code1000       STOP        #$2700
 
@@ -315,6 +321,33 @@ LEA_DEST
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
                 RTS
+ADDQ
+                JSR     ADDQ_BUFFER
+                BRA     PRINT_BUFFER
+
+ADDQ_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'Q', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 9 TO 10
+               ** VALID SIZES ARE B (00),W (01) ,L (10)
+               MOVE.B   #' ', (A6)+
+               RTS
+               
+MOVEQ
+                JSR     MOVEQ_BUFFER
+                BRA     PRINT_BUFFER
+
+MOVEQ_BUFFER
+               MOVE.B   #'M',(A6)+
+               MOVE.B   #'O', (A6)+  
+               MOVE.B   #'V', (A6)+
+               MOVE.B   #'E', (A6)+
+               MOVE.B   #'Q', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
                   
 jmp_mode
                 JMP     MODE000  ** DN

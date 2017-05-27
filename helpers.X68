@@ -40,7 +40,7 @@ as_bigLetter            SUB.B  #$37,D0          *subtract 37, used for A-F
 *check the data start address
 sub_StartReadingData    MOVE.L  location_startData,D0
     
-                        BTST    #0,D0               *checks if LSB is 1, 
+                        BTST    #1,D0               *checks if LSB is 1, 
                         BNE     srdFailAddrOddB     *if 1, then address is odd and invalid
                         
                         MOVE.L  #0,D7               *if D7 equals 0, then address is valid
@@ -59,7 +59,7 @@ sub_EndReadingData      MOVE.L  location_startData,D0
                         MOVE.L  location_endData,D1
                         MOVE.L  D1, A4
     
-                        BTST    #0,D0               *checks if LSB is 1, 
+                        BTST    #1D0               *checks if LSB is 1, 
                         BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
                         
                         CMP.L  D0,D1               *end address must be greater than start address
@@ -138,6 +138,7 @@ sub_PrintAddress    CLR.L   D7
                     JSR     sub_PrintTable
                     RTS
 *-----------------------------------------------------------
+
 
 
 

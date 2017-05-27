@@ -5,17 +5,20 @@
 
 
 START    ORG   $6000                 LEA     $A000,SP        *Load the SP
-                 
-                 LEA     (A7), A2
+                    
+                
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
-                 ;MOVE.W  #$4E71,D3 * NOP
+                 ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
+                 ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
+                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
@@ -42,10 +45,13 @@ jmp_table      JMP         code0000
                JMP         code0100
                            
                JMP         code0101
-
+      
                JMP         code0110
-
+               * ADDQ
+               * BGT
+               * BLE
                JMP         code0111
+               * MOVEQ
 
                JMP         code1000
                
@@ -53,22 +59,31 @@ jmp_table      JMP         code0000
                * OR
 
                JMP         code1001
-
+                *SUB
                JMP         code1010
-
+               
                JMP         code1011
-
+               * CMP
                JMP         code1100
-
+               * MULS
+               * AND
+        
                JMP         code1101
-
+               *ADD
+               *ADDA
                JMP         code1110
+               * ASR
+               * ASL
+               * LSL
+               * LSR
+               * ROL
+               * ROR
 
                JMP         code1111
 
 
 code0000      
-               JSR          bits5to8 // RETURNS INTO D5
+               JSR          bits5to8 // RETURNS INTO D3
                CMP.L        #%0110, D3
                BNE          INVALID_OP
                BRA          ADDI  
@@ -107,8 +122,84 @@ code0100
                ** CMP.L  #%0000110010000000, D2
                ** JSR    MOVEM
                 
+                ** TO DO: BRANCH IF INVALID OPCODE
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
+code0101       STOP        #$2700
+
+code0110       STOP        #$2700
+
+code0111       STOP        #$2700
+
+code1000       STOP        #$2700
+
+code1001       STOP        #$2700
+
+code1010       STOP        #$2700
+
+code1011       BRA        code1011
+
+  
+
+code1100       STOP        #$2700
+
+code1101       
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
+               *ADDA
+               JSR      bits8to10
+               CMP      #%011, D3  ** WORD
+               BEQ      ADDA
+               CMP      #%111, D3   ** LONG
+               BEQ      ADDA
+               
+               *ADD
+               CMP      #%000, D3   ** BYTE TO DATA REGISTER
+               BEQ      ADD
+               CMP      #%001, D3   ** WORD TO DATA REGISTER
+               BEQ      ADD
+               CMP      #%010, D3   ** LONG TO DATA REGISTER
+               BEQ      ADD
+               CMP      #%100, D3   ** BYTE TO EA
+               BEQ      ADD
+               CMP      #%101, D3   ** WORD TO EA
+               BEQ      ADD
+               CMP      #%110, D3   ** LONG TO EA
+               BEQ      ADD
+               
+
+code1110       STOP        #$2700
+
+code1111       STOP        #$2700
+
+ADDA    
+               JSR     ADDA_BUFFER
+               BRA     PRINT_BUFFER
+                
+ADDA_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'A', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE W (011) ,L (111)
+               MOVE.B   #' ', (A6)+
+               RTS
+               
+ADD    
+               JSR     ADD_BUFFER
+               BRA     PRINT_BUFFER
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS               
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -133,12 +224,12 @@ ADDI_DES
                CMP      #%110, D3 **COMPLICATED
                BEQ      INVALID_EA
                
-               JSR      bits14to16
-               CMP      #%100,D3  ** IMMEDIATE
+               JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
+               CMP      #%111100,D3 // immediate data
                BEQ      INVALID_EA
-               CMP      #%010,D3 ** COMPLICATED
+               CMP      #%111010,D3 // complicated
                BEQ      INVALID_EA
-               CMP      #%011,D3 ** COMPLICATED
+               CMP      #%111011,D3 // complicated
                BEQ      INVALID_EA
                
                JSR      bits11to13 ** grab bits to jump with
@@ -191,7 +282,7 @@ LEA_SRC
             CMP      #%110, D3
             BEQ      INVALID_EA
             
-            * CHECK ON REGISTER BITS TO SEE IF NOW ABSOLUTE WORD OR LONG
+            
             JSR      bits14to16 // source register - d4
             CMP      #%100, D3
             BEQ      INVALID_EA
@@ -200,11 +291,19 @@ LEA_SRC
             CMP      #%011, D3
             BEQ      INVALID_EA
             
-            
+             JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
+             CMP      #%111100,D3 // immediate data
+             BEQ      INVALID_EA
+             CMP      #%111010,D3 // complicated
+             BEQ      INVALID_EA
+             CMP      #%111011,D3 // complicated
+             BEQ      INVALID_EA
+   
              JSR      bits11to13 ** grab mode bits to jump with
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
+             
              
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
@@ -216,7 +315,6 @@ LEA_DEST
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
                 RTS
- 
                   
 jmp_mode
                 JMP     MODE000  ** DN
@@ -268,7 +366,12 @@ bits14to16
                AND      #%0000000000000111, D2
                MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
-               
+bits11to16
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000000000111111, D2
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
 ** DN       
 MODE000         
                 MOVE.B  #'(', (A6)+
@@ -344,7 +447,7 @@ ABSOLUTE_LONG_BUFFER
                                                     
 
 PRINT_BUFFER    
-                * TOD0: FIGURE OUT WHY IT HANGS AFTER TRAP 15         
+               MOVE.B   #%0,  (A6)+ ** null terminate the string       
                LEA      BUFFER, A1
                MOVE.W   #14,D0
                TRAP     #15
@@ -362,33 +465,7 @@ INVALID_OP
                *** CLEAR OUT A6
                 ** PUT INVALID MESSAGE INTO A6
                 BRA EXIT             
-            
-               
-
-code0101       STOP        #$2700
-
-code0110       STOP        #$2700
-
-code0111       STOP        #$2700
-
-code1000       STOP        #$2700
-
-code1001       STOP        #$2700
-
-code1010       STOP        #$2700
-
-code1011       BRA        code1011
-
-  
-
-code1100       STOP        #$2700
-
-code1101       STOP        #$2700
-
-code1110       STOP        #$2700
-
-code1111       STOP        #$2700
-
+                
 NOP                 LEA     NOP_disp,A1          
                     MOVE.B  #14,D0
                     TRAP    #15
@@ -463,3 +540,9 @@ BUFFER DC.B '     ',0
 
 
 
+
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~

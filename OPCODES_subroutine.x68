@@ -20,10 +20,18 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
-                 MOVE.W     #$47D5, D3
-                ; MOVE.W     #$7E70, D3 *MOVEQ
-                MOVE.W     #$80C0, D3 *DIVU
-  
+
+                 ; MOVE.W     #$7E70, D3 *MOVEQ
+                 ; MOVE.W     #$80C0, D3 *DIVU
+                 ; MOVE.W     #$8000, D3 * OR
+                 ; MOVE.W        #$9000, D3 * SUB
+                 ; MOVE.W        #$B000, D3 * CMP
+                 ; MOVE.W        #$C1C0, D3 * MULS
+                 ; MOVE.W        #$C000, D3 * AND
+                 ; MOVE.W        #$E0F8, D3  *ASR
+                 ; MOVE.W        #$E1E2, D3  *ASL
+                 MOVE.W        #$E393, D3  *LSL
+                 ;MOVE.W        #$E2DC, D3  *LSR
 
                  
                  MOVE.W  D3,D5
@@ -39,6 +47,8 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
 EXIT                 
        SIMHALT   
 
+
+**TODO: PRINT INVALID OPCODES FOR REMAINING JMPS
 jmp_table      JMP         code0000
                 *ADDI
 
@@ -72,6 +82,7 @@ jmp_table      JMP         code0000
                
                JMP         code1011
                * CMP
+               
                JMP         code1100
                * MULS
                * AND
@@ -134,27 +145,45 @@ code0100
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
 code0101      
+<<<<<<< HEAD
 
                 JSR   ADDQ
 
+=======
+                JSR   ADDQ
+
+>>>>>>> olga
 code0110        STOP        #$2700
 
 code0111       
                 JSR       MOVEQ
+<<<<<<< HEAD
 
 code1000      
                 JSR        DIVU
 
+=======
+>>>>>>> olga
 
-code1001       STOP        #$2700
+code1000      
+                JSR        bits8to10
+                CMP        #%011, D3  ** ONLY TIME IT'S DIVU
+                BEQ        DIVU
+                BRA        OR       ** OTHERWISE OR
+                
 
+code1001       
+               JSR         SUB
 code1010       STOP        #$2700
 
-code1011       BRA        code1011
+code1011       
+               JSR         CMP
 
-  
-
-code1100       STOP        #$2700
+code1100      
+                JSR        bits8to10
+                CMP        #%111, D3  ** ONLY TIME IT'S MULS
+                BEQ        MULS
+                BRA        AND       ** OTHERWISE AND
 
 code1101       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
@@ -180,7 +209,31 @@ code1101
                BEQ      ADD
                
 
-code1110       STOP        #$2700
+code1110       
+                * ASR
+                JSR     bits1to10
+                CMP     #%1110000011,D3
+                BEQ     ASR
+                
+                * ASL
+                CMP     #%1110000111,D3
+                BEQ     ASL
+                
+                ** TODO: MASK REGISTERS AND FIND SIZE RIGHT AWAY
+                * LSL
+                CLR     D4
+                MOVE.L  D3,D4
+                AND.L   #11110001
+                CMP     #%111000111,D4
+                BEQ     LSL
+                
+                * LSR
+                CMP     #%1110001011,D3
+                BEQ     LSR
+                
+                * ROL
+                
+                * ROR
 
 code1111       STOP        #$2700
 
@@ -371,7 +424,10 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
+<<<<<<< HEAD
 
+=======
+>>>>>>> olga
                
 DIVU
                 JSR     DIVU_BUFFER
@@ -383,8 +439,126 @@ DIVU_BUFFER
                MOVE.B   #'V', (A6)+
                MOVE.B   #'U', (A6)+
                MOVE.B   #' ', (A6)+
+<<<<<<< HEAD
                RTS                  
 
+=======
+               RTS  
+OR    
+               JSR     OR_BUFFER
+               BRA     PRINT_BUFFER
+                
+OR_BUFFER
+               MOVE.B   #'O',(A6)+
+               MOVE.B   #'R', (A6)+  
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS   
+
+SUB   
+               JSR     SUB_BUFFER
+               BRA     PRINT_BUFFER               
+
+SUB_BUFFER
+               MOVE.B   #'S',(A6)+
+               MOVE.B   #'U', (A6)+  
+               MOVE.B   #'B', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS  
+CMP   
+               JSR     CMP_BUFFER
+               BRA     PRINT_BUFFER
+                
+CMP_BUFFER
+               MOVE.B   #'C',(A6)+
+               MOVE.B   #'M', (A6)+  
+               MOVE.B   #'P', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS   
+               
+MULS
+                JSR     MULS_BUFFER
+                BRA     PRINT_BUFFER
+
+MULS_BUFFER
+               MOVE.B   #'M',(A6)+
+               MOVE.B   #'U', (A6)+  
+               MOVE.B   #'L', (A6)+
+               MOVE.B   #'S', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS
+
+AND    
+               JSR     AND_BUFFER
+               BRA     PRINT_BUFFER
+                
+AND_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'N', (A6)+  
+               MOVE.B   #'D', (A6)+
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS    
+
+ASR     
+                JSR     ASR_BUFFER
+                BRA     PRINT_BUFFER
+
+ASR_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'R', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS      
+
+ASL     
+                JSR     ASL_BUFFER
+                BRA     PRINT_BUFFER
+
+ASL_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'L', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS     
+
+LSL     
+                JSR     LSL_BUFFER
+                BRA     PRINT_BUFFER
+
+LSL_BUFFER
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'L', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS     
+
+LSR     
+                JSR     LSR_BUFFER
+                BRA     PRINT_BUFFER
+
+LSR_BUFFER
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'R', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS       
+               
+>>>>>>> olga
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -504,6 +678,13 @@ bits11to16
                CLR      D3
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%0000000000111111, D2
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
+bits1to10
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%1111111111000000, D2
+               ROR.L    #6, D2
                MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
 ** DN       
@@ -663,6 +844,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

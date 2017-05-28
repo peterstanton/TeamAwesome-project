@@ -20,17 +20,9 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
-<<<<<<< HEAD
-<<<<<<< HEAD
                  ;  MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
-                   MOVE.W  #$D9A5, D3  * ADD.L D4,-(A5)
-                 ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
-=======
-                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
->>>>>>> parent of f4f41e7... Parsing is starting to work
-=======
-                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
->>>>>>> parent of f4f41e7... Parsing is starting to work
+                  ; MOVE.W  #$D9A5, D3  * ADD.L D4,-(A5)
+                   ; MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -281,8 +273,6 @@ ADD_DIRECTION_REVERSED
                
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-<<<<<<< HEAD
-<<<<<<< HEAD
                MOVE.B   #' ', (A6)+
                RTS               
               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
@@ -362,10 +352,6 @@ ADD_DEST
 
 
 
->>>>>>> ec74e90c0f143265a93a88788e3964e3869133a8
-=======
-=======
->>>>>>> parent of f4f41e7... Parsing is starting to work
                
 ADD_DONE       CLR      D6
                RTS     
@@ -374,10 +360,6 @@ ADD_DONE       CLR      D6
 
 
 
-<<<<<<< HEAD
->>>>>>> parent of f4f41e7... Parsing is starting to work
-=======
->>>>>>> parent of f4f41e7... Parsing is starting to work
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -1069,14 +1051,7 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
-<<<<<<< HEAD
-<<<<<<< HEAD
-
        MOVE.B   #' ',(A6)+
-=======
->>>>>>> parent of f4f41e7... Parsing is starting to work
-=======
->>>>>>> parent of f4f41e7... Parsing is starting to work
        CLR      D3
        RTS
 
@@ -1094,14 +1069,9 @@ SIZEISLONG
                 
      
 BUFFER DC.B '     ',0     
-      
-<<<<<<< HEAD
 
     END START 
-=======
->>>>>>> parent of f4f41e7... Parsing is starting to work
 
-    END START 
 
 
 

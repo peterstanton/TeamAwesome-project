@@ -16,10 +16,11 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -247,8 +248,11 @@ ADD_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
-               MOVE.B   #'.', (A6)+
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               JSR      GETSIZE_ADD
+               
+               ;Okay, the directionality bit in D4 should determine which order we should process bits in?
+               
+               
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                MOVE.B   #' ', (A6)+
@@ -829,6 +833,62 @@ COPY_OPCODE
                      MOVE.W D5,D2 
                      RTS  
                      
+****************************
+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+GETSIZE_ADD
+            JSR     bits8to10
+            CMP     #%000,D3
+            BNE     ADD_NOTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #1,D4
+            CLR     D3
+            RTS
+        
+ADD_NOTBYTE 
+            CMP     #%001,D3
+            BNE     ADD_NOTWORD
+            JSR     SIZEISWORD
+            MOVE    #1,D4
+            CLR     D3
+            RTS
+            
+ADD_NOTWORD
+            CMP     #%010,D3
+            BNE     ADD_NOTLEFT
+            JSR     SIZEISLONG
+            MOVE    #1,D4
+            CLR     D3
+            RTS
+            
+ADD_NOTLEFT     ;check other direction
+            CMP     #%100,D3
+            BNE     ADD_NOTRIGHTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #2,D4
+            CLR     D3
+            RTS
+            
+ADD_NOTRIGHTBYTE
+            CMP     #%101,D3
+            BNE     ADD_NOTRIGHTWORD
+            JSR     SIZEISWORD
+            MOVE    #2,D4
+            CLR     D3
+            RTS
+
+ADD_NOTRIGHTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            MOVE    #2,D4
+            CLR     D3
+            RTS 
+                             
+                     
+                     
 *****************************                  
 GETSIZE_ADDI
         JSR     bits8to10
@@ -879,16 +939,19 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
+       CLR      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
+       CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       CLR      D3
        RTS
                 
      
@@ -896,6 +959,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

@@ -1,6 +1,6 @@
 00006000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/28/2017 2:36:23 PM
+Created On: 5/28/2017 2:53:10 PM
 
 00000000                             1  *** D3 - ISOLATED BITS FOR COMPARISONS
 00000000                             2  *** D4 - MODE
@@ -13,17 +13,17 @@ Created On: 5/28/2017 2:36:23 PM
 00006000  5201                       9                     ADDQ.B  #$1,D1      
 00006002                            10                   
 00006002  41F9 0000624E             11                   LEA     jmp_table,A0    *Index into the table
-00006008  4DF9 00006ADE             12                   LEA     BUFFER, A6      * Load buffer into A6
+00006008  4DF9 00006B2E             12                   LEA     BUFFER, A6      * Load buffer into A6
 0000600E  4283                      13                   CLR.L   D3              *Zero it
 00006010                            14                   * TEST OPCODES
-00006010  363C 45D7                 15                    MOVE.W  #$45D7,D3 * LEA (A7), A2
-00006014                            16                   ; MOVE.W  #$4E71,D3 * NOP
-00006014                            17                   ; MOVE.W  #$4E75,D3 * RTS
-00006014                            18                   ; MOVE.W  #$4EB0,D3 * JSR
-00006014                            19                   ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-00006014                            20                   ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
-00006014                            21                   ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-00006014                            22                   ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+00006010                            15                   ; MOVE.W  #$45D7,D3 * LEA (A7), A2
+00006010                            16                   ; MOVE.W  #$4E71,D3 * NOP
+00006010                            17                   ; MOVE.W  #$4E75,D3 * RTS
+00006010                            18                   ; MOVE.W  #$4EB0,D3 * JSR
+00006010                            19                   ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+00006010                            20                   ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+00006010                            21                   ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
+00006010  363C D64A                 22                    MOVE.W  #$D64A, D3  * ADD.W A2,D3
 00006014                            23                   ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
 00006014                            24                   ; MOVE.W    #$5201,D3    *ADDQ
 00006014                            25  
@@ -191,10 +191,10 @@ Created On: 5/28/2017 2:36:23 PM
 000062AE                           187  
 000062AE                           188  
 000062AE                           189  code0000      
-000062AE  4EB9 00006846            190                 JSR          bits5to8 // RETURNS INTO D3
+000062AE  4EB9 0000688A            190                 JSR          bits5to8 // RETURNS INTO D3
 000062B4  B6BC 00000006            191                 CMP.L        #%0110, D3
-000062BA  6600 0690                192                 BNE          INVALID_OP
-000062BE  6000 0188                193                 BRA          ADDI  
+000062BA  6600 06D4                192                 BNE          INVALID_OP
+000062BE  6000 01CC                193                 BRA          ADDI  
 000062C2                           194  
 000062C2  4E72 2700                195  code0001       STOP        #$2700
 000062C6                           196  
@@ -203,22 +203,22 @@ Created On: 5/28/2017 2:36:23 PM
 000062CA  4E72 2700                199  code0011       STOP        #$2700
 000062CE                           200  
 000062CE                           201  code0100       
-000062CE  4EB9 000069CA            202                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
+000062CE  4EB9 00006A0E            202                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
 000062D4                           203                  
 000062D4                           204                 *NOP
 000062D4  C47C 0FFF                205                 AND     #%0000111111111111,D2
 000062D8  B4BC 00000E71            206                 CMP.L   #%000111001110001, D2
-000062DE  6700 0670                207                 BEQ     NOP
+000062DE  6700 06B4                207                 BEQ     NOP
 000062E2                           208                 
 000062E2                           209                 *RTS
 000062E2  C47C 0FFF                210                 AND     #%0000111111111111,D2
 000062E6  B4BC 00000E75            211                 CMP.L   #%0000111001110101, D2
-000062EC  6700 0670                212                 BEQ     RTS
+000062EC  6700 06B4                212                 BEQ     RTS
 000062F0                           213  
 000062F0                           214                 *JSR
 000062F0  C47C 0FC0                215                 AND     #%0000111111000000,D2
 000062F4  B4BC 00000E80            216                 CMP.L   #%0000111010000000,D2
-000062FA  6700 0670                217                 BEQ     JSR
+000062FA  6700 06B4                217                 BEQ     JSR
 000062FE                           218                 
 000062FE                           219                 * MOVEM
 000062FE                           220                  ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
@@ -232,40 +232,40 @@ Created On: 5/28/2017 2:36:23 PM
 000062FE                           228                  
 000062FE                           229                  ** TO DO: BRANCH IF INVALID OPCODE
 000062FE                           230                  *LEA - if it's not the top codes, it's LEA
-000062FE  6000 01EC                231                  BRA     LEA
+000062FE  6000 0230                231                  BRA     LEA
 00006302                           232  code0101      
 00006302                           233  
-00006302  4EB9 000065E6            234                  JSR   ADDQ
+00006302  4EB9 0000662A            234                  JSR   ADDQ
 00006308                           235  
 00006308  4E72 2700                236  code0110        STOP        #$2700
 0000630C                           237  
 0000630C                           238  code0111       
-0000630C  4EB9 00006606            239                  JSR       MOVEQ
+0000630C  4EB9 0000664A            239                  JSR       MOVEQ
 00006312                           240  
 00006312                           241  code1000      
-00006312  4EB9 00006858            242                  JSR        bits8to10
+00006312  4EB9 0000689C            242                  JSR        bits8to10
 00006318  B67C 0003                243                  CMP        #%011, D3  ** ONLY TIME IT'S DIVU
-0000631C  6700 030C                244                  BEQ        DIVU
-00006320  6000 0328                245                  BRA        OR       ** OTHERWISE OR
+0000631C  6700 0350                244                  BEQ        DIVU
+00006320  6000 036C                245                  BRA        OR       ** OTHERWISE OR
 00006324                           246                  
 00006324                           247  
 00006324                           248  code1001       
-00006324  4EB9 00006666            249                 JSR         SUB
+00006324  4EB9 000066AA            249                 JSR         SUB
 0000632A  4E72 2700                250  code1010       STOP        #$2700
 0000632E                           251  
 0000632E                           252  code1011       
-0000632E  4EB9 00006686            253                 JSR         CMP
+0000632E  4EB9 000066CA            253                 JSR         CMP
 00006334                           254  
 00006334                           255  code1100      
-00006334  4EB9 00006858            256                  JSR        bits8to10
+00006334  4EB9 0000689C            256                  JSR        bits8to10
 0000633A  B67C 0007                257                  CMP        #%111, D3  ** ONLY TIME IT'S MULS
-0000633E  6700 0366                258                  BEQ        MULS
-00006342  6000 0382                259                  BRA        AND       ** OTHERWISE AND
+0000633E  6700 03AA                258                  BEQ        MULS
+00006342  6000 03C6                259                  BRA        AND       ** OTHERWISE AND
 00006346                           260  
 00006346                           261  code1101       
-00006346  4EB9 000069CA            262                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
+00006346  4EB9 00006A0E            262                 JSR COPY_OPCODE // Makes a copy of Opcode into d2
 0000634C                           263                 *ADDA
-0000634C  4EB9 00006858            264                 JSR      bits8to10
+0000634C  4EB9 0000689C            264                 JSR      bits8to10
 00006352  B67C 0003                265                 CMP      #%011, D3  ** WORD
 00006356  6700 006E                266                 BEQ      ADDA
 0000635A  B67C 0007                267                 CMP      #%111, D3   ** LONG
@@ -288,13 +288,13 @@ Created On: 5/28/2017 2:36:23 PM
 00006392                           284  
 00006392                           285  code1110       
 00006392                           286                  * ASR
-00006392  4EB9 0000689C            287                  JSR     bits1to10
+00006392  4EB9 000068E0            287                  JSR     bits1to10
 00006398  B67C 0383                288                  CMP     #%1110000011,D3
-0000639C  6700 0348                289                  BEQ     ASR
+0000639C  6700 038C                289                  BEQ     ASR
 000063A0                           290                  
 000063A0                           291                  * ASL
 000063A0  B67C 0387                292                  CMP     #%1110000111,D3
-000063A4  6700 035C                293                  BEQ     ASL
+000063A4  6700 03A0                293                  BEQ     ASL
 000063A8                           294                  
 000063A8                           295                  ** TODO: MASK REGISTERS AND FIND SIZE RIGHT AWAY
 000063A8                           296                  * LSL
@@ -302,11 +302,11 @@ Created On: 5/28/2017 2:36:23 PM
 000063AA  2803                     298                  MOVE.L  D3,D4
 000063AC  C8BC 00A98671            299                  AND.L   #11110001,D4
 000063B2  B87C 01C7                300                  CMP     #%111000111,D4
-000063B6  6700 0366                301                  BEQ     LSL
+000063B6  6700 03AA                301                  BEQ     LSL
 000063BA                           302                  
 000063BA                           303                  * LSR
 000063BA  B67C 038B                304                  CMP     #%1110001011,D3
-000063BE  6700 037A                305                  BEQ     LSR
+000063BE  6700 03BE                305                  BEQ     LSR
 000063C2                           306                  
 000063C2                           307                  * ROL
 000063C2                           308                  
@@ -316,14 +316,14 @@ Created On: 5/28/2017 2:36:23 PM
 000063C6                           312  
 000063C6                           313  ADDA    
 000063C6  4EB9 000063D0            314                 JSR     ADDA_BUFFER
-000063CC  6000 0566                315                 BRA     PRINT_BUFFER
+000063CC  6000 05AA                315                 BRA     PRINT_BUFFER
 000063D0                           316                  
 000063D0                           317  ADDA_BUFFER
 000063D0  1CFC 0041                318                 MOVE.B   #'A',(A6)+
 000063D4  1CFC 0044                319                 MOVE.B   #'D', (A6)+  
 000063D8  1CFC 0044                320                 MOVE.B   #'D', (A6)+
 000063DC  1CFC 0041                321                 MOVE.B   #'A', (A6)+
-000063E0  4EB9 00006A92            322                 JSR      GETSIZE_ADDA
+000063E0  4EB9 00006AD6            322                 JSR      GETSIZE_ADDA
 000063E6  1CFC 0020                323                 MOVE.B   #' ', (A6)+
 000063EA  4E75                     324                 RTS
 000063EC                           325                 
@@ -331,760 +331,788 @@ Created On: 5/28/2017 2:36:23 PM
 000063EC                           327                 
 000063EC                           328  *********************************************               
 000063EC                           329  ADD    
-000063EC  4EB9 0000642C            330                 JSR     ADD_BUFFER
-000063F2  4EB9 00006934            331                 JSR     PRINT_BUFFER
-000063F8                           332                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-000063F8                           333                 
-000063F8  BC7C 0001                334                 CMP      #1,D6
-000063FC  6600 0016                335                 BNE      ADD_DIRECTION_REVERSED
-00006400  4EB9 00006440            336                 JSR      ADD_SRC
-00006406  1CFC 0020                337                 MOVE.B   #' ', (A6)+
-0000640A  4EB9 00006440            338                 JSR      ADD_DEST
-00006410  6000 0016                339                 BRA      ADD_DONE
-00006414                           340                 
-00006414                           341  ADD_DIRECTION_REVERSED
-00006414                           342  
-00006414  4EB9 00006440            343                 JSR      ADD_DEST
-0000641A  1CFC 0020                344                 MOVE.B   #' ', (A6)+
-0000641E  4EB9 00006440            345                 JSR      ADD_SRC
-00006424  6000 0002                346                 BRA      ADD_DONE              
-00006428                           347                 
-00006428                           348                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-00006428                           349                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-00006428                           350                 
-00006428  4246                     351  ADD_DONE       CLR      D6
-0000642A  4E75                     352                 RTS     
-0000642C                           353                  
-0000642C                           354  ADD_BUFFER
-0000642C  1CFC 0041                355                 MOVE.B   #'A',(A6)+
-00006430  1CFC 0044                356                 MOVE.B   #'D', (A6)+  
-00006434  1CFC 0044                357                 MOVE.B   #'D', (A6)+
-00006438  4EB9 000069D0            358                 JSR      GETSIZE_ADD
-0000643E  4E75                     359                 RTS
-00006440                           360  
-00006440                           361  
-00006440                           362  ***********************************************        
-00006440                           363  
-00006440                           364  
-00006440                           365  
-00006440                           366  
-00006440                           367  ADD_SRC
-00006440                           368  
-00006440                           369  
-00006440                           370  
-00006440                           371  
-00006440                           372  
-00006440                           373  ADD_DEST
-00006440  4EB9 00006832            374                  JSR    bits5to7
-00006446  3803                     375                  MOVE   D3,D4
-00006448                           376  
-00006448                           377    
-00006448                           378  
-00006448                           379  
-00006448                           380  
-00006448                           381  ADDI
-00006448  4EB9 000064D0            382                  JSR     ADDI_BUFFER
-0000644E  4EB9 0000645E            383                  JSR     ADDI_SRC
-00006454  4EB9 0000646C            384                  JSR     ADDI_DES
-0000645A  6000 04D8                385                  BRA     PRINT_BUFFER
-0000645E                           386                  
-0000645E                           387  ADDI_SRC                        
-0000645E  1CFC 0023                388                  MOVE.B  #'#', (A6)+
-00006462  1CFC 002C                389                  MOVE.B  #',', (A6)+
-00006466  1CFC 0020                390                  MOVE.B  #' ', (A6)+
-0000646A  4E75                     391                  RTS
-0000646C                           392                    ** TODO: IMPLEMENT THIS IN EA
-0000646C                           393                  ** Immediate field—Data immediately following the instruction.
-0000646C                           394                  **If size = 00, the data is the low-order byte of the immediate word.
-0000646C                           395                  **If size = 01, the data is the entire immediate word.
-0000646C                           396                  **If size = 10, the data is the next two immediate words. 
-0000646C                           397  ADDI_DES
-0000646C                           398                  * LATER BITS ARE DESTINATION (11 TO 13 FOR MODE, 14 TO 16 FOR REGISTER)
-0000646C                           399                  ** INVALID INCLUDE AN, IMMEDIATE AND TYPICAL INVALIDS
-0000646C  4EB9 0000686A            400                 JSR      bits11to13
-00006472  B67C 0001                401                 CMP      #%001, D3 **AN
-00006476  6700 04D0                402                 BEQ      INVALID_EA
-0000647A  B67C 0005                403                 CMP      #%101, D3 **COMPLICATED
-0000647E  6700 04C8                404                 BEQ      INVALID_EA
-00006482  B67C 0006                405                 CMP      #%110, D3 **COMPLICATED
-00006486  6700 04C0                406                 BEQ      INVALID_EA
-0000648A                           407                 
-0000648A  4EB9 0000688C            408                 JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
-00006490  B67C 003C                409                 CMP      #%111100,D3 // immediate data
-00006494  6700 04B2                410                 BEQ      INVALID_EA
-00006498  B67C 003A                411                 CMP      #%111010,D3 // complicated
-0000649C  6700 04AA                412                 BEQ      INVALID_EA
-000064A0  B67C 003B                413                 CMP      #%111011,D3 // complicated
-000064A4  6700 04A2                414                 BEQ      INVALID_EA
-000064A8                           415                 
-000064A8  4EB9 0000686A            416                 JSR      bits11to13 ** grab bits to jump with\
-000064AE  3803                     417                 MOVE     D3,D4
-000064B0  41F9 00006756            418                 LEA     jmp_mode,A0    *Index into the table
-000064B6  C6FC 0006                419                 MULU    #6,D3       *Form offset     
-000064BA  4EB0 3000                420                 JSR     0(A0,D3)   *Jump indirect with index
-000064BE                           421                 
-000064BE  4243                     422                 CLR     D3
-000064C0  4EB9 0000687C            423                 JSR     bits14to16
-000064C6  4EB9 00006786            424                 JSR     insert_num
-000064CC  4244                     425                 CLR     D4
-000064CE                           426                 
-000064CE  4E75                     427                 RTS
-000064D0                           428                 
-000064D0                           429                             
-000064D0                           430  ADDI_BUFFER
-000064D0  1CFC 0041                431                 MOVE.B   #'A',(A6)+
-000064D4  1CFC 0044                432                 MOVE.B   #'D', (A6)+  
-000064D8  1CFC 0044                433                 MOVE.B   #'D', (A6)+
-000064DC  1CFC 0049                434                 MOVE.B   #'I', (A6)+
-000064E0                           435                 
-000064E0  4EB9 00006A58            436                 JSR      GETSIZE_ADDI
-000064E6                           437                 
-000064E6                           438                 ** TODO: ADD SIZE BASED ON BITS 9 TO 10   
-000064E6                           439                 ** VALID SIZES ARE B (00),W (01) ,L (10)
-000064E6  1CFC 0020                440                 MOVE.B   #' ', (A6)+
-000064EA  4E75                     441                 RTS
-000064EC                           442                              
-000064EC                           443  LEA
-000064EC  4EB9 00006858            444                 JSR      bits8to10   // 1 1 1
-000064F2  B47C 0007                445                 CMP      #7, D2 // if the returned bits are not 7, it's not LEA
-000064F6  6600 0454                446                 BNE      INVALID_OP
-000064FA  4EB9 00006510            447                 JSR      LEA_BUFFER
-00006500  4EB9 00006522            448                 JSR      LEA_SRC
-00006506  4EB9 000065C2            449                 JSR      LEA_DEST
-0000650C  6000 0426                450                 BRA      PRINT_BUFFER
-00006510                           451                 
-00006510                           452  LEA_BUFFER 
-00006510  1CFC 004C                453                 MOVE.B   #'L',(A6)+
-00006514  1CFC 0045                454                 MOVE.B   #'E', (A6)+  
-00006518  1CFC 0041                455                 MOVE.B   #'A', (A6)+
-0000651C  1CFC 0020                456                 MOVE.B   #' ', (A6)+
-00006520  4E75                     457                 RTS
-00006522                           458            
-00006522                           459  LEA_SRC
-00006522                           460              *INVALID SRCS ARE DN, AN, (AN)+, -(AN), 101 (COMPLICATED, 110, #DATA
-00006522  4EB9 0000686A            461              JSR      bits11to13  // source mode - D3
-00006528  B67C 0000                462              CMP      #%000, D3
-0000652C  6700 041A                463              BEQ      INVALID_EA
-00006530  B67C 0001                464              CMP      #%001, D3
-00006534  6700 0412                465              BEQ      INVALID_EA
-00006538  B67C 0003                466              CMP      #%011, D3
-0000653C  6700 040A                467              BEQ      INVALID_EA
-00006540  B67C 0004                468              CMP      #%100, D3
-00006544  6700 0402                469              BEQ      INVALID_EA
-00006548  B67C 0005                470              CMP      #%101, D3
-0000654C  6700 03FA                471              BEQ      INVALID_EA
-00006550  B67C 0006                472              CMP      #%110, D3
-00006554  6700 03F2                473              BEQ      INVALID_EA
-00006558                           474  
-00006558                           475              
-00006558                           476              * CHECK ON REGISTER BITS TO SEE IF NOW ABSOLUTE WORD OR LONG
-00006558  4EB9 0000687C            477              JSR      bits14to16 // source register - d4
-0000655E  B67C 0004                478              CMP      #%100, D3
-00006562  6700 03E4                479              BEQ      INVALID_EA
-00006566  B67C 0002                480              CMP      #%010, D3
-0000656A  6700 03DC                481              BEQ      INVALID_EA
-0000656E  B67C 0003                482              CMP      #%011, D3
-00006572  6700 03D4                483              BEQ      INVALID_EA
-00006576                           484              
-00006576                           485  
-00006576  4EB9 0000688C            486               JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
-0000657C  B67C 003C                487               CMP      #%111100,D3 // immediate data
-00006580  6700 03C6                488               BEQ      INVALID_EA
-00006584  B67C 003A                489               CMP      #%111010,D3 // complicated
-00006588  6700 03BE                490               BEQ      INVALID_EA
-0000658C  B67C 003B                491               CMP      #%111011,D3 // complicated
-00006590  6700 03B6                492               BEQ      INVALID_EA
-00006594                           493     
-00006594  4EB9 0000686A            494               JSR      bits11to13 ** grab mode bits to jump with
-0000659A  3803                     495               MOVE    D3,D4
-0000659C                           496  
-0000659C  41F9 00006756            497               LEA     jmp_mode,A0    *Index into the table
-000065A2  C6FC 0006                498               MULU    #6,D3       *Form offset     
-000065A6  4EB0 3000                499               JSR     0(A0,D3)   *Jump indirect with index
-000065AA                           500               
-000065AA                           501  
-000065AA  4243                     502               CLR     D3
-000065AC  4EB9 0000687C            503               JSR     bits14to16
-000065B2  4EB9 00006786            504               JSR     insert_num
-000065B8                           505               
-000065B8  1CFC 002C                506               MOVE.B     #',', (A6)+
-000065BC  1CFC 0020                507               MOVE.B     #' ', (A6)+
-000065C0                           508  
-000065C0  4E75                     509               RTS
-000065C2                           510               
-000065C2                           511  LEA_DEST    
-000065C2  4244                     512                  CLR     D4
-000065C4  41F9 00006756            513                  LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING            
-000065CA  363C 0001                514                  MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
-000065CE  3803                     515                  MOVE    D3,D4
-000065D0  C6FC 0006                516                  MULU    #6,D3       *Form offset     
-000065D4  4EB0 3000                517                  JSR     0(A0,D3)   *Jump indirect with index
-000065D8                           518                  
-000065D8  4EB9 00006832            519                  JSR     bits5to7
-000065DE  4EB9 00006786            520                  JSR     insert_num
-000065E4                           521                  
-000065E4  4E75                     522                  RTS
-000065E6                           523  
-000065E6                           524  
-000065E6                           525  ADDQ
-000065E6  4EB9 000065F0            526                  JSR     ADDQ_BUFFER
-000065EC  6000 0346                527                  BRA     PRINT_BUFFER
-000065F0                           528  
-000065F0                           529  ADDQ_BUFFER
-000065F0  1CFC 0041                530                 MOVE.B   #'A',(A6)+
-000065F4  1CFC 0044                531                 MOVE.B   #'D', (A6)+  
-000065F8  1CFC 0044                532                 MOVE.B   #'D', (A6)+
-000065FC  1CFC 0051                533                 MOVE.B   #'Q', (A6)+
-00006600                           534                 ** TODO: ADD SIZE BASED ON BITS 9 TO 10
-00006600                           535                 ** VALID SIZES ARE B (00),W (01) ,L (10)
-00006600  1CFC 0020                536                 MOVE.B   #' ', (A6)+
-00006604  4E75                     537                 RTS
-00006606                           538                 
-00006606                           539  MOVEQ
-00006606  4EB9 00006610            540                  JSR     MOVEQ_BUFFER
-0000660C  6000 0326                541                  BRA     PRINT_BUFFER
-00006610                           542  
-00006610                           543  MOVEQ_BUFFER
-00006610  1CFC 004D                544                 MOVE.B   #'M',(A6)+
-00006614  1CFC 004F                545                 MOVE.B   #'O', (A6)+  
-00006618  1CFC 0056                546                 MOVE.B   #'V', (A6)+
-0000661C  1CFC 0045                547                 MOVE.B   #'E', (A6)+
-00006620  1CFC 0051                548                 MOVE.B   #'Q', (A6)+
-00006624  1CFC 0020                549                 MOVE.B   #' ', (A6)+
-00006628  4E75                     550                 RTS
-0000662A                           551  
-0000662A                           552  DIVU
-0000662A  4EB9 00006634            553                  JSR     DIVU_BUFFER
-00006630  6000 0302                554                  BRA     PRINT_BUFFER
-00006634                           555  
-00006634                           556  DIVU_BUFFER
-00006634  1CFC 0044                557                 MOVE.B   #'D',(A6)+
-00006638  1CFC 0049                558                 MOVE.B   #'I', (A6)+  
-0000663C  1CFC 0056                559                 MOVE.B   #'V', (A6)+
-00006640  1CFC 0055                560                 MOVE.B   #'U', (A6)+
+000063EC  4EB9 00006432            330                 JSR     ADD_BUFFER
+000063F2                           331                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+000063F2                           332                 
+000063F2  BC7C 0001                333                 CMP      #1,D6
+000063F6  6600 001A                334                 BNE      ADD_DIRECTION_REVERSED
+000063FA  4EB9 00006446            335                 JSR      ADD_SRC
+00006400  1CFC 002C                336                 MOVE.B   #',', (A6)+
+00006404  1CFC 0020                337                 MOVE.B   #' ', (A6)+
+00006408  4EB9 0000646A            338                 JSR      ADD_DEST
+0000640E  6000 001A                339                 BRA      ADD_DONE
+00006412                           340                 
+00006412                           341  ADD_DIRECTION_REVERSED
+00006412                           342  
+00006412  4EB9 0000646A            343                 JSR      ADD_DEST
+00006418  1CFC 002C                344                 MOVE.B   #',', (A6)+
+0000641C  1CFC 0020                345                 MOVE.B   #' ', (A6)+
+00006420  4EB9 00006446            346                 JSR      ADD_SRC
+00006426  6000 0002                347                 BRA      ADD_DONE              
+0000642A                           348                 
+0000642A                           349                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+0000642A                           350                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+0000642A                           351                 
+0000642A                           352  ADD_DONE       
+0000642A  4246                     353                 CLR      D6
+0000642C  4EB9 00006978            354                 JSR     PRINT_BUFFER
+00006432                           355  
+00006432                           356                  
+00006432                           357  ADD_BUFFER
+00006432  1CFC 0041                358                 MOVE.B   #'A',(A6)+
+00006436  1CFC 0044                359                 MOVE.B   #'D', (A6)+  
+0000643A  1CFC 0044                360                 MOVE.B   #'D', (A6)+
+0000643E  4EB9 00006A14            361                 JSR      GETSIZE_ADD
+00006444  4E75                     362                 RTS
+00006446                           363  
+00006446                           364  
+00006446                           365  ***********************************************        
+00006446                           366  
+00006446                           367  
+00006446                           368  
+00006446                           369  ****************************************************************************************
+00006446                           370  ADD_SRC
+00006446                           371  
+00006446  4EB9 000068AE            372                  JSR    bits11to13
+0000644C  3803                     373                  MOVE   D3,D4
+0000644E  41F9 0000679A            374                  LEA     jmp_mode,A0    *Index into the table
+00006454  C6FC 0006                375                  MULU   #6,D3
+00006458  4EB0 3000                376                  JSR    0(A0,D3)     
+0000645C                           377                  
+0000645C  4EB9 000068C0            378                  JSR    bits14to16
+00006462  4EB9 000067CA            379                  JSR    insert_num
+00006468  4E75                     380                  RTS
+0000646A                           381  
+0000646A                           382  
+0000646A                           383  
+0000646A                           384  
+0000646A                           385  
+0000646A                           386  ADD_DEST
+0000646A  363C 0000                387                  MOVE.W #%000,D3     ;Can only have a data register.
+0000646E  3803                     388                  MOVE   D3,D4
+00006470  41F9 0000679A            389                  LEA     jmp_mode,A0    *Index into the table
+00006476  C6FC 0006                390                  MULU    #6,D3       *Form offset     
+0000647A  4EB0 3000                391                  JSR     0(A0,D3)   *Jump indirect with index
+0000647E                           392                  
+0000647E  4EB9 00006876            393                  JSR     bits5to7
+00006484  4EB9 000067CA            394                  JSR     insert_num
+0000648A  4E75                     395                  RTS
+0000648C                           396                  
+0000648C                           397  
+0000648C                           398    
+0000648C                           399  
+0000648C                           400  
+0000648C                           401  ***********************************************************************************************
+0000648C                           402  
+0000648C                           403  
+0000648C                           404  
+0000648C                           405  
+0000648C                           406  ADDI
+0000648C  4EB9 00006514            407                  JSR     ADDI_BUFFER
+00006492  4EB9 000064A2            408                  JSR     ADDI_SRC
+00006498  4EB9 000064B0            409                  JSR     ADDI_DES
+0000649E  6000 04D8                410                  BRA     PRINT_BUFFER
+000064A2                           411                  
+000064A2                           412  ADDI_SRC                        
+000064A2  1CFC 0023                413                  MOVE.B  #'#', (A6)+
+000064A6  1CFC 002C                414                  MOVE.B  #',', (A6)+
+000064AA  1CFC 0020                415                  MOVE.B  #' ', (A6)+
+000064AE  4E75                     416                  RTS
+000064B0                           417                    ** TODO: IMPLEMENT THIS IN EA
+000064B0                           418                  ** Immediate field—Data immediately following the instruction.
+000064B0                           419                  **If size = 00, the data is the low-order byte of the immediate word.
+000064B0                           420                  **If size = 01, the data is the entire immediate word.
+000064B0                           421                  **If size = 10, the data is the next two immediate words. 
+000064B0                           422  ADDI_DES
+000064B0                           423                  * LATER BITS ARE DESTINATION (11 TO 13 FOR MODE, 14 TO 16 FOR REGISTER)
+000064B0                           424                  ** INVALID INCLUDE AN, IMMEDIATE AND TYPICAL INVALIDS
+000064B0  4EB9 000068AE            425                 JSR      bits11to13
+000064B6  B67C 0001                426                 CMP      #%001, D3 **AN
+000064BA  6700 04D0                427                 BEQ      INVALID_EA
+000064BE  B67C 0005                428                 CMP      #%101, D3 **COMPLICATED
+000064C2  6700 04C8                429                 BEQ      INVALID_EA
+000064C6  B67C 0006                430                 CMP      #%110, D3 **COMPLICATED
+000064CA  6700 04C0                431                 BEQ      INVALID_EA
+000064CE                           432                 
+000064CE  4EB9 000068D0            433                 JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
+000064D4  B67C 003C                434                 CMP      #%111100,D3 // immediate data
+000064D8  6700 04B2                435                 BEQ      INVALID_EA
+000064DC  B67C 003A                436                 CMP      #%111010,D3 // complicated
+000064E0  6700 04AA                437                 BEQ      INVALID_EA
+000064E4  B67C 003B                438                 CMP      #%111011,D3 // complicated
+000064E8  6700 04A2                439                 BEQ      INVALID_EA
+000064EC                           440                 
+000064EC  4EB9 000068AE            441                 JSR      bits11to13 ** grab bits to jump with\
+000064F2  3803                     442                 MOVE     D3,D4
+000064F4  41F9 0000679A            443                 LEA     jmp_mode,A0    *Index into the table
+000064FA  C6FC 0006                444                 MULU    #6,D3       *Form offset     
+000064FE  4EB0 3000                445                 JSR     0(A0,D3)   *Jump indirect with index
+00006502                           446                 
+00006502  4243                     447                 CLR     D3
+00006504  4EB9 000068C0            448                 JSR     bits14to16
+0000650A  4EB9 000067CA            449                 JSR     insert_num
+00006510  4244                     450                 CLR     D4
+00006512                           451                 
+00006512  4E75                     452                 RTS
+00006514                           453                 
+00006514                           454                             
+00006514                           455  ADDI_BUFFER
+00006514  1CFC 0041                456                 MOVE.B   #'A',(A6)+
+00006518  1CFC 0044                457                 MOVE.B   #'D', (A6)+  
+0000651C  1CFC 0044                458                 MOVE.B   #'D', (A6)+
+00006520  1CFC 0049                459                 MOVE.B   #'I', (A6)+
+00006524                           460                 
+00006524  4EB9 00006A9C            461                 JSR      GETSIZE_ADDI
+0000652A                           462                 
+0000652A                           463                 ** TODO: ADD SIZE BASED ON BITS 9 TO 10   
+0000652A                           464                 ** VALID SIZES ARE B (00),W (01) ,L (10)
+0000652A  1CFC 0020                465                 MOVE.B   #' ', (A6)+
+0000652E  4E75                     466                 RTS
+00006530                           467                              
+00006530                           468  LEA
+00006530  4EB9 0000689C            469                 JSR      bits8to10   // 1 1 1
+00006536  B47C 0007                470                 CMP      #7, D2 // if the returned bits are not 7, it's not LEA
+0000653A  6600 0454                471                 BNE      INVALID_OP
+0000653E  4EB9 00006554            472                 JSR      LEA_BUFFER
+00006544  4EB9 00006566            473                 JSR      LEA_SRC
+0000654A  4EB9 00006606            474                 JSR      LEA_DEST
+00006550  6000 0426                475                 BRA      PRINT_BUFFER
+00006554                           476                 
+00006554                           477  LEA_BUFFER 
+00006554  1CFC 004C                478                 MOVE.B   #'L',(A6)+
+00006558  1CFC 0045                479                 MOVE.B   #'E', (A6)+  
+0000655C  1CFC 0041                480                 MOVE.B   #'A', (A6)+
+00006560  1CFC 0020                481                 MOVE.B   #' ', (A6)+
+00006564  4E75                     482                 RTS
+00006566                           483            
+00006566                           484  LEA_SRC
+00006566                           485              *INVALID SRCS ARE DN, AN, (AN)+, -(AN), 101 (COMPLICATED, 110, #DATA
+00006566  4EB9 000068AE            486              JSR      bits11to13  // source mode - D3
+0000656C  B67C 0000                487              CMP      #%000, D3
+00006570  6700 041A                488              BEQ      INVALID_EA
+00006574  B67C 0001                489              CMP      #%001, D3
+00006578  6700 0412                490              BEQ      INVALID_EA
+0000657C  B67C 0003                491              CMP      #%011, D3
+00006580  6700 040A                492              BEQ      INVALID_EA
+00006584  B67C 0004                493              CMP      #%100, D3
+00006588  6700 0402                494              BEQ      INVALID_EA
+0000658C  B67C 0005                495              CMP      #%101, D3
+00006590  6700 03FA                496              BEQ      INVALID_EA
+00006594  B67C 0006                497              CMP      #%110, D3
+00006598  6700 03F2                498              BEQ      INVALID_EA
+0000659C                           499  
+0000659C                           500              
+0000659C                           501              * CHECK ON REGISTER BITS TO SEE IF NOW ABSOLUTE WORD OR LONG
+0000659C  4EB9 000068C0            502              JSR      bits14to16 // source register - d4
+000065A2  B67C 0004                503              CMP      #%100, D3
+000065A6  6700 03E4                504              BEQ      INVALID_EA
+000065AA  B67C 0002                505              CMP      #%010, D3
+000065AE  6700 03DC                506              BEQ      INVALID_EA
+000065B2  B67C 0003                507              CMP      #%011, D3
+000065B6  6700 03D4                508              BEQ      INVALID_EA
+000065BA                           509              
+000065BA                           510  
+000065BA  4EB9 000068D0            511               JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
+000065C0  B67C 003C                512               CMP      #%111100,D3 // immediate data
+000065C4  6700 03C6                513               BEQ      INVALID_EA
+000065C8  B67C 003A                514               CMP      #%111010,D3 // complicated
+000065CC  6700 03BE                515               BEQ      INVALID_EA
+000065D0  B67C 003B                516               CMP      #%111011,D3 // complicated
+000065D4  6700 03B6                517               BEQ      INVALID_EA
+000065D8                           518     
+000065D8  4EB9 000068AE            519               JSR      bits11to13 ** grab mode bits to jump with
+000065DE  3803                     520               MOVE    D3,D4
+000065E0                           521  
+000065E0  41F9 0000679A            522               LEA     jmp_mode,A0    *Index into the table
+000065E6  C6FC 0006                523               MULU    #6,D3       *Form offset     
+000065EA  4EB0 3000                524               JSR     0(A0,D3)   *Jump indirect with index
+000065EE                           525               
+000065EE                           526  
+000065EE  4243                     527               CLR     D3
+000065F0  4EB9 000068C0            528               JSR     bits14to16
+000065F6  4EB9 000067CA            529               JSR     insert_num
+000065FC                           530               
+000065FC  1CFC 002C                531               MOVE.B     #',', (A6)+
+00006600  1CFC 0020                532               MOVE.B     #' ', (A6)+
+00006604                           533  
+00006604  4E75                     534               RTS
+00006606                           535               
+00006606                           536  LEA_DEST    
+00006606  4244                     537                  CLR     D4
+00006608  41F9 0000679A            538                  LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING            
+0000660E  363C 0001                539                  MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
+00006612  3803                     540                  MOVE    D3,D4
+00006614  C6FC 0006                541                  MULU    #6,D3       *Form offset     
+00006618  4EB0 3000                542                  JSR     0(A0,D3)   *Jump indirect with index
+0000661C                           543                  
+0000661C  4EB9 00006876            544                  JSR     bits5to7
+00006622  4EB9 000067CA            545                  JSR     insert_num
+00006628                           546                  
+00006628  4E75                     547                  RTS
+0000662A                           548  
+0000662A                           549  
+0000662A                           550  ADDQ
+0000662A  4EB9 00006634            551                  JSR     ADDQ_BUFFER
+00006630  6000 0346                552                  BRA     PRINT_BUFFER
+00006634                           553  
+00006634                           554  ADDQ_BUFFER
+00006634  1CFC 0041                555                 MOVE.B   #'A',(A6)+
+00006638  1CFC 0044                556                 MOVE.B   #'D', (A6)+  
+0000663C  1CFC 0044                557                 MOVE.B   #'D', (A6)+
+00006640  1CFC 0051                558                 MOVE.B   #'Q', (A6)+
+00006644                           559                 ** TODO: ADD SIZE BASED ON BITS 9 TO 10
+00006644                           560                 ** VALID SIZES ARE B (00),W (01) ,L (10)
 00006644  1CFC 0020                561                 MOVE.B   #' ', (A6)+
-00006648  4E75                     562                 RTS  
-0000664A                           563  OR    
-0000664A  4EB9 00006654            564                 JSR     OR_BUFFER
-00006650  6000 02E2                565                 BRA     PRINT_BUFFER
-00006654                           566                  
-00006654                           567  OR_BUFFER
-00006654  1CFC 004F                568                 MOVE.B   #'O',(A6)+
-00006658  1CFC 0052                569                 MOVE.B   #'R', (A6)+  
-0000665C  1CFC 002E                570                 MOVE.B   #'.', (A6)+
-00006660                           571                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-00006660                           572                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-00006660                           573                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-00006660  1CFC 0020                574                 MOVE.B   #' ', (A6)+
-00006664  4E75                     575                 RTS   
-00006666                           576  
-00006666                           577  SUB   
-00006666  4EB9 00006670            578                 JSR     SUB_BUFFER
-0000666C  6000 02C6                579                 BRA     PRINT_BUFFER               
-00006670                           580  
-00006670                           581  SUB_BUFFER
-00006670  1CFC 0053                582                 MOVE.B   #'S',(A6)+
-00006674  1CFC 0055                583                 MOVE.B   #'U', (A6)+  
-00006678  1CFC 0042                584                 MOVE.B   #'B', (A6)+
-0000667C  1CFC 002E                585                 MOVE.B   #'.', (A6)+
-00006680                           586                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-00006680                           587                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-00006680                           588                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-00006680  1CFC 0020                589                 MOVE.B   #' ', (A6)+
-00006684  4E75                     590                 RTS  
-00006686                           591  CMP   
-00006686  4EB9 00006690            592                 JSR     CMP_BUFFER
-0000668C  6000 02A6                593                 BRA     PRINT_BUFFER
-00006690                           594                  
-00006690                           595  CMP_BUFFER
-00006690  1CFC 0043                596                 MOVE.B   #'C',(A6)+
-00006694  1CFC 004D                597                 MOVE.B   #'M', (A6)+  
-00006698  1CFC 0050                598                 MOVE.B   #'P', (A6)+
-0000669C  1CFC 002E                599                 MOVE.B   #'.', (A6)+
-000066A0                           600                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-000066A0                           601                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-000066A0                           602                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-000066A0  1CFC 0020                603                 MOVE.B   #' ', (A6)+
-000066A4  4E75                     604                 RTS   
-000066A6                           605                 
-000066A6                           606  MULS
-000066A6  4EB9 000066B0            607                  JSR     MULS_BUFFER
-000066AC  6000 0286                608                  BRA     PRINT_BUFFER
-000066B0                           609  
-000066B0                           610  MULS_BUFFER
-000066B0  1CFC 004D                611                 MOVE.B   #'M',(A6)+
-000066B4  1CFC 0055                612                 MOVE.B   #'U', (A6)+  
-000066B8  1CFC 004C                613                 MOVE.B   #'L', (A6)+
-000066BC  1CFC 0053                614                 MOVE.B   #'S', (A6)+
-000066C0  1CFC 0020                615                 MOVE.B   #' ', (A6)+
-000066C4  4E75                     616                 RTS
-000066C6                           617  
-000066C6                           618  AND    
-000066C6  4EB9 000066D0            619                 JSR     AND_BUFFER
-000066CC  6000 0266                620                 BRA     PRINT_BUFFER
-000066D0                           621                  
-000066D0                           622  AND_BUFFER
-000066D0  1CFC 0041                623                 MOVE.B   #'A',(A6)+
-000066D4  1CFC 004E                624                 MOVE.B   #'N', (A6)+  
-000066D8  1CFC 0044                625                 MOVE.B   #'D', (A6)+
-000066DC  1CFC 002E                626                 MOVE.B   #'.', (A6)+
-000066E0                           627                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-000066E0                           628                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-000066E0                           629                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-000066E0  1CFC 0020                630                 MOVE.B   #' ', (A6)+
-000066E4  4E75                     631                 RTS    
-000066E6                           632  
-000066E6                           633  ASR     
-000066E6  4EB9 000066F0            634                  JSR     ASR_BUFFER
-000066EC  6000 0246                635                  BRA     PRINT_BUFFER
-000066F0                           636  
-000066F0                           637  ASR_BUFFER
-000066F0  1CFC 0041                638                 MOVE.B   #'A',(A6)+
-000066F4  1CFC 0053                639                 MOVE.B   #'S', (A6)+  
-000066F8  1CFC 0052                640                 MOVE.B   #'R', (A6)+
-000066FC  1CFC 0020                641                 MOVE.B   #' ', (A6)+
-00006700  4E75                     642                 RTS      
-00006702                           643  
-00006702                           644  ASL     
-00006702  4EB9 0000670C            645                  JSR     ASL_BUFFER
-00006708  6000 022A                646                  BRA     PRINT_BUFFER
-0000670C                           647  
-0000670C                           648  ASL_BUFFER
-0000670C  1CFC 0041                649                 MOVE.B   #'A',(A6)+
-00006710  1CFC 0053                650                 MOVE.B   #'S', (A6)+  
-00006714  1CFC 004C                651                 MOVE.B   #'L', (A6)+
-00006718  1CFC 0020                652                 MOVE.B   #' ', (A6)+
-0000671C  4E75                     653                 RTS     
-0000671E                           654  
-0000671E                           655  LSL     
-0000671E  4EB9 00006728            656                  JSR     LSL_BUFFER
-00006724  6000 020E                657                  BRA     PRINT_BUFFER
-00006728                           658  
-00006728                           659  LSL_BUFFER
-00006728  1CFC 004C                660                 MOVE.B   #'L',(A6)+
-0000672C  1CFC 0053                661                 MOVE.B   #'S', (A6)+  
-00006730  1CFC 004C                662                 MOVE.B   #'L', (A6)+
-00006734  1CFC 0020                663                 MOVE.B   #' ', (A6)+
-00006738  4E75                     664                 RTS     
-0000673A                           665  
-0000673A                           666  LSR     
-0000673A  4EB9 00006744            667                  JSR     LSR_BUFFER
-00006740  6000 01F2                668                  BRA     PRINT_BUFFER
-00006744                           669  
-00006744                           670  LSR_BUFFER
-00006744  1CFC 004C                671                 MOVE.B   #'L',(A6)+
-00006748  1CFC 0053                672                 MOVE.B   #'S', (A6)+  
-0000674C  1CFC 0052                673                 MOVE.B   #'R', (A6)+
-00006750  1CFC 0020                674                 MOVE.B   #' ', (A6)+
-00006754  4E75                     675                 RTS       
-00006756                           676                 
-00006756                           677  jmp_mode
-00006756  4EF9 000068AE            678                  JMP     MODE000  ** DN
-0000675C  4EF9 000068B4            679                  JMP     MODE001  ** AN
-00006762  4EF9 000068BC            680                  JMP     MODE010  ** (AN)
-00006768  4EF9 000068C6            681                  JMP     MODE011  ** (AN)+   
-0000676E  4EF9 000068CE            682                  JMP     MODE100  ** -(AN)
-00006774  4EF9 000068DA            683                  JMP     MODE101  **INVALID
-0000677A  4EF9 000068E2            684                  JMP     MODE110  **INVALID
-00006780  4EF9 000068EA            685                  JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
-00006786                           686  
-00006786                           687                  
-00006786                           688  insert_num
-00006786                           689                  
-00006786                           690                  ;get number from D3
-00006786  B67C 0000                691                  CMP     #%000,D3       ;0
-0000678A  6600 000A                692                  BNE     ONE         
-0000678E  1CFC 0030                693                  MOVE.B  #'0',(A6)+      ;Put ASCII value in buffer.
-00006792  6000 006E                694                  BRA     FINISHER
-00006796                           695                  
-00006796  B67C 0001                696  ONE             CMP     #%001,D3       ;1
-0000679A  6600 000A                697                  BNE     TWO 
-0000679E  1CFC 0031                698                  MOVE.B  #'1',(A6)+
-000067A2  6000 005E                699                  BRA     FINISHER
-000067A6                           700  
-000067A6                           701                  
-000067A6  B67C 0002                702  TWO             CMP     #%010,D3        ;2
-000067AA  6600 000A                703                  BNE     THREE
-000067AE  1CFC 0032                704                  MOVE.B  #'2',(A6)+
-000067B2  6000 004E                705                  BRA     FINISHER
-000067B6                           706                  
-000067B6  B67C 0003                707  THREE           CMP     #%011,D3        ;3
-000067BA  6600 000A                708                  BNE     FOUR
-000067BE  1CFC 0033                709                  MOVE.B  #'3',(A6)+
-000067C2  6000 003E                710                  BRA     FINISHER
-000067C6                           711                  
-000067C6  B67C 0004                712  FOUR            CMP     #%100,D3        ;4
-000067CA  6600 000A                713                  BNE     FIVE
-000067CE  1CFC 0034                714                  MOVE.B  #'4',(A6)+
-000067D2  6000 002E                715                  BRA     FINISHER
-000067D6                           716                  
-000067D6  B67C 0005                717  FIVE            CMP     #%101,D3        ;5
-000067DA  6600 000A                718                  BNE     SIX
-000067DE  1CFC 0035                719                  MOVE.B  #'5',(A6)+
-000067E2  6000 001E                720                  BRA     FINISHER
-000067E6                           721                  
-000067E6  B67C 0006                722  SIX             CMP     #%110,D3        ;6
-000067EA  6600 000A                723                  BNE     SEVEN
-000067EE  1CFC 0036                724                  MOVE.B  #'6',(A6)+
-000067F2  6000 000E                725                  BRA     FINISHER
-000067F6                           726                  
-000067F6  B67C 0007                727  SEVEN           CMP     #%111,D3        ;7
-000067FA  1CFC 0037                728                  MOVE.B  #'7',(A6)+
-000067FE  6000 0002                729                  BRA     FINISHER
-00006802                           730                  
-00006802                           731  FINISHER                
-00006802                           732                  
-00006802                           733                  ;check D4, do we need to do stuff?
-00006802  B87C 0002                734                  CMP     #%010,D4
-00006806  6600 0008                735                  BNE     POSTINCR
-0000680A  1CFC 0029                736                  MOVE.B  #')',(A6)+
-0000680E  4E75                     737                  RTS
-00006810                           738                  
-00006810  B87C 0003                739  POSTINCR        CMP     #%011,D4
-00006814  6600 000C                740                  BNE     ONEPAREN
-00006818  1CFC 0029                741                  MOVE.B  #')',(A6)+
-0000681C  1CFC 002B                742                  MOVE.B  #'+',(A6)+
-00006820  4E75                     743                  RTS
-00006822                           744                  
-00006822  B87C 0004                745  ONEPAREN        CMP     #%100,D4
-00006826  6600 0008                746                  BNE     DONE
-0000682A  1CFC 0029                747                  MOVE.B  #')',(A6)+                
-0000682E                           748  
-0000682E  4244                     749                  CLR     D4
-00006830  4E75                     750  DONE            RTS
-00006832                           751  
-00006832                           752          
-00006832                           753                 
-00006832                           754  bits5to7
-00006832  4243                     755                 CLR      D3
-00006834  4EB9 000069CA            756                 JSR      COPY_OPCODE  // opcode copied to D2
-0000683A  C47C 0E00                757                 AND      #%0000111000000000, D2
-0000683E  E09A                     758                 ROR.L    #8, D2          // rotate bits so isolated at the end
-00006840  E29A                     759                 ROR.L    #1, D2
-00006842  3602                     760                 MOVE.W   D2,D3 // moving isolated bits into d3
-00006844  4E75                     761                 RTS
-00006846                           762                 
-00006846                           763  bits5to8
-00006846  4243                     764                 CLR      D3
-00006848  4EB9 000069CA            765                 JSR      COPY_OPCODE  // opcode copied to D2
-0000684E  C47C 0F00                766                 AND      #%0000111100000000, D2
-00006852  E09A                     767                 ROR.L    #8, D2          // rotate bits so isolated at the end
-00006854  3602                     768                 MOVE.W   D2,D3 // moving isolated bits into d3
-00006856  4E75                     769                 RTS
-00006858                           770                 
-00006858                           771  bits8to10
-00006858  4243                     772                 CLR      D3
-0000685A  4EB9 000069CA            773                 JSR      COPY_OPCODE  // opcode copied to D2
-00006860  C47C 01C0                774                 AND      #%0000000111000000, D2
-00006864  EC9A                     775                 ROR.L    #6, D2          // rotate bits so isolated at the end
-00006866  3602                     776                 MOVE.W   D2,D3 // moving isolated bits into d3
-00006868  4E75                     777                 RTS               
-0000686A                           778             
-0000686A                           779  bits11to13
-0000686A  4243                     780                 CLR      D3
-0000686C  4EB9 000069CA            781                 JSR      COPY_OPCODE  // opcode copied to D2
-00006872  C47C 0038                782                 AND      #%0000000000111000, D2
-00006876  E69A                     783                 ROR.L    #3, D2          // rotate bits so isolated at the end
-00006878  3602                     784                 MOVE.W   D2,D3 // moving isolated bits into d3
-0000687A  4E75                     785                 RTS
-0000687C                           786             
-0000687C                           787  bits14to16
-0000687C  4243                     788                 CLR      D3
-0000687E  4EB9 000069CA            789                 JSR      COPY_OPCODE  // opcode copied to D2
-00006884  C47C 0007                790                 AND      #%0000000000000111, D2
-00006888  3602                     791                 MOVE.W   D2,D3 // moving isolated bits into d3
-0000688A  4E75                     792                 RTS
-0000688C                           793  bits11to16
-0000688C  4243                     794                 CLR      D3
-0000688E  4EB9 000069CA            795                 JSR      COPY_OPCODE  // opcode copied to D2
-00006894  C47C 003F                796                 AND      #%0000000000111111, D2
-00006898  3602                     797                 MOVE.W   D2,D3 // moving isolated bits into d3
-0000689A  4E75                     798                 RTS
-0000689C                           799  bits1to10
-0000689C  4243                     800                 CLR      D3
-0000689E  4EB9 000069CA            801                 JSR      COPY_OPCODE  // opcode copied to D2
-000068A4  C47C FFC0                802                 AND      #%1111111111000000, D2
-000068A8  EC9A                     803                 ROR.L    #6, D2
-000068AA  3602                     804                 MOVE.W   D2,D3 // moving isolated bits into d3
-000068AC  4E75                     805                 RTS
-000068AE                           806  ** DN       
-000068AE                           807  MODE000         
-000068AE  1CFC 0044                808                  MOVE.B  #'D',(A6)+     
-000068B2  4E75                     809                  RTS
-000068B4                           810  
-000068B4                           811  ** AN
-000068B4                           812  MODE001         
-000068B4  4EB9 000068F2            813                  JSR ADDRESS_BUFFER  
-000068BA  4E75                     814                  RTS      
-000068BC                           815  
-000068BC                           816   ** (AN)
-000068BC                           817  MODE010         
-000068BC  1CFC 0028                818                  MOVE.B  #'(', (A6)+
-000068C0  1CFC 0041                819                  MOVE.B  #'A',(A6)+  
-000068C4  4E75                     820                  RTS      
-000068C6                           821  
-000068C6                           822  ** (AN)+ 
-000068C6                           823  MODE011         
-000068C6  1CFC 0028                824                  MOVE.B  #'(', (A6)+
-000068CA  1CFC 0041                825                  MOVE.B  #'A',(A6)+        
-000068CE                           826  
-000068CE                           827   ** -(AN)
-000068CE                           828  MODE100         
-000068CE  1CFC 002D                829                  MOVE.B  #'-', (A6)+
-000068D2  1CFC 0028                830                  MOVE.B  #'(', (A6)+
-000068D6  1CFC 0041                831                  MOVE.B  #'A',(A6)+
-000068DA                           832                  
-000068DA                           833  **INVALID               
-000068DA                           834  MODE101         
-000068DA  1CFC 0028                835                  MOVE.B  #'(', (A6)+
-000068DE  1CFC 0041                836                  MOVE.B  #'A',(A6)+ 
-000068E2                           837                  
-000068E2                           838  **INVALID
-000068E2                           839  MODE110         
-000068E2  1CFC 0028                840                  MOVE.B  #'(', (A6)+
-000068E6  1CFC 0041                841                  MOVE.B  #'A',(A6)+  
-000068EA                           842  
-000068EA                           843  ** ABSOLUTE AND IMMEDIATE            
-000068EA                           844  MODE111         
-000068EA                           845                  *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
-000068EA  4EB9 000068F8            846                 JSR ABSOLUTE_BUFFER  
-000068F0  4E75                     847                 RTS            
-000068F2                           848                                          
-000068F2                           849  ADDRESS_BUFFER
-000068F2  1CFC 0041                850                  MOVE.B  #'A',(A6)+ 
-000068F6  4E75                     851                  RTS
-000068F8                           852                 
-000068F8                           853  ABSOLUTE_BUFFER
-000068F8  4243                     854                 CLR      D3
-000068FA  3604                     855                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON
-000068FC  1CF8 0024                856                 MOVE.B   '$', (A6)+
-00006900  B67C 0000                857                 CMP.W    #%000, D3
-00006904  6700 000E                858                 BEQ      ABSOLUTE_WORD_BUFFER
-00006908  4243                     859                 CLR      D3
-0000690A  3604                     860                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
-0000690C  B67C 0001                861                 CMP.W    #%001, D3
-00006910  6700 0012                862                 BEQ      ABSOLUTE_LONG_BUFFER
-00006914                           863                 
-00006914                           864  ABSOLUTE_WORD_BUFFER
-00006914                           865                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
-00006914                           866                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
-00006914  1CFC 0046                867                         MOVE.B #'F', (A6)+ 
-00006918  1CFC 0046                868                         MOVE.B #'F', (A6)+ 
-0000691C  1CFC 0046                869                         MOVE.B #'F', (A6)+ 
-00006920  1CFC 0046                870                         MOVE.B #'F', (A6)+   
-00006924                           871  ABSOLUTE_LONG_BUFFER       
-00006924                           872                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
-00006924                           873                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
-00006924  1CFC 0047                874                         MOVE.B #'G', (A6)+ 
-00006928  1CFC 0047                875                         MOVE.B #'G', (A6)+ 
-0000692C  1CFC 0047                876                         MOVE.B #'G', (A6)+ 
-00006930  1CFC 0047                877                         MOVE.B #'G', (A6)+ 
-00006934                           878                                                      
-00006934                           879  
-00006934                           880  PRINT_BUFFER    
-00006934  1CFC 0000                881                 MOVE.B   #%0,  (A6)+ ** null terminate the string       
-00006938  43F9 00006ADE            882                 LEA      BUFFER, A1
-0000693E  303C 000E                883                 MOVE.W   #14,D0
-00006942  4E4F                     884                 TRAP     #15
-00006944  6000 F903                885                 BRA EXIT
-00006948                           886                 
-00006948                           887                 
-00006948                           888  
-00006948                           889  INVALID_EA  
-00006948                           890                  * TODO: IMPLEMENT
-00006948                           891                  *** CLEAR OUT A6
-00006948                           892                  ** PUT INVALID MESSAGE INTO A6
-00006948  6000 F8FF                893                  BRA EXIT
-0000694C                           894  INVALID_OP  
-0000694C                           895                  ** TODO: IMPLEMENT
-0000694C                           896                 *** CLEAR OUT A6
-0000694C                           897                  ** PUT INVALID MESSAGE INTO A6
-0000694C  6000 F8FB                898                  BRA EXIT             
-00006950                           899                  
-00006950  43F8 618B                900  NOP                 LEA     NOP_disp,A1          
-00006954  103C 000E                901                      MOVE.B  #14,D0
-00006958  4E4F                     902                      TRAP    #15
-0000695A  6000 F8ED                903                      BRA     EXIT
-0000695E                           904                   
-0000695E                           905  RTS      
-0000695E  43F8 61F2                906                      LEA     RTS_disp,A1          
-00006962  103C 000E                907                      MOVE.B  #14,D0
-00006966  4E4F                     908                      TRAP    #15 
-00006968  6000 F8DF                909                      BRA     EXIT
-0000696C                           910  JSR      
-0000696C  4DF9 00006ADE            911                      LEA     BUFFER, A6
-00006972  1CFC 004A                912                      MOVE.B #'J', (A6)+
-00006976  1CFC 0053                913                      MOVE.B #'S', (A6)+
-0000697A  1CFC 0052                914                      MOVE.B #'R', (A6)+
-0000697E  1CFC 0020                915                      MOVE.B #' ', (A6)+
-00006982  43F9 00006ADE            916                      LEA     BUFFER, A1
-00006988                           917                      ** BITS 10 - 12 MODE       
-00006988                           918                      ** BITS 13 - 16 REGISTER
-00006988  103C 000E                919                      MOVE.B  #14,D0
-0000698C  4E4F                     920                      TRAP    #15 
-0000698E  6000 F8B9                921                      BRA     EXIT
-00006992                           922                    
-00006992                           923  MOVEM      
-00006992                           924                     
-00006992                           925                      ** SIZE SUBROUTINE
-00006992                           926                      ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
-00006992  C47C 0040                927                      AND #%0000000001000000,D2 
-00006996                           928                      * WORD
-00006996  B4BC 00000040            929                      CMP.L   #%0000000001000000,D2
-0000699C  4EB9 000069B2            930                      JSR     MOVEM_W 
-000069A2                           931                      *LONG
-000069A2  B4BC 00000040            932                      CMP.L   #%0000000001000000,D2 
-000069A8                           933                     ** JSR     MOVEM_L
-000069A8  103C 000E                934                      MOVE.B  #14,D0
-000069AC  4E4F                     935                      TRAP    #15
-000069AE  6000 F899                936                      BRA     EXIT 
-000069B2                           937                      
-000069B2                           938  MOVEM_W 
-000069B2  43F8 61A0                939                       LEA     MOVEM_disp,A1
-000069B6                           940                      * PRINT MOVEM
-000069B6  103C 000E                941                       MOVE.B  #14,D0
-000069BA  4E4F                     942                       TRAP    #15
-000069BC                           943          
-000069BC                           944                      * PRINT WORD PORTION
-000069BC  41F8 6237                945                       LEA     size_w, A0
-000069C0  103C 000E                946                       MOVE.B  #14,D0
-000069C4  4E4F                     947                       TRAP    #15 
-000069C6                           948          
-000069C6  6000 F881                949                       BRA     EXIT 
-000069CA                           950       
-000069CA                           951     
-000069CA                           952  COPY_OPCODE 
-000069CA                           953                       ** HOLDS COPY OF OPCODE TO BE MANIPULATED
-000069CA  4242                     954                       CLR    D2  
-000069CC  3405                     955                       MOVE.W D5,D2 
-000069CE  4E75                     956                       RTS  
-000069D0                           957                       
-000069D0                           958  ****************************
-000069D0                           959  
-000069D0                           960                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-000069D0                           961                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-000069D0                           962                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-000069D0                           963  GETSIZE_ADD
-000069D0  4EB8 6858                964              JSR     bits8to10
-000069D4  B67C 0000                965              CMP     #%000,D3
-000069D8  6600 0010                966              BNE     ADD_NOTBYTE
-000069DC  4EB9 00006ABA            967              JSR     SIZEISBYTE
-000069E2  3C3C 0001                968              MOVE    #1,D6
-000069E6  4243                     969              CLR     D3
-000069E8  4E75                     970              RTS
-000069EA                           971          
-000069EA                           972  ADD_NOTBYTE 
-000069EA  B67C 0001                973              CMP     #%001,D3
-000069EE  6600 0010                974              BNE     ADD_NOTWORD
-000069F2  4EB9 00006AC6            975              JSR     SIZEISWORD
-000069F8  3C3C 0001                976              MOVE    #1,D6
-000069FC  4243                     977              CLR     D3
-000069FE  4E75                     978              RTS
-00006A00                           979              
-00006A00                           980  ADD_NOTWORD
-00006A00  B67C 0002                981              CMP     #%010,D3
-00006A04  6600 0010                982              BNE     ADD_NOTLEFT
-00006A08  4EB9 00006AD2            983              JSR     SIZEISLONG
-00006A0E  3C3C 0001                984              MOVE    #1,D6
-00006A12  4243                     985              CLR     D3
-00006A14  4E75                     986              RTS
-00006A16                           987              
-00006A16                           988  ADD_NOTLEFT     ;check other direction
-00006A16  B67C 0004                989              CMP     #%100,D3
-00006A1A  6600 0010                990              BNE     ADD_NOTRIGHTBYTE
-00006A1E  4EB9 00006ABA            991              JSR     SIZEISBYTE
-00006A24  3C3C 0002                992              MOVE    #2,D6
-00006A28  4243                     993              CLR     D3
-00006A2A  4E75                     994              RTS
-00006A2C                           995              
-00006A2C                           996  ADD_NOTRIGHTBYTE
-00006A2C  B67C 0005                997              CMP     #%101,D3
-00006A30  6600 0010                998              BNE     ADD_NOTRIGHTWORD
-00006A34  4EB9 00006AC6            999              JSR     SIZEISWORD
-00006A3A  3C3C 0002               1000              MOVE    #2,D6
-00006A3E  4243                    1001              CLR     D3
-00006A40  4E75                    1002              RTS
-00006A42                          1003  
-00006A42                          1004  ADD_NOTRIGHTWORD
-00006A42  B67C 0006               1005              CMP     #%110,D3
-00006A46  6600 FF00               1006              BNE     INVALID_EA
-00006A4A  4EB9 00006AD2           1007              JSR     SIZEISLONG
-00006A50  3C3C 0002               1008              MOVE    #2,D6
-00006A54  4243                    1009              CLR     D3
-00006A56  4E75                    1010              RTS 
-00006A58                          1011                               
-00006A58                          1012                       
-00006A58                          1013                       
-00006A58                          1014  *****************************                  
-00006A58                          1015  GETSIZE_ADDI
-00006A58  4EB8 6858               1016          JSR     bits8to10
-00006A5C  B67C 0000               1017          CMP     #%000,D3
-00006A60  6600 000C               1018          BNE     ADDI_NOTBYTE
-00006A64  4EB9 00006ABA           1019          JSR     SIZEISBYTE
-00006A6A  4243                    1020          CLR     D3
-00006A6C  4E75                    1021          RTS
-00006A6E                          1022  
-00006A6E                          1023  ADDI_NOTBYTE
-00006A6E  B67C 0001               1024          CMP     #%001,D3
-00006A72  6600 000C               1025          BNE     ADDI_NOTWORD
-00006A76  4EB9 00006AC6           1026          JSR     SIZEISWORD
-00006A7C  4243                    1027          CLR     D3
-00006A7E  4E75                    1028          RTS
-00006A80                          1029          
-00006A80                          1030  ADDI_NOTWORD
-00006A80  B67C 0002               1031          CMP     #%010,D3
-00006A84  6600 FEC2               1032          BNE     INVALID_EA
-00006A88  4EB9 00006AD2           1033          JSR     SIZEISLONG
-00006A8E  4243                    1034          CLR     D3
-00006A90  4E75                    1035          RTS
-00006A92                          1036          
-00006A92                          1037                              
-00006A92                          1038                       
-00006A92                          1039  ********************************          
-00006A92                          1040                       
-00006A92                          1041                       
-00006A92                          1042  ********************************                     
-00006A92                          1043  GETSIZE_ADDA
-00006A92  4EB8 6858               1044          JSR     bits8to10
-00006A96  B67C 0003               1045          CMP     #%011,D3
-00006A9A  6600 000C               1046          BNE     ADDA_NOTWORD
-00006A9E  4EB9 00006AC6           1047          JSR     SIZEISWORD
-00006AA4  4243                    1048          CLR     D3
-00006AA6  4E75                    1049          RTS
-00006AA8                          1050          
-00006AA8                          1051  
-00006AA8                          1052          
-00006AA8                          1053  ADDA_NOTWORD
-00006AA8  B67C 0007               1054          CMP     #%111,D3
-00006AAC  6600 FE9A               1055          BNE     INVALID_EA
-00006AB0  4EB9 00006AD2           1056          JSR     SIZEISLONG
-00006AB6  4243                    1057          CLR     D3
-00006AB8  4E75                    1058          RTS
-00006ABA                          1059  **********************************        
-00006ABA                          1060      
-00006ABA                          1061  SIZEISBYTE
-00006ABA  1CFC 002E               1062         MOVE.B   #'.',(A6)+
-00006ABE  1CFC 0042               1063         MOVE.B   #'B',(A6)+
-00006AC2  4243                    1064         CLR      D3
-00006AC4  4E75                    1065         RTS
-00006AC6                          1066  
-00006AC6                          1067  SIZEISWORD    
-00006AC6  1CFC 002E               1068         MOVE.B   #'.',(A6)+
-00006ACA  1CFC 0057               1069         MOVE.B   #'W',(A6)+
-00006ACE  4243                    1070         CLR      D3
-00006AD0  4E75                    1071         RTS
-00006AD2                          1072                  
-00006AD2                          1073  SIZEISLONG    
-00006AD2  1CFC 002E               1074         MOVE.B   #'.',(A6)+
-00006AD6  1CFC 004C               1075         MOVE.B   #'L',(A6)+
-00006ADA  4243                    1076         CLR      D3
-00006ADC  4E75                    1077         RTS
-00006ADE                          1078                  
-00006ADE                          1079       
-00006ADE= 20 20 20 20 20 00       1080  BUFFER DC.B '     ',0     
-00006AE4                          1081        
-00006AE4                          1082  
-00006AE4                          1083      END START 
+00006648  4E75                     562                 RTS
+0000664A                           563                 
+0000664A                           564  MOVEQ
+0000664A  4EB9 00006654            565                  JSR     MOVEQ_BUFFER
+00006650  6000 0326                566                  BRA     PRINT_BUFFER
+00006654                           567  
+00006654                           568  MOVEQ_BUFFER
+00006654  1CFC 004D                569                 MOVE.B   #'M',(A6)+
+00006658  1CFC 004F                570                 MOVE.B   #'O', (A6)+  
+0000665C  1CFC 0056                571                 MOVE.B   #'V', (A6)+
+00006660  1CFC 0045                572                 MOVE.B   #'E', (A6)+
+00006664  1CFC 0051                573                 MOVE.B   #'Q', (A6)+
+00006668  1CFC 0020                574                 MOVE.B   #' ', (A6)+
+0000666C  4E75                     575                 RTS
+0000666E                           576  
+0000666E                           577  DIVU
+0000666E  4EB9 00006678            578                  JSR     DIVU_BUFFER
+00006674  6000 0302                579                  BRA     PRINT_BUFFER
+00006678                           580  
+00006678                           581  DIVU_BUFFER
+00006678  1CFC 0044                582                 MOVE.B   #'D',(A6)+
+0000667C  1CFC 0049                583                 MOVE.B   #'I', (A6)+  
+00006680  1CFC 0056                584                 MOVE.B   #'V', (A6)+
+00006684  1CFC 0055                585                 MOVE.B   #'U', (A6)+
+00006688  1CFC 0020                586                 MOVE.B   #' ', (A6)+
+0000668C  4E75                     587                 RTS  
+0000668E                           588  OR    
+0000668E  4EB9 00006698            589                 JSR     OR_BUFFER
+00006694  6000 02E2                590                 BRA     PRINT_BUFFER
+00006698                           591                  
+00006698                           592  OR_BUFFER
+00006698  1CFC 004F                593                 MOVE.B   #'O',(A6)+
+0000669C  1CFC 0052                594                 MOVE.B   #'R', (A6)+  
+000066A0  1CFC 002E                595                 MOVE.B   #'.', (A6)+
+000066A4                           596                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+000066A4                           597                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+000066A4                           598                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+000066A4  1CFC 0020                599                 MOVE.B   #' ', (A6)+
+000066A8  4E75                     600                 RTS   
+000066AA                           601  
+000066AA                           602  SUB   
+000066AA  4EB9 000066B4            603                 JSR     SUB_BUFFER
+000066B0  6000 02C6                604                 BRA     PRINT_BUFFER               
+000066B4                           605  
+000066B4                           606  SUB_BUFFER
+000066B4  1CFC 0053                607                 MOVE.B   #'S',(A6)+
+000066B8  1CFC 0055                608                 MOVE.B   #'U', (A6)+  
+000066BC  1CFC 0042                609                 MOVE.B   #'B', (A6)+
+000066C0  1CFC 002E                610                 MOVE.B   #'.', (A6)+
+000066C4                           611                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+000066C4                           612                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+000066C4                           613                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+000066C4  1CFC 0020                614                 MOVE.B   #' ', (A6)+
+000066C8  4E75                     615                 RTS  
+000066CA                           616  CMP   
+000066CA  4EB9 000066D4            617                 JSR     CMP_BUFFER
+000066D0  6000 02A6                618                 BRA     PRINT_BUFFER
+000066D4                           619                  
+000066D4                           620  CMP_BUFFER
+000066D4  1CFC 0043                621                 MOVE.B   #'C',(A6)+
+000066D8  1CFC 004D                622                 MOVE.B   #'M', (A6)+  
+000066DC  1CFC 0050                623                 MOVE.B   #'P', (A6)+
+000066E0  1CFC 002E                624                 MOVE.B   #'.', (A6)+
+000066E4                           625                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+000066E4                           626                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+000066E4                           627                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+000066E4  1CFC 0020                628                 MOVE.B   #' ', (A6)+
+000066E8  4E75                     629                 RTS   
+000066EA                           630                 
+000066EA                           631  MULS
+000066EA  4EB9 000066F4            632                  JSR     MULS_BUFFER
+000066F0  6000 0286                633                  BRA     PRINT_BUFFER
+000066F4                           634  
+000066F4                           635  MULS_BUFFER
+000066F4  1CFC 004D                636                 MOVE.B   #'M',(A6)+
+000066F8  1CFC 0055                637                 MOVE.B   #'U', (A6)+  
+000066FC  1CFC 004C                638                 MOVE.B   #'L', (A6)+
+00006700  1CFC 0053                639                 MOVE.B   #'S', (A6)+
+00006704  1CFC 0020                640                 MOVE.B   #' ', (A6)+
+00006708  4E75                     641                 RTS
+0000670A                           642  
+0000670A                           643  AND    
+0000670A  4EB9 00006714            644                 JSR     AND_BUFFER
+00006710  6000 0266                645                 BRA     PRINT_BUFFER
+00006714                           646                  
+00006714                           647  AND_BUFFER
+00006714  1CFC 0041                648                 MOVE.B   #'A',(A6)+
+00006718  1CFC 004E                649                 MOVE.B   #'N', (A6)+  
+0000671C  1CFC 0044                650                 MOVE.B   #'D', (A6)+
+00006720  1CFC 002E                651                 MOVE.B   #'.', (A6)+
+00006724                           652                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+00006724                           653                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+00006724                           654                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+00006724  1CFC 0020                655                 MOVE.B   #' ', (A6)+
+00006728  4E75                     656                 RTS    
+0000672A                           657  
+0000672A                           658  ASR     
+0000672A  4EB9 00006734            659                  JSR     ASR_BUFFER
+00006730  6000 0246                660                  BRA     PRINT_BUFFER
+00006734                           661  
+00006734                           662  ASR_BUFFER
+00006734  1CFC 0041                663                 MOVE.B   #'A',(A6)+
+00006738  1CFC 0053                664                 MOVE.B   #'S', (A6)+  
+0000673C  1CFC 0052                665                 MOVE.B   #'R', (A6)+
+00006740  1CFC 0020                666                 MOVE.B   #' ', (A6)+
+00006744  4E75                     667                 RTS      
+00006746                           668  
+00006746                           669  ASL     
+00006746  4EB9 00006750            670                  JSR     ASL_BUFFER
+0000674C  6000 022A                671                  BRA     PRINT_BUFFER
+00006750                           672  
+00006750                           673  ASL_BUFFER
+00006750  1CFC 0041                674                 MOVE.B   #'A',(A6)+
+00006754  1CFC 0053                675                 MOVE.B   #'S', (A6)+  
+00006758  1CFC 004C                676                 MOVE.B   #'L', (A6)+
+0000675C  1CFC 0020                677                 MOVE.B   #' ', (A6)+
+00006760  4E75                     678                 RTS     
+00006762                           679  
+00006762                           680  LSL     
+00006762  4EB9 0000676C            681                  JSR     LSL_BUFFER
+00006768  6000 020E                682                  BRA     PRINT_BUFFER
+0000676C                           683  
+0000676C                           684  LSL_BUFFER
+0000676C  1CFC 004C                685                 MOVE.B   #'L',(A6)+
+00006770  1CFC 0053                686                 MOVE.B   #'S', (A6)+  
+00006774  1CFC 004C                687                 MOVE.B   #'L', (A6)+
+00006778  1CFC 0020                688                 MOVE.B   #' ', (A6)+
+0000677C  4E75                     689                 RTS     
+0000677E                           690  
+0000677E                           691  LSR     
+0000677E  4EB9 00006788            692                  JSR     LSR_BUFFER
+00006784  6000 01F2                693                  BRA     PRINT_BUFFER
+00006788                           694  
+00006788                           695  LSR_BUFFER
+00006788  1CFC 004C                696                 MOVE.B   #'L',(A6)+
+0000678C  1CFC 0053                697                 MOVE.B   #'S', (A6)+  
+00006790  1CFC 0052                698                 MOVE.B   #'R', (A6)+
+00006794  1CFC 0020                699                 MOVE.B   #' ', (A6)+
+00006798  4E75                     700                 RTS       
+0000679A                           701                 
+0000679A                           702  jmp_mode
+0000679A  4EF9 000068F2            703                  JMP     MODE000  ** DN
+000067A0  4EF9 000068F8            704                  JMP     MODE001  ** AN
+000067A6  4EF9 00006900            705                  JMP     MODE010  ** (AN)
+000067AC  4EF9 0000690A            706                  JMP     MODE011  ** (AN)+   
+000067B2  4EF9 00006912            707                  JMP     MODE100  ** -(AN)
+000067B8  4EF9 0000691E            708                  JMP     MODE101  **INVALID
+000067BE  4EF9 00006926            709                  JMP     MODE110  **INVALID
+000067C4  4EF9 0000692E            710                  JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
+000067CA                           711  
+000067CA                           712                  
+000067CA                           713  insert_num
+000067CA                           714                  
+000067CA                           715                  ;get number from D3
+000067CA  B67C 0000                716                  CMP     #%000,D3       ;0
+000067CE  6600 000A                717                  BNE     ONE         
+000067D2  1CFC 0030                718                  MOVE.B  #'0',(A6)+      ;Put ASCII value in buffer.
+000067D6  6000 006E                719                  BRA     FINISHER
+000067DA                           720                  
+000067DA  B67C 0001                721  ONE             CMP     #%001,D3       ;1
+000067DE  6600 000A                722                  BNE     TWO 
+000067E2  1CFC 0031                723                  MOVE.B  #'1',(A6)+
+000067E6  6000 005E                724                  BRA     FINISHER
+000067EA                           725  
+000067EA                           726                  
+000067EA  B67C 0002                727  TWO             CMP     #%010,D3        ;2
+000067EE  6600 000A                728                  BNE     THREE
+000067F2  1CFC 0032                729                  MOVE.B  #'2',(A6)+
+000067F6  6000 004E                730                  BRA     FINISHER
+000067FA                           731                  
+000067FA  B67C 0003                732  THREE           CMP     #%011,D3        ;3
+000067FE  6600 000A                733                  BNE     FOUR
+00006802  1CFC 0033                734                  MOVE.B  #'3',(A6)+
+00006806  6000 003E                735                  BRA     FINISHER
+0000680A                           736                  
+0000680A  B67C 0004                737  FOUR            CMP     #%100,D3        ;4
+0000680E  6600 000A                738                  BNE     FIVE
+00006812  1CFC 0034                739                  MOVE.B  #'4',(A6)+
+00006816  6000 002E                740                  BRA     FINISHER
+0000681A                           741                  
+0000681A  B67C 0005                742  FIVE            CMP     #%101,D3        ;5
+0000681E  6600 000A                743                  BNE     SIX
+00006822  1CFC 0035                744                  MOVE.B  #'5',(A6)+
+00006826  6000 001E                745                  BRA     FINISHER
+0000682A                           746                  
+0000682A  B67C 0006                747  SIX             CMP     #%110,D3        ;6
+0000682E  6600 000A                748                  BNE     SEVEN
+00006832  1CFC 0036                749                  MOVE.B  #'6',(A6)+
+00006836  6000 000E                750                  BRA     FINISHER
+0000683A                           751                  
+0000683A  B67C 0007                752  SEVEN           CMP     #%111,D3        ;7
+0000683E  1CFC 0037                753                  MOVE.B  #'7',(A6)+
+00006842  6000 0002                754                  BRA     FINISHER
+00006846                           755                  
+00006846                           756  FINISHER                
+00006846                           757                  
+00006846                           758                  ;check D4, do we need to do stuff?
+00006846  B87C 0002                759                  CMP     #%010,D4
+0000684A  6600 0008                760                  BNE     POSTINCR
+0000684E  1CFC 0029                761                  MOVE.B  #')',(A6)+
+00006852  4E75                     762                  RTS
+00006854                           763                  
+00006854  B87C 0003                764  POSTINCR        CMP     #%011,D4
+00006858  6600 000C                765                  BNE     ONEPAREN
+0000685C  1CFC 0029                766                  MOVE.B  #')',(A6)+
+00006860  1CFC 002B                767                  MOVE.B  #'+',(A6)+
+00006864  4E75                     768                  RTS
+00006866                           769                  
+00006866  B87C 0004                770  ONEPAREN        CMP     #%100,D4
+0000686A  6600 0008                771                  BNE     DONE
+0000686E  1CFC 0029                772                  MOVE.B  #')',(A6)+                
+00006872                           773  
+00006872  4244                     774                  CLR     D4
+00006874  4E75                     775  DONE            RTS
+00006876                           776  
+00006876                           777          
+00006876                           778                 
+00006876                           779  bits5to7
+00006876  4243                     780                 CLR      D3
+00006878  4EB9 00006A0E            781                 JSR      COPY_OPCODE  // opcode copied to D2
+0000687E  C47C 0E00                782                 AND      #%0000111000000000, D2
+00006882  E09A                     783                 ROR.L    #8, D2          // rotate bits so isolated at the end
+00006884  E29A                     784                 ROR.L    #1, D2
+00006886  3602                     785                 MOVE.W   D2,D3 // moving isolated bits into d3
+00006888  4E75                     786                 RTS
+0000688A                           787                 
+0000688A                           788  bits5to8
+0000688A  4243                     789                 CLR      D3
+0000688C  4EB9 00006A0E            790                 JSR      COPY_OPCODE  // opcode copied to D2
+00006892  C47C 0F00                791                 AND      #%0000111100000000, D2
+00006896  E09A                     792                 ROR.L    #8, D2          // rotate bits so isolated at the end
+00006898  3602                     793                 MOVE.W   D2,D3 // moving isolated bits into d3
+0000689A  4E75                     794                 RTS
+0000689C                           795                 
+0000689C                           796  bits8to10
+0000689C  4243                     797                 CLR      D3
+0000689E  4EB9 00006A0E            798                 JSR      COPY_OPCODE  // opcode copied to D2
+000068A4  C47C 01C0                799                 AND      #%0000000111000000, D2
+000068A8  EC9A                     800                 ROR.L    #6, D2          // rotate bits so isolated at the end
+000068AA  3602                     801                 MOVE.W   D2,D3 // moving isolated bits into d3
+000068AC  4E75                     802                 RTS               
+000068AE                           803             
+000068AE                           804  bits11to13
+000068AE  4243                     805                 CLR      D3
+000068B0  4EB9 00006A0E            806                 JSR      COPY_OPCODE  // opcode copied to D2
+000068B6  C47C 0038                807                 AND      #%0000000000111000, D2
+000068BA  E69A                     808                 ROR.L    #3, D2          // rotate bits so isolated at the end
+000068BC  3602                     809                 MOVE.W   D2,D3 // moving isolated bits into d3
+000068BE  4E75                     810                 RTS
+000068C0                           811             
+000068C0                           812  bits14to16
+000068C0  4243                     813                 CLR      D3
+000068C2  4EB9 00006A0E            814                 JSR      COPY_OPCODE  // opcode copied to D2
+000068C8  C47C 0007                815                 AND      #%0000000000000111, D2
+000068CC  3602                     816                 MOVE.W   D2,D3 // moving isolated bits into d3
+000068CE  4E75                     817                 RTS
+000068D0                           818  bits11to16
+000068D0  4243                     819                 CLR      D3
+000068D2  4EB9 00006A0E            820                 JSR      COPY_OPCODE  // opcode copied to D2
+000068D8  C47C 003F                821                 AND      #%0000000000111111, D2
+000068DC  3602                     822                 MOVE.W   D2,D3 // moving isolated bits into d3
+000068DE  4E75                     823                 RTS
+000068E0                           824  bits1to10
+000068E0  4243                     825                 CLR      D3
+000068E2  4EB9 00006A0E            826                 JSR      COPY_OPCODE  // opcode copied to D2
+000068E8  C47C FFC0                827                 AND      #%1111111111000000, D2
+000068EC  EC9A                     828                 ROR.L    #6, D2
+000068EE  3602                     829                 MOVE.W   D2,D3 // moving isolated bits into d3
+000068F0  4E75                     830                 RTS
+000068F2                           831  ** DN       
+000068F2                           832  MODE000         
+000068F2  1CFC 0044                833                  MOVE.B  #'D',(A6)+     
+000068F6  4E75                     834                  RTS
+000068F8                           835  
+000068F8                           836  ** AN
+000068F8                           837  MODE001         
+000068F8  4EB9 00006936            838                  JSR ADDRESS_BUFFER  
+000068FE  4E75                     839                  RTS      
+00006900                           840  
+00006900                           841   ** (AN)
+00006900                           842  MODE010         
+00006900  1CFC 0028                843                  MOVE.B  #'(', (A6)+
+00006904  1CFC 0041                844                  MOVE.B  #'A',(A6)+  
+00006908  4E75                     845                  RTS      
+0000690A                           846  
+0000690A                           847  ** (AN)+ 
+0000690A                           848  MODE011         
+0000690A  1CFC 0028                849                  MOVE.B  #'(', (A6)+
+0000690E  1CFC 0041                850                  MOVE.B  #'A',(A6)+        
+00006912                           851  
+00006912                           852   ** -(AN)
+00006912                           853  MODE100         
+00006912  1CFC 002D                854                  MOVE.B  #'-', (A6)+
+00006916  1CFC 0028                855                  MOVE.B  #'(', (A6)+
+0000691A  1CFC 0041                856                  MOVE.B  #'A',(A6)+
+0000691E                           857                  
+0000691E                           858  **INVALID               
+0000691E                           859  MODE101         
+0000691E  1CFC 0028                860                  MOVE.B  #'(', (A6)+
+00006922  1CFC 0041                861                  MOVE.B  #'A',(A6)+ 
+00006926                           862                  
+00006926                           863  **INVALID
+00006926                           864  MODE110         
+00006926  1CFC 0028                865                  MOVE.B  #'(', (A6)+
+0000692A  1CFC 0041                866                  MOVE.B  #'A',(A6)+  
+0000692E                           867  
+0000692E                           868  ** ABSOLUTE AND IMMEDIATE            
+0000692E                           869  MODE111         
+0000692E                           870                  *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
+0000692E  4EB9 0000693C            871                 JSR ABSOLUTE_BUFFER  
+00006934  4E75                     872                 RTS            
+00006936                           873                                          
+00006936                           874  ADDRESS_BUFFER
+00006936  1CFC 0041                875                  MOVE.B  #'A',(A6)+ 
+0000693A  4E75                     876                  RTS
+0000693C                           877                 
+0000693C                           878  ABSOLUTE_BUFFER
+0000693C  4243                     879                 CLR      D3
+0000693E  3604                     880                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON
+00006940  1CF8 0024                881                 MOVE.B   '$', (A6)+
+00006944  B67C 0000                882                 CMP.W    #%000, D3
+00006948  6700 000E                883                 BEQ      ABSOLUTE_WORD_BUFFER
+0000694C  4243                     884                 CLR      D3
+0000694E  3604                     885                 MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
+00006950  B67C 0001                886                 CMP.W    #%001, D3
+00006954  6700 0012                887                 BEQ      ABSOLUTE_LONG_BUFFER
+00006958                           888                 
+00006958                           889  ABSOLUTE_WORD_BUFFER
+00006958                           890                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
+00006958                           891                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
+00006958  1CFC 0046                892                         MOVE.B #'F', (A6)+ 
+0000695C  1CFC 0046                893                         MOVE.B #'F', (A6)+ 
+00006960  1CFC 0046                894                         MOVE.B #'F', (A6)+ 
+00006964  1CFC 0046                895                         MOVE.B #'F', (A6)+   
+00006968                           896  ABSOLUTE_LONG_BUFFER       
+00006968                           897                         *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
+00006968                           898                         *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
+00006968  1CFC 0047                899                         MOVE.B #'G', (A6)+ 
+0000696C  1CFC 0047                900                         MOVE.B #'G', (A6)+ 
+00006970  1CFC 0047                901                         MOVE.B #'G', (A6)+ 
+00006974  1CFC 0047                902                         MOVE.B #'G', (A6)+ 
+00006978                           903                                                      
+00006978                           904  
+00006978                           905  PRINT_BUFFER    
+00006978  1CFC 0000                906                 MOVE.B   #%0,  (A6)+ ** null terminate the string       
+0000697C  43F9 00006B2E            907                 LEA      BUFFER, A1
+00006982  303C 000E                908                 MOVE.W   #14,D0
+00006986  4E4F                     909                 TRAP     #15
+00006988  6000 F8BF                910                 BRA EXIT
+0000698C                           911                 
+0000698C                           912                 
+0000698C                           913  
+0000698C                           914  INVALID_EA  
+0000698C                           915                  * TODO: IMPLEMENT
+0000698C                           916                  *** CLEAR OUT A6
+0000698C                           917                  ** PUT INVALID MESSAGE INTO A6
+0000698C  6000 F8BB                918                  BRA EXIT
+00006990                           919  INVALID_OP  
+00006990                           920                  ** TODO: IMPLEMENT
+00006990                           921                 *** CLEAR OUT A6
+00006990                           922                  ** PUT INVALID MESSAGE INTO A6
+00006990  6000 F8B7                923                  BRA EXIT             
+00006994                           924                  
+00006994  43F8 618B                925  NOP                 LEA     NOP_disp,A1          
+00006998  103C 000E                926                      MOVE.B  #14,D0
+0000699C  4E4F                     927                      TRAP    #15
+0000699E  6000 F8A9                928                      BRA     EXIT
+000069A2                           929                   
+000069A2                           930  RTS      
+000069A2  43F8 61F2                931                      LEA     RTS_disp,A1          
+000069A6  103C 000E                932                      MOVE.B  #14,D0
+000069AA  4E4F                     933                      TRAP    #15 
+000069AC  6000 F89B                934                      BRA     EXIT
+000069B0                           935  JSR      
+000069B0  4DF9 00006B2E            936                      LEA     BUFFER, A6
+000069B6  1CFC 004A                937                      MOVE.B #'J', (A6)+
+000069BA  1CFC 0053                938                      MOVE.B #'S', (A6)+
+000069BE  1CFC 0052                939                      MOVE.B #'R', (A6)+
+000069C2  1CFC 0020                940                      MOVE.B #' ', (A6)+
+000069C6  43F9 00006B2E            941                      LEA     BUFFER, A1
+000069CC                           942                      ** BITS 10 - 12 MODE       
+000069CC                           943                      ** BITS 13 - 16 REGISTER
+000069CC  103C 000E                944                      MOVE.B  #14,D0
+000069D0  4E4F                     945                      TRAP    #15 
+000069D2  6000 F875                946                      BRA     EXIT
+000069D6                           947                    
+000069D6                           948  MOVEM      
+000069D6                           949                     
+000069D6                           950                      ** SIZE SUBROUTINE
+000069D6                           951                      ** 0 1  0 0     1 | D | 0   0 1 | S M   Xn  
+000069D6  C47C 0040                952                      AND #%0000000001000000,D2 
+000069DA                           953                      * WORD
+000069DA  B4BC 00000040            954                      CMP.L   #%0000000001000000,D2
+000069E0  4EB9 000069F6            955                      JSR     MOVEM_W 
+000069E6                           956                      *LONG
+000069E6  B4BC 00000040            957                      CMP.L   #%0000000001000000,D2 
+000069EC                           958                     ** JSR     MOVEM_L
+000069EC  103C 000E                959                      MOVE.B  #14,D0
+000069F0  4E4F                     960                      TRAP    #15
+000069F2  6000 F855                961                      BRA     EXIT 
+000069F6                           962                      
+000069F6                           963  MOVEM_W 
+000069F6  43F8 61A0                964                       LEA     MOVEM_disp,A1
+000069FA                           965                      * PRINT MOVEM
+000069FA  103C 000E                966                       MOVE.B  #14,D0
+000069FE  4E4F                     967                       TRAP    #15
+00006A00                           968          
+00006A00                           969                      * PRINT WORD PORTION
+00006A00  41F8 6237                970                       LEA     size_w, A0
+00006A04  103C 000E                971                       MOVE.B  #14,D0
+00006A08  4E4F                     972                       TRAP    #15 
+00006A0A                           973          
+00006A0A  6000 F83D                974                       BRA     EXIT 
+00006A0E                           975       
+00006A0E                           976     
+00006A0E                           977  COPY_OPCODE 
+00006A0E                           978                       ** HOLDS COPY OF OPCODE TO BE MANIPULATED
+00006A0E  4242                     979                       CLR    D2  
+00006A10  3405                     980                       MOVE.W D5,D2 
+00006A12  4E75                     981                       RTS  
+00006A14                           982                       
+00006A14                           983  ****************************
+00006A14                           984  
+00006A14                           985                 ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+00006A14                           986                 ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+00006A14                           987                                 ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+00006A14                           988  GETSIZE_ADD
+00006A14  4EB8 689C                989              JSR     bits8to10
+00006A18  B67C 0000                990              CMP     #%000,D3
+00006A1C  6600 0010                991              BNE     ADD_NOTBYTE
+00006A20  4EB9 00006AFE            992              JSR     SIZEISBYTE
+00006A26  3C3C 0001                993              MOVE    #1,D6
+00006A2A  4243                     994              CLR     D3
+00006A2C  4E75                     995              RTS
+00006A2E                           996          
+00006A2E                           997  ADD_NOTBYTE 
+00006A2E  B67C 0001                998              CMP     #%001,D3
+00006A32  6600 0010                999              BNE     ADD_NOTWORD
+00006A36  4EB9 00006B0E           1000              JSR     SIZEISWORD
+00006A3C  3C3C 0001               1001              MOVE    #1,D6
+00006A40  4243                    1002              CLR     D3
+00006A42  4E75                    1003              RTS
+00006A44                          1004              
+00006A44                          1005  ADD_NOTWORD
+00006A44  B67C 0002               1006              CMP     #%010,D3
+00006A48  6600 0010               1007              BNE     ADD_NOTLEFT
+00006A4C  4EB9 00006B1E           1008              JSR     SIZEISLONG
+00006A52  3C3C 0001               1009              MOVE    #1,D6
+00006A56  4243                    1010              CLR     D3
+00006A58  4E75                    1011              RTS
+00006A5A                          1012              
+00006A5A                          1013  ADD_NOTLEFT     ;check other direction
+00006A5A  B67C 0004               1014              CMP     #%100,D3
+00006A5E  6600 0010               1015              BNE     ADD_NOTRIGHTBYTE
+00006A62  4EB9 00006AFE           1016              JSR     SIZEISBYTE
+00006A68  3C3C 0002               1017              MOVE    #2,D6
+00006A6C  4243                    1018              CLR     D3
+00006A6E  4E75                    1019              RTS
+00006A70                          1020              
+00006A70                          1021  ADD_NOTRIGHTBYTE
+00006A70  B67C 0005               1022              CMP     #%101,D3
+00006A74  6600 0010               1023              BNE     ADD_NOTRIGHTWORD
+00006A78  4EB9 00006B0E           1024              JSR     SIZEISWORD
+00006A7E  3C3C 0002               1025              MOVE    #2,D6
+00006A82  4243                    1026              CLR     D3
+00006A84  4E75                    1027              RTS
+00006A86                          1028  
+00006A86                          1029  ADD_NOTRIGHTWORD
+00006A86  B67C 0006               1030              CMP     #%110,D3
+00006A8A  6600 FF00               1031              BNE     INVALID_EA
+00006A8E  4EB9 00006B1E           1032              JSR     SIZEISLONG
+00006A94  3C3C 0002               1033              MOVE    #2,D6
+00006A98  4243                    1034              CLR     D3
+00006A9A  4E75                    1035              RTS 
+00006A9C                          1036                               
+00006A9C                          1037                       
+00006A9C                          1038                       
+00006A9C                          1039  *****************************                  
+00006A9C                          1040  GETSIZE_ADDI
+00006A9C  4EB8 689C               1041          JSR     bits8to10
+00006AA0  B67C 0000               1042          CMP     #%000,D3
+00006AA4  6600 000C               1043          BNE     ADDI_NOTBYTE
+00006AA8  4EB9 00006AFE           1044          JSR     SIZEISBYTE
+00006AAE  4243                    1045          CLR     D3
+00006AB0  4E75                    1046          RTS
+00006AB2                          1047  
+00006AB2                          1048  ADDI_NOTBYTE
+00006AB2  B67C 0001               1049          CMP     #%001,D3
+00006AB6  6600 000C               1050          BNE     ADDI_NOTWORD
+00006ABA  4EB9 00006B0E           1051          JSR     SIZEISWORD
+00006AC0  4243                    1052          CLR     D3
+00006AC2  4E75                    1053          RTS
+00006AC4                          1054          
+00006AC4                          1055  ADDI_NOTWORD
+00006AC4  B67C 0002               1056          CMP     #%010,D3
+00006AC8  6600 FEC2               1057          BNE     INVALID_EA
+00006ACC  4EB9 00006B1E           1058          JSR     SIZEISLONG
+00006AD2  4243                    1059          CLR     D3
+00006AD4  4E75                    1060          RTS
+00006AD6                          1061          
+00006AD6                          1062                              
+00006AD6                          1063                       
+00006AD6                          1064  ********************************          
+00006AD6                          1065                       
+00006AD6                          1066                       
+00006AD6                          1067  ********************************                     
+00006AD6                          1068  GETSIZE_ADDA
+00006AD6  4EB8 689C               1069          JSR     bits8to10
+00006ADA  B67C 0003               1070          CMP     #%011,D3
+00006ADE  6600 000C               1071          BNE     ADDA_NOTWORD
+00006AE2  4EB9 00006B0E           1072          JSR     SIZEISWORD
+00006AE8  4243                    1073          CLR     D3
+00006AEA  4E75                    1074          RTS
+00006AEC                          1075          
+00006AEC                          1076  
+00006AEC                          1077          
+00006AEC                          1078  ADDA_NOTWORD
+00006AEC  B67C 0007               1079          CMP     #%111,D3
+00006AF0  6600 FE9A               1080          BNE     INVALID_EA
+00006AF4  4EB9 00006B1E           1081          JSR     SIZEISLONG
+00006AFA  4243                    1082          CLR     D3
+00006AFC  4E75                    1083          RTS
+00006AFE                          1084  **********************************        
+00006AFE                          1085      
+00006AFE                          1086  SIZEISBYTE
+00006AFE  1CFC 002E               1087         MOVE.B   #'.',(A6)+
+00006B02  1CFC 0042               1088         MOVE.B   #'B',(A6)+
+00006B06  1CFC 0020               1089         MOVE.B   #' ',(A6)+
+00006B0A  4243                    1090         CLR      D3
+00006B0C  4E75                    1091         RTS
+00006B0E                          1092  
+00006B0E                          1093  SIZEISWORD    
+00006B0E  1CFC 002E               1094         MOVE.B   #'.',(A6)+
+00006B12  1CFC 0057               1095         MOVE.B   #'W',(A6)+
+00006B16  1CFC 0020               1096         MOVE.B   #' ',(A6)+
+00006B1A  4243                    1097         CLR      D3
+00006B1C  4E75                    1098         RTS
+00006B1E                          1099                  
+00006B1E                          1100  SIZEISLONG    
+00006B1E  1CFC 002E               1101         MOVE.B   #'.',(A6)+
+00006B22  1CFC 004C               1102         MOVE.B   #'L',(A6)+
+00006B26  1CFC 0020               1103         MOVE.B   #' ',(A6)+
+00006B2A  4243                    1104         CLR      D3
+00006B2C  4E75                    1105         RTS
+00006B2E                          1106                  
+00006B2E                          1107       
+00006B2E= 20 20 20 20 20 00       1108  BUFFER DC.B '     ',0     
+00006B34                          1109        
+00006B34                          1110  
+00006B34                          1111      END START 
 
 No errors detected
 No warnings generated
@@ -1093,63 +1121,63 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ABSOLUTE_BUFFER     68F8
-ABSOLUTE_LONG_BUFFER  6924
-ABSOLUTE_WORD_BUFFER  6914
+ABSOLUTE_BUFFER     693C
+ABSOLUTE_LONG_BUFFER  6968
+ABSOLUTE_WORD_BUFFER  6958
 ADD                 63EC
 ADDA                63C6
 ADDA_BUFFER         63D0
 ADDA_DISP           61AA
-ADDA_NOTWORD        6AA8
-ADDI                6448
-ADDI_BUFFER         64D0
-ADDI_DES            646C
+ADDA_NOTWORD        6AEC
+ADDI                648C
+ADDI_BUFFER         6514
+ADDI_DES            64B0
 ADDI_DISP           61AF
-ADDI_NOTBYTE        6A6E
-ADDI_NOTWORD        6A80
-ADDI_SRC            645E
-ADDQ                65E6
-ADDQ_BUFFER         65F0
+ADDI_NOTBYTE        6AB2
+ADDI_NOTWORD        6AC4
+ADDI_SRC            64A2
+ADDQ                662A
+ADDQ_BUFFER         6634
 ADDQ_DISP           61B4
-ADDRESS_BUFFER      68F2
+ADDRESS_BUFFER      6936
 ADDR_ODDBIT_MSG     60C4
 ADDR_ORDER_CHECK    60EB
-ADD_BUFFER          642C
-ADD_DEST            6440
-ADD_DIRECTION_REVERSED  6414
+ADD_BUFFER          6432
+ADD_DEST            646A
+ADD_DIRECTION_REVERSED  6412
 ADD_DISP            61A6
-ADD_DONE            6428
-ADD_NOTBYTE         69EA
-ADD_NOTLEFT         6A16
-ADD_NOTRIGHTBYTE    6A2C
-ADD_NOTRIGHTWORD    6A42
-ADD_NOTWORD         6A00
-ADD_SRC             6440
-AND                 66C6
-AND_BUFFER          66D0
+ADD_DONE            642A
+ADD_NOTBYTE         6A2E
+ADD_NOTLEFT         6A5A
+ADD_NOTRIGHTBYTE    6A70
+ADD_NOTRIGHTWORD    6A86
+ADD_NOTWORD         6A44
+ADD_SRC             6446
+AND                 670A
+AND_BUFFER          6714
 AND_DISP            61CF
-ASL                 6702
-ASL_BUFFER          670C
+ASL                 6746
+ASL_BUFFER          6750
 ASL_DISP            61DE
-ASR                 66E6
-ASR_BUFFER          66F0
+ASR                 672A
+ASR_BUFFER          6734
 ASR_DISP            61E2
 BACKSLASHSIGH       622C
 BCC_DISP            61F6
 BGT_DISP            61FA
-BITS11TO13          686A
-BITS11TO16          688C
-BITS14TO16          687C
-BITS1TO10           689C
-BITS5TO7            6832
-BITS5TO8            6846
-BITS8TO10           6858
+BITS11TO13          68AE
+BITS11TO16          68D0
+BITS14TO16          68C0
+BITS1TO10           68E0
+BITS5TO7            6876
+BITS5TO8            688A
+BITS8TO10           689C
 BLE_DISP            61FE
-BUFFER              6ADE
+BUFFER              6B2E
 CLOSEPAREN          6230
 CLR_DISP            61CB
-CMP                 6686
-CMP_BUFFER          6690
+CMP                 66CA
+CMP_BUFFER          66D4
 CODE0000            62AE
 CODE0001            62C2
 CODE0010            62C6
@@ -1167,37 +1195,37 @@ CODE1101            6346
 CODE1110            6392
 CODE1111            63C2
 COMMASIGN           622A
-COPY_OPCODE         69CA
+COPY_OPCODE         6A0E
 CR                  D
-DIVU                662A
-DIVU_BUFFER         6634
+DIVU                666E
+DIVU_BUFFER         6678
 DIVU_DISP           61C2
 DOLLARSIGN          6224
-DONE                6830
+DONE                6874
 ENDTEST_MSG         613F
 EXIT                6249
-FINISHER            6802
-FIVE                67D6
-FOUR                67C6
-GETSIZE_ADD         69D0
-GETSIZE_ADDA        6A92
-GETSIZE_ADDI        6A58
+FINISHER            6846
+FIVE                681A
+FOUR                680A
+GETSIZE_ADD         6A14
+GETSIZE_ADDA        6AD6
+GETSIZE_ADDI        6A9C
 HEXATABLE           6202
 INPUT_BUFFER        623E
-INSERT_NUM          6786
+INSERT_NUM          67CA
 INVALIDEA_DISP      6183
 INVALID_DISP        617E
-INVALID_EA          6948
-INVALID_OP          694C
-JMP_MODE            6756
+INVALID_EA          698C
+INVALID_OP          6990
+JMP_MODE            679A
 JMP_TABLE           624E
-JSR                 696C
+JSR                 69B0
 JSR_DISP            61EE
-LEA                 64EC
-LEA_BUFFER          6510
-LEA_DEST            65C2
+LEA                 6530
+LEA_BUFFER          6554
+LEA_DEST            6606
 LEA_DISP            61C7
-LEA_SRC             6522
+LEA_SRC             6566
 LF                  A
 LINEBREAK           617B
 LINECOUNT           623D
@@ -1205,63 +1233,63 @@ LOCATION_ENDDATA    6244
 LOCATION_END_MSG    60A7
 LOCATION_STARTDATA  6240
 LOCATION_START_MSG  6088
-LSL                 671E
-LSL_BUFFER          6728
+LSL                 6762
+LSL_BUFFER          676C
 LSL_DISP            61D6
-LSR                 673A
-LSR_BUFFER          6744
+LSR                 677E
+LSR_BUFFER          6788
 LSR_DISP            61DA
 MINUSSIGN           6228
-MODE000             68AE
-MODE001             68B4
-MODE010             68BC
-MODE011             68C6
-MODE100             68CE
-MODE101             68DA
-MODE110             68E2
-MODE111             68EA
+MODE000             68F2
+MODE001             68F8
+MODE010             6900
+MODE011             690A
+MODE100             6912
+MODE101             691E
+MODE110             6926
+MODE111             692E
 MOVEA_DISP          6194
-MOVEM               6992
+MOVEM               69D6
 MOVEM_DISP          61A0
-MOVEM_W             69B2
-MOVEQ               6606
-MOVEQ_BUFFER        6610
+MOVEM_W             69F6
+MOVEQ               664A
+MOVEQ_BUFFER        6654
 MOVEQ_DISP          619A
 MOVE_DISP           618F
-MULS                66A6
-MULS_BUFFER         66B0
+MULS                66EA
+MULS_BUFFER         66F4
 MULS_DISP           61BD
-NOP                 6950
+NOP                 6994
 NOP_DISP            618B
-ONE                 6796
-ONEPAREN            6822
+ONE                 67DA
+ONEPAREN            6866
 OPENPAREN           622E
-OR                  664A
-OR_BUFFER           6654
+OR                  668E
+OR_BUFFER           6698
 OR_DISP             61D3
 PAUSE_MSG           6125
 PLUSSIGN            6226
-POSTINCR            6810
+POSTINCR            6854
 POUNDSIGN           6222
-PRINT_BUFFER        6934
+PRINT_BUFFER        6978
 ROL_DISP            61E6
 ROR_DISP            61EA
-RTS                 695E
+RTS                 69A2
 RTS_DISP            61F2
-SEVEN               67F6
-SIX                 67E6
-SIZEISBYTE          6ABA
-SIZEISLONG          6AD2
-SIZEISWORD          6AC6
+SEVEN               683A
+SIX                 682A
+SIZEISBYTE          6AFE
+SIZEISLONG          6B1E
+SIZEISWORD          6B0E
 SIZE_B              6234
 SIZE_L              623A
 SIZE_W              6237
 SPACE               6232
 START               6000
-SUB                 6666
-SUB_BUFFER          6670
+SUB                 66AA
+SUB_BUFFER          66B4
 SUB_DISP            61B9
 TABLE_LENGTH        6248
-THREE               67B6
-TWO                 67A6
+THREE               67FA
+TWO                 67EA
 WELCOME_MSG         6024

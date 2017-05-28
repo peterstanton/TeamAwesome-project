@@ -12,14 +12,14 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                  * TEST OPCODES
-                  MOVE.W  #$45D7,D3 * LEA (A7), A2
+                 ; MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                  MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
@@ -245,12 +245,12 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
-               JSR     PRINT_BUFFER
               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
                JSR      ADD_SRC
+               MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
                JSR      ADD_DEST
                BRA      ADD_DONE
@@ -258,6 +258,7 @@ ADD
 ADD_DIRECTION_REVERSED
 
                JSR      ADD_DEST
+               MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
                JSR      ADD_SRC
                BRA      ADD_DONE              
@@ -265,8 +266,10 @@ ADD_DIRECTION_REVERSED
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
-ADD_DONE       CLR      D6
-               RTS     
+ADD_DONE       
+               CLR      D6
+               JSR     PRINT_BUFFER
+
                 
 ADD_BUFFER
                MOVE.B   #'A',(A6)+
@@ -280,18 +283,40 @@ ADD_BUFFER
 
 
 
-
+****************************************************************************************
 ADD_SRC
+
+                JSR    bits11to13
+                MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU   #6,D3
+                JSR    0(A0,D3)     
+                
+                JSR    bits14to16
+                JSR    insert_num
+                RTS
 
 
 
 
 
 ADD_DEST
-                JSR    bits5to7
+                MOVE.W #%000,D3     ;Can only have a data register.
                 MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index
+                
+                JSR     bits5to7
+                JSR     insert_num
+                RTS
+                
 
   
+
+
+***********************************************************************************************
+
 
 
 
@@ -978,18 +1003,21 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 

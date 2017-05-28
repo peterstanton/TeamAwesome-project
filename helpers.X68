@@ -16,8 +16,8 @@ sub_AsToHeLoop          MOVE.B  (A1)+,D0            *gets first byte
                         LSL.L   #$4,D1              *else, shift remaining char in D1 for next char
                         BRA     sub_AsToHeLoop      *loops through again
                         
-athEndLoop
-                        RTS ** RETURNS AFTER CONVERTING ASCII TO HEX
+athEndLoop              MOVE.L  D1,D7               *hex number in D7
+                        RTS
 *-----------------------------------------------------------
 *Breaks down ASCII code from digits 0-9, a-f or A-F
 *Makes the assumption that D0 holds $30-$39, $41-$46
@@ -91,7 +91,6 @@ erdFailAddrOddB         LEA     addr_oddBit_msg,A1
                         MOVE.L  #1,D7               *if D7 equals 1, then address is invalid
                         BRA     erdFinish
                         
-
 
 
 

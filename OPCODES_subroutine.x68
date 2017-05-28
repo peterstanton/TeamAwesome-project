@@ -936,16 +936,19 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
+       CLR      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
+       CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       CLR      D3
        RTS
                 
      

@@ -88,6 +88,9 @@ MAIN_LOOP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ;  MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
+                   MOVE.W  #$D9A5, D3  * ADD.L D4,-(A5)
+                 ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -327,6 +330,84 @@ ADD_BUFFER
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                MOVE.B   #' ', (A6)+
                RTS               
+              ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               
+               CMP      #1,D6
+               BNE      ADD_DIRECTION_REVERSED
+               CLR      D6
+               JSR      ADD_SRC
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_DEST
+               BRA      ADD_DONE
+               
+ADD_DIRECTION_REVERSED
+
+               CLR      D6
+               JSR      ADD_DEST
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_SRC
+               BRA      ADD_DONE              
+               
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               
+ADD_DONE       
+               CLR      D6
+               JSR     PRINT_BUFFER
+
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               JSR      GETSIZE_ADD
+               RTS
+
+
+***********************************************        
+
+
+
+****************************************************************************************
+ADD_SRC
+
+                JSR    bits11to13
+                MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU   #6,D3
+                JSR    0(A0,D3)     
+                
+                JSR    bits14to16
+                JSR    insert_num
+                RTS
+
+
+
+
+
+ADD_DEST
+                MOVE.W #%000,D3     ;Can only have a data register.
+                MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index
+                
+                JSR     bits5to7
+                JSR     insert_num
+                RTS
+                
+
+  
+
+
+***********************************************************************************************
+
+
+
+
+>>>>>>> ec74e90c0f143265a93a88788e3964e3869133a8
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -432,6 +513,7 @@ LEA_SRC
              BEQ      INVALID_EA
    
              JSR      bits11to13 ** grab mode bits to jump with
+             MOVE    D3,D4
 
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
@@ -761,22 +843,26 @@ MODE010
 ** (AN)+ 
 MODE011         
                 MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+        
+                MOVE.B  #'A',(A6)+ 
+                RTS       
 
  ** -(AN)
 MODE100         
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+
+                RTS
                 
 **INVALID               
 MODE101         
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+ 
+                RTS
                 
 **INVALID
 MODE110         
                 MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+  
+                MOVE.B  #'A',(A6)+
+                RTS  
 
 ** ABSOLUTE AND IMMEDIATE            
 MODE111         
@@ -798,6 +884,7 @@ ABSOLUTE_BUFFER
                MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
                CMP.W    #%001, D3
                BEQ      ABSOLUTE_LONG_BUFFER
+               RTS
                
 ABSOLUTE_WORD_BUFFER
                        *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
@@ -805,14 +892,17 @@ ABSOLUTE_WORD_BUFFER
                        MOVE.B #'F', (A6)+ 
                        MOVE.B #'F', (A6)+ 
                        MOVE.B #'F', (A6)+ 
-                       MOVE.B #'F', (A6)+   
+                       MOVE.B #'F', (A6)+ 
+                       RTS       
+                  
 ABSOLUTE_LONG_BUFFER       
                        *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
                        *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
                        MOVE.B #'G', (A6)+ 
                        MOVE.B #'G', (A6)+ 
                        MOVE.B #'G', (A6)+ 
-                       MOVE.B #'G', (A6)+ 
+                       MOVE.B #'G', (A6)+
+                       RTS 
                                                     
 
 PRINT_BUFFER    
@@ -946,6 +1036,9 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
+
+       MOVE.B   #' ',(A6)+
+       CLR      D3
        RTS
 
 SIZEISWORD    
@@ -965,6 +1058,7 @@ BUFFER DC.L 1
       INCLUDE 'helpers.x68'
       INCLUDE 'definitions.x68'
     END START 
+
 
 
 

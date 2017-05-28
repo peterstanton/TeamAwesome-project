@@ -20,9 +20,13 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+<<<<<<< HEAD
                  ;  MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
                    MOVE.W  #$D9A5, D3  * ADD.L D4,-(A5)
                  ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
+=======
+                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
+>>>>>>> parent of f4f41e7... Parsing is starting to work
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -247,6 +251,35 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
+               BRA     PRINT_BUFFER
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               JSR      GETSIZE_ADD
+               
+               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               
+               CMP      #1,D6
+               BNE      ADD_DIRECTION_REVERSED
+               JSR      ADD_SRC
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_DEST
+               BRA      ADD_DONE
+               
+ADD_DIRECTION_REVERSED
+
+               JSR      ADD_DEST
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_SRC
+               BRA      ADD_DONE              
+               
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+<<<<<<< HEAD
+               MOVE.B   #' ', (A6)+
+               RTS               
               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                
                CMP      #1,D6
@@ -324,6 +357,17 @@ ADD_DEST
 
 
 
+>>>>>>> ec74e90c0f143265a93a88788e3964e3869133a8
+=======
+               
+ADD_DONE       CLR      D6
+               RTS     
+
+***********************************************          
+
+
+
+>>>>>>> parent of f4f41e7... Parsing is starting to work
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -1015,21 +1059,23 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
+<<<<<<< HEAD
+
        MOVE.B   #' ',(A6)+
+=======
+>>>>>>> parent of f4f41e7... Parsing is starting to work
        CLR      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
-       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
-       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
@@ -1038,6 +1084,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

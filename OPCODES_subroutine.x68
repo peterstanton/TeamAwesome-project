@@ -247,19 +247,12 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
-               BRA     PRINT_BUFFER
-                
-ADD_BUFFER
-               MOVE.B   #'A',(A6)+
-               MOVE.B   #'D', (A6)+  
-               MOVE.B   #'D', (A6)+
-               JSR      GETSIZE_ADD
-               
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-               
+
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
                JSR      ADD_SRC
+               MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
                JSR      ADD_DEST
                BRA      ADD_DONE
@@ -276,6 +269,16 @@ ADD_DIRECTION_REVERSED
                
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               JSR      GETSIZE_ADD
+               RTS
+               
+
                
 ADD_DONE       
                CLR      D6
@@ -283,11 +286,6 @@ ADD_DONE
 
                 
 
-***********************************************        
-
-
-
-****************************************************************************************
 ADD_SRC
 
                 JSR    bits11to13
@@ -314,7 +312,7 @@ ADD_DEST
                 JSR     insert_num
                 RTS
                         
-
+***********************************************************************************************
 
 
 ADDI
@@ -1015,12 +1013,14 @@ SIZEISBYTE
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
@@ -1028,6 +1028,8 @@ SIZEISLONG
 BUFFER DC.B '     ',0     
 
     END START 
+
+
 
 
 

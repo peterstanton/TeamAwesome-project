@@ -361,6 +361,16 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
+               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               
+               CMP      #1,D6
+               BNE      ADD_DIRECTION_REVERSED
+               JSR      ADD_SRC
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_DEST
+               BRA      ADD_DONE
+               
                BRA     PRINT_BUFFER
                 
 ADD_BUFFER
@@ -368,16 +378,9 @@ ADD_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                JSR      GETSIZE_ADD
+               RTS
                
-               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-               
-               CMP      #1,D6
-               BNE      ADD_DIRECTION_REVERSED
-               JSR      ADD_SRC
-               MOVE.B   #' ', (A6)+
-               JSR      ADD_DEST
-               BRA      ADD_DONE
-               
+
                
 ADD_DIRECTION_REVERSED
 
@@ -667,6 +670,7 @@ MULS_BUFFER
                MOVE.B   #'S', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
+
 
 AND    
                JSR     AND_BUFFER
@@ -1129,12 +1133,14 @@ SIZEISBYTE
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
@@ -1142,6 +1148,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

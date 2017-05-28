@@ -1,6 +1,7 @@
 *** D3 - ISOLATED BITS FOR COMPARISONS
+*** D4 - MODE
 *** D5 - CURRENT OPCODE
-***
+*** D6 - 
 ***
 
 
@@ -889,6 +890,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

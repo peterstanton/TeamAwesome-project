@@ -19,7 +19,8 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                  MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                   MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
                  ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
@@ -764,23 +765,27 @@ MODE010
 ** (AN)+ 
 MODE011         
                 MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+        
+                MOVE.B  #'A',(A6)+ 
+                RTS       
 
  ** -(AN)
 MODE100         
                 MOVE.B  #'-', (A6)+
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+
+                RTS
                 
 **INVALID               
 MODE101         
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+ 
+                RTS
                 
 **INVALID
 MODE110         
                 MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+  
+                MOVE.B  #'A',(A6)+
+                RTS  
 
 ** ABSOLUTE AND IMMEDIATE            
 MODE111         
@@ -802,6 +807,7 @@ ABSOLUTE_BUFFER
                MOVE.W   D4,D3 // USE D3 FOR COMPARISON   
                CMP.W    #%001, D3
                BEQ      ABSOLUTE_LONG_BUFFER
+               RTS
                
 ABSOLUTE_WORD_BUFFER
                        *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
@@ -809,14 +815,17 @@ ABSOLUTE_WORD_BUFFER
                        MOVE.B #'F', (A6)+ 
                        MOVE.B #'F', (A6)+ 
                        MOVE.B #'F', (A6)+ 
-                       MOVE.B #'F', (A6)+   
+                       MOVE.B #'F', (A6)+ 
+                       RTS       
+                  
 ABSOLUTE_LONG_BUFFER       
                        *** TODO: SHOULD START AT THE CURRENT LOCATION AFTER OPCODE AND READ IN ADDRESS TO PRINT
                        *** TODO: PROPERLY INCREMENT CURRENT ADDRESS
                        MOVE.B #'G', (A6)+ 
                        MOVE.B #'G', (A6)+ 
                        MOVE.B #'G', (A6)+ 
-                       MOVE.B #'G', (A6)+ 
+                       MOVE.B #'G', (A6)+
+                       RTS 
                                                     
 
 PRINT_BUFFER    

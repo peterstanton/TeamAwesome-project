@@ -20,7 +20,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
-                 MOVE.W     #$41D5, D3
+                 MOVE.W     #$47D5, D3
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
@@ -299,6 +299,7 @@ LEA_SRC
             
             
              JSR      bits11to13 ** grab mode bits to jump with
+             MOVE     D3,D4
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
@@ -313,8 +314,10 @@ LEA_SRC
              RTS
              
 LEA_DEST    
-                LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING             
+                CLR     D4
+                LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING            
                 MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
+                MOVE    D3,D4
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
                 
@@ -363,45 +366,47 @@ jmp_mode
                 
                 
 insert_num
+                
                 ;get number from D3
                 CMP     #%000,D3       ;0
                 BNE     ONE         
-                MOVE.B  '0',(A6)+      ;Put ASCII value in buffer.
+                MOVE.B  #'0',(A6)+      ;Put ASCII value in buffer.
                 BRA     FINISHER
                 
 ONE             CMP     #%001,D3       ;1
                 BNE     TWO 
-                MOVE.B  '1',(A6)+
+                MOVE.B  #'1',(A6)+
                 BRA     FINISHER
 
                 
 TWO             CMP     #%010,D3        ;2
                 BNE     THREE
-                MOVE.B  '2',(A6)+
+                MOVE.B  #'2',(A6)+
                 BRA     FINISHER
                 
 THREE           CMP     #%011,D3        ;3
                 BNE     FOUR
-                MOVE.B  '3',(A6)+
+                MOVE.B  #'3',(A6)+
                 BRA     FINISHER
                 
 FOUR            CMP     #%100,D3        ;4
                 BNE     FIVE
-                MOVE.B  '4',(A6)+
+                MOVE.B  #'4',(A6)+
                 BRA     FINISHER
                 
 FIVE            CMP     #%101,D3        ;5
                 BNE     SIX
-                MOVE.B  '5',(A6)+
+                MOVE.B  #'5',(A6)+
                 BRA     FINISHER
                 
 SIX             CMP     #%110,D3        ;6
                 BNE     SEVEN
-                MOVE.B  '6',(A6)+
+                MOVE.B  #'6',(A6)+
                 BRA     FINISHER
                 
 SEVEN           CMP     #%111,D3        ;7
-                MOVE.B  '7',(A6)+
+                MOVE.B  #'7',(A6)+
+                BRA     FINISHER
                 
 FINISHER                
                 
@@ -418,8 +423,10 @@ POSTINCR        CMP     #%011,D4
                 RTS
                 
 ONEPAREN        CMP     #%100,D4
+                BNE     DONE
                 MOVE.B  #')',(A6)+                
-                RTS
+
+DONE            RTS
         
                
 bits5to7
@@ -511,7 +518,6 @@ MODE111
                                         
 ADDRESS_BUFFER
                 MOVE.B  #'A',(A6)+ 
-                ** TO DO : FIGURE OUT HOW TO PRINT THE REGISTER NUMBER
                 RTS
                
 ABSOLUTE_BUFFER
@@ -625,6 +631,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

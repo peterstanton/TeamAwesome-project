@@ -216,7 +216,7 @@ code1110
                 * LSL
                 CLR     D4
                 MOVE.L  D3,D4
-                AND.L   #11110001
+                AND.L   #11110001,D4
                 CMP     #%111000111,D4
                 BEQ     LSL
                 

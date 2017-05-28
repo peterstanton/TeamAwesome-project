@@ -15,9 +15,9 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
-                  MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
+                 ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
                  ;MOVE.W     #$47D5, D3
@@ -255,8 +255,10 @@ ADDI_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'I', (A6)+
-               MOVE.B   #'.', (A6)+
-               ** TODO: ADD SIZE BASED ON BITS 9 TO 10
+               
+               JSR      GETSIZE_ADDI
+               
+               ** TODO: ADD SIZE BASED ON BITS 9 TO 10   
                ** VALID SIZES ARE B (00),W (01) ,L (10)
                MOVE.B   #' ', (A6)+
                RTS
@@ -655,20 +657,52 @@ COPY_OPCODE
                      MOVE.W D5,D2 
                      RTS  
                      
+*****************************                  
+GETSIZE_ADDI
+        JSR     bits8to10
+        CMP     #%000,D3
+        BNE     ADDI_NOTBYTE
+        JSR     SIZEISBYTE
+        CLR     D3
+        RTS
+
+ADDI_NOTBYTE
+        CMP     #%001,D3
+        BNE     ADDI_NOTWORD
+        JSR     SIZEISWORD
+        CLR     D3
+        RTS
+        
+ADDI_NOTWORD
+        CMP     #%010,D3
+        BNE     INVALID_EA
+        JSR     SIZEISLONG
+        CLR     D3
+        RTS
+        
+                            
+                     
+********************************          
+                     
+                     
+********************************                     
 GETSIZE_ADDA
         JSR     bits8to10
         CMP     #%011,D3
-        BNE     NOTWORD
+        BNE     ADDI_NOTWORD
         JSR     SIZEISWORD
+        CLR     D3
         RTS
         
+
         
-NOTWORD
+ADDA_NOTWORD
         CMP     #%111,D3
         BNE     INVALID_EA
         JSR     SIZEISLONG
+        CLR     D3
         RTS
-        
+**********************************        
     
 SIZEISBYTE
        MOVE.B   #'.',(A6)+

@@ -23,7 +23,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  MOVE.W     #$47D5, D3
                 ; MOVE.W     #$7E70, D3 *MOVEQ
                 MOVE.W     #$80C0, D3 *DIVU
-                MOVE.W     #$80C0, D3 *DIVU
+  
 
                  
                  MOVE.W  D3,D5
@@ -663,6 +663,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

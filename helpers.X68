@@ -23,25 +23,24 @@ athEndLoop              MOVE.L  D1,D7               *hex number in D7
 *Breaks down ASCII code from digits 0-9, a-f or A-F
 *Makes the assumption that D0 holds $30-$39, $41-$46
 *-----------------------------------------------------------
-sub_breakDownAs         CMP.B   #$39,D0     *$30-$39 is a digit (0-9)
-                        BGT     as_smallLetter
-                        CMP.B   #$46,D0
-                        
-                        BGT     as_bigLetter
-                        SUB.B   #$30,D0
+sub_breakDownAs         CMP.B   #$39,D0         *$is it a 0-9 digit?
+                        BGT     as_smallLetter  *go to number helper
+                        CMP.B   #$46,D0         *is it a letter A-F?
+                        BLE     as_bigLetter    *go to A-F helper
+                        SUB.B   #$57,D0         *subtract 57, last choice is a-f
                         RTS
                         
-as_smallLetter          SUB.B   #$30,D0
-                        RTS
+as_smallLetter          SUB.B   #$30,D0         *subtract 30, used for digits
                         
-as_bigLetter            SUB.B  #$37,D0
+                        
+as_bigLetter            SUB.B  #$37,D0          *subtract 37, used for A-F
                         RTS
 *-----------------------------------------------------------
 *start reading data helper method
 *check the data start address
 sub_StartReadingData    MOVE.L  location_startData,D0
     
-                        BTST    #0,D0               *checks if LSB is 1, 
+                        BTST    #1,D0               *checks if LSB is 1, 
                         BNE     srdFailAddrOddB     *if 1, then address is odd and invalid
                         
                         MOVE.L  #0,D7               *if D7 equals 0, then address is valid
@@ -60,7 +59,7 @@ sub_EndReadingData      MOVE.L  location_startData,D0
                         MOVE.L  location_endData,D1
                         MOVE.L  D1, A4
     
-                        BTST    #0,D0               *checks if LSB is 1, 
+                        BTST    #1,D0               *checks if LSB is 1, 
                         BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
                         
                         CMP.L  D0,D1               *end address must be greater than start address
@@ -139,6 +138,8 @@ sub_PrintAddress    CLR.L   D7
                     JSR     sub_PrintTable
                     RTS
 *-----------------------------------------------------------
+
+
 
 
 

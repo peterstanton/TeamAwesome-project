@@ -21,6 +21,9 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
                  MOVE.W     #$47D5, D3
+                ; MOVE.W     #$7E70, D3 *MOVEQ
+                MOVE.W     #$80C0, D3 *DIVU
+
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
@@ -130,14 +133,17 @@ code0100
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
 code0101      
-              JSR   ADDQ
 
-code0110       STOP        #$2700
+                JSR   ADDQ
+
+code0110        STOP        #$2700
 
 code0111       
-               JSR       MOVEQ
+                JSR       MOVEQ
 
-code1000       STOP        #$2700
+code1000      
+                JSR        DIVU
+
 
 code1001       STOP        #$2700
 
@@ -287,6 +293,7 @@ LEA_SRC
             BEQ      INVALID_EA
             CMP      #%110, D3
             BEQ      INVALID_EA
+
             
             * CHECK ON REGISTER BITS TO SEE IF NOW ABSOLUTE WORD OR LONG
             JSR      bits14to16 // source register - d4
@@ -297,13 +304,22 @@ LEA_SRC
             CMP      #%011, D3
             BEQ      INVALID_EA
             
-            
+
+             JSR      bits11to16 // check mode and register, invalid if immediate or 111010, 111011
+             CMP      #%111100,D3 // immediate data
+             BEQ      INVALID_EA
+             CMP      #%111010,D3 // complicated
+             BEQ      INVALID_EA
+             CMP      #%111011,D3 // complicated
+             BEQ      INVALID_EA
+   
              JSR      bits11to13 ** grab mode bits to jump with
-             MOVE     D3,D4
+
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
              
+
              CLR     D3
              JSR     bits14to16
              JSR     insert_num
@@ -325,6 +341,7 @@ LEA_DEST
                 JSR     insert_num
                 
                 RTS
+
 
 ADDQ
                 JSR     ADDQ_BUFFER
@@ -353,7 +370,20 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
-                  
+
+               
+DIVU
+                JSR     DIVU_BUFFER
+                BRA     PRINT_BUFFER
+
+DIVU_BUFFER
+               MOVE.B   #'D',(A6)+
+               MOVE.B   #'I', (A6)+  
+               MOVE.B   #'V', (A6)+
+               MOVE.B   #'U', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS                  
+
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -363,7 +393,7 @@ jmp_mode
                 JMP     MODE101  **INVALID
                 JMP     MODE110  **INVALID
                 JMP     MODE111  ** ABSOLUTE AND IMMEDIATE
-                
+
                 
 insert_num
                 
@@ -427,6 +457,7 @@ ONEPAREN        CMP     #%100,D4
                 MOVE.B  #')',(A6)+                
 
 DONE            RTS
+
         
                
 bits5to7
@@ -631,8 +662,6 @@ BUFFER DC.B '     ',0
       
 
     END START 
-
-
 
 
 

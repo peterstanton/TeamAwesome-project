@@ -154,11 +154,6 @@ code0110        STOP        #$2700
 code0111       
                 JSR       MOVEQ
 
-
-code1000      
-                JSR        DIVU
-
-
 code1000      
                 JSR        bits8to10
                 CMP        #%011, D3  ** ONLY TIME IT'S DIVU
@@ -891,6 +886,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

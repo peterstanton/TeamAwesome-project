@@ -240,6 +240,9 @@ ADDA_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
                
+               
+               
+*********************************************               
 ADD    
                JSR     ADD_BUFFER
                BRA     PRINT_BUFFER
@@ -250,13 +253,32 @@ ADD_BUFFER
                MOVE.B   #'D', (A6)+
                JSR      GETSIZE_ADD
                
-               ;Okay, the directionality bit in D4 should determine which order we should process bits in?
+               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                
+               CMP      #1,D6
+               BNE      ADD_DIRECTION_REVERSED
+               JSR      ADD_SRC
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_DEST
+               BRA      ADD_DONE
+               
+ADD_DIRECTION_REVERSED
+
+               JSR      ADD_DEST
+               MOVE.B   #' ', (A6)+
+               JSR      ADD_SRC
+               BRA      ADD_DONE              
                
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-               MOVE.B   #' ', (A6)+
-               RTS               
+               
+ADD_DONE       CLR      D6
+               RTS     
+
+***********************************************          
+
+
+
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -843,7 +865,7 @@ GETSIZE_ADD
             CMP     #%000,D3
             BNE     ADD_NOTBYTE
             JSR     SIZEISBYTE
-            MOVE    #1,D4
+            MOVE    #1,D6
             CLR     D3
             RTS
         
@@ -851,7 +873,7 @@ ADD_NOTBYTE
             CMP     #%001,D3
             BNE     ADD_NOTWORD
             JSR     SIZEISWORD
-            MOVE    #1,D4
+            MOVE    #1,D6
             CLR     D3
             RTS
             
@@ -859,7 +881,7 @@ ADD_NOTWORD
             CMP     #%010,D3
             BNE     ADD_NOTLEFT
             JSR     SIZEISLONG
-            MOVE    #1,D4
+            MOVE    #1,D6
             CLR     D3
             RTS
             
@@ -867,7 +889,7 @@ ADD_NOTLEFT     ;check other direction
             CMP     #%100,D3
             BNE     ADD_NOTRIGHTBYTE
             JSR     SIZEISBYTE
-            MOVE    #2,D4
+            MOVE    #2,D6
             CLR     D3
             RTS
             
@@ -875,7 +897,7 @@ ADD_NOTRIGHTBYTE
             CMP     #%101,D3
             BNE     ADD_NOTRIGHTWORD
             JSR     SIZEISWORD
-            MOVE    #2,D4
+            MOVE    #2,D6
             CLR     D3
             RTS
 
@@ -883,7 +905,7 @@ ADD_NOTRIGHTWORD
             CMP     #%110,D3
             BNE     INVALID_EA
             JSR     SIZEISLONG
-            MOVE    #2,D4
+            MOVE    #2,D6
             CLR     D3
             RTS 
                              

@@ -87,7 +87,7 @@ MAIN_LOOP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -100,7 +100,7 @@ MAIN_LOOP
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
-                 MOVE.W        #$E2DC, D3  *LSR
+                 ;MOVE.W        #$E2DC, D3  *LSR
                  
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+

@@ -17,7 +17,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4EB0,D3 * JSR
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
+                  MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
 
@@ -145,25 +145,18 @@ code0100
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
 code0101      
-<<<<<<< HEAD
 
                 JSR   ADDQ
 
-=======
-                JSR   ADDQ
-
->>>>>>> olga
 code0110        STOP        #$2700
 
 code0111       
                 JSR       MOVEQ
-<<<<<<< HEAD
+
 
 code1000      
                 JSR        DIVU
 
-=======
->>>>>>> olga
 
 code1000      
                 JSR        bits8to10
@@ -246,7 +239,7 @@ ADDA_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'A', (A6)+
-               MOVE.B   #'.', (A6)+
+               JSR      GETSIZE_ADDA
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE W (011) ,L (111)
                MOVE.B   #' ', (A6)+
@@ -406,7 +399,6 @@ ADDQ_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'Q', (A6)+
-               MOVE.B   #'.', (A6)+
                ** TODO: ADD SIZE BASED ON BITS 9 TO 10
                ** VALID SIZES ARE B (00),W (01) ,L (10)
                MOVE.B   #' ', (A6)+
@@ -424,11 +416,7 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
-<<<<<<< HEAD
 
-=======
->>>>>>> olga
-               
 DIVU
                 JSR     DIVU_BUFFER
                 BRA     PRINT_BUFFER
@@ -439,10 +427,6 @@ DIVU_BUFFER
                MOVE.B   #'V', (A6)+
                MOVE.B   #'U', (A6)+
                MOVE.B   #' ', (A6)+
-<<<<<<< HEAD
-               RTS                  
-
-=======
                RTS  
 OR    
                JSR     OR_BUFFER
@@ -558,7 +542,6 @@ LSR_BUFFER
                MOVE.B   #' ', (A6)+
                RTS       
                
->>>>>>> olga
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -631,6 +614,7 @@ ONEPAREN        CMP     #%100,D4
                 BNE     DONE
                 MOVE.B  #')',(A6)+                
 
+                CLR     D4
 DONE            RTS
 
         
@@ -837,14 +821,42 @@ COPY_OPCODE
                      CLR    D2  
                      MOVE.W D5,D2 
                      RTS  
+                     
+GETSIZE_ADDA
+        JSR     bits8to10
+        CMP     #%011,D3
+        BNE     NOTWORD
+        JSR     SIZEISWORD
+        RTS
+        
+        
+NOTWORD
+        CMP     #%111,D3
+        BNE     INVALID_EA
+        JSR     SIZEISLONG
+        RTS
+        
+    
+SIZEISBYTE
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'B',(A6)+
+       RTS
 
+SIZEISWORD    
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'W',(A6)+
+       RTS
+                
+SIZEISLONG    
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'L',(A6)+
+       RTS
                 
      
 BUFFER DC.B '     ',0     
       
 
     END START 
-
 
 
 

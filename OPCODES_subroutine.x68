@@ -15,9 +15,9 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                 ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+                  MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
                  ;MOVE.W     #$47D5, D3
@@ -689,7 +689,7 @@ ADDI_NOTWORD
 GETSIZE_ADDA
         JSR     bits8to10
         CMP     #%011,D3
-        BNE     ADDI_NOTWORD
+        BNE     ADDA_NOTWORD
         JSR     SIZEISWORD
         CLR     D3
         RTS
@@ -724,6 +724,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

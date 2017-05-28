@@ -265,6 +265,7 @@ ADDI
                 
 ADDI_SRC                        
                 MOVE.B  #'#', (A6)+
+                RTS
                   ** TODO: IMPLEMENT THIS IN EA
                 ** Immediate field—Data immediately following the instruction.
                 **If size = 00, the data is the low-order byte of the immediate word.
@@ -889,6 +890,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

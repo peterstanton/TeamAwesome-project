@@ -24,8 +24,7 @@ IO_StartLoop    LEA     location_start_msg,A1
                 CLR.L   D0
                 CLR.L   D1
                 
-                JSR     sub_AsToHeLoop          *this will put the newly converted hex value into D7
-                MOVE.L  D7, location_startData  *puts that value into a variable, 'location_startData'
+                JSR     sub_AsToHeLoop          
                 MOVEA.L  location_startData, A2
                 MOVEA.L  A2,A4
                 ADD.L    #$2,A4
@@ -54,8 +53,7 @@ IO_EndLoop      LEA     location_end_msg,A1
                 CLR.L   D0
                 CLR.L   D1
                 
-                JSR     sub_AstoHeLoop          *this will put the newly converted hex value into D7
-                MOVE.L  D7, location_endData  *puts that value into a variable, 'location_startData'
+                JSR     sub_AstoHeLoop          
                 MOVEA.L location_endData, A3
                 
                 LEA     linebreak,A1            *appends line at the end of the user input
@@ -67,6 +65,7 @@ IO_EndLoop      LEA     location_end_msg,A1
                 CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
                 BEQ    IO_StartLoop            *starts loop over due to invalidity
 *-----------------------------------------------------------
+
 
 
 

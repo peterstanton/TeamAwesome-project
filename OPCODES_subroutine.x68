@@ -1,16 +1,84 @@
+START  ORG $1000
+*-----------------------------------------------------------
+* Title      :
+* Written by :
+* Date       :
+* Description:
+*-----------------------------------------------------------
+*Displays welcome message
+                LEA     welcome_msg, A1
+                MOVE.B  #13,D0
+                TRAP    #15
+*-----------------------------------------------------------
+*Gets the starting and ending inputs
+*First, the start address prompt and location
+IO_StartLoop    LEA     location_start_msg,A1
+                MOVE.B  #14,D0
+                TRAP    #15
+
+*Gets the user input for start locatioin                
+                LEA     input_buffer,A1
+                MOVE.B  #2,D0
+                TRAP    #15
+                
+*Converts that ASCII input into hexadecimal
+                CLR.L   D0
+                CLR.L   D1
+                
+                JSR     sub_AsToHeLoop          
+                MOVEA.L  D1, A2
+                MOVEA.L  A2,A4
+                ADD.L    #$2,A4
+                
+                LEA     linebreak,A1            *appends line at the end of the user input
+                MOVE.B  #14,D0
+                TRAP    #15
+                
+                
+                JSR    sub_StartReadingData    *checks the validity of the start address
+                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
+                BEQ    IO_StartLoop            *starts loop over due to invalidity
+*-----------------------------------------------------------
+*Gets the starting and ending inputs
+*Second, gets the ending address prompt and location
+IO_EndLoop      LEA     location_end_msg,A1
+                MOVE.B  #14,D0
+                TRAP    #15
+
+*Gets the user input for start locatioin                
+                LEA     input_buffer,A1
+                MOVE.B  #2,D0
+                TRAP    #15
+                
+*Converts that ASCII input into hexadecimal
+                CLR.L   D0
+                CLR.L   D1
+                
+                JSR     sub_AstoHeLoop          
+                MOVEA.L D1, A3
+                
+                LEA     linebreak,A1            *appends line at the end of the user input
+                MOVE.B  #14,D0
+                TRAP    #15
+                
+                
+                JSR    sub_endReadingData    *checks the validity of the start address
+                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
+                BEQ    IO_StartLoop            *starts loop over due to invalidity
+*-----------------------------------------------------------
+                JSR MAIN_LOOP
+
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
 *** D5 - CURRENT OPCODE
-*** D6 - 
 ***
-
-
-START    ORG   $6000                 LEA     $A000,SP        *Load the SP
-                   ADDQ.B  #$1,D1      
-                 
+*** 
+MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
+                
+; MOVE.W  (A2), D3
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ; MOVE.W  #$4E71,D3 * NOP
@@ -20,7 +88,6 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
-                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -32,22 +99,28 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W        #$C000, D3 * AND
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
-                 ;MOVE.W        #$E393, D3  *LSL
-                 ;MOVE.W        #$E2DC, D3  *LSR
-
+                 ; MOVE.W        #$E393, D3  *LSL
+                 MOVE.W        #$E2DC, D3  *LSR
+                 
+                 MOVE.B      #' ', (A6)+
+                 MOVE.B      #' ', (A6)+
+                 MOVE.B      #' ', (A6)+
+                 MOVE.B      #' ', (A6)+
+                 
+                 ;CLR         D2
+                 ;MOVE.B      #16,D2          // Setup for Base-16 conversion
+                 ;MOVE.L      A2,D1        
+                 ;MOVE.B      #15,D0          
+                 ;TRAP        #15             // Print value in Addr1
+                 
+                 
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
-
-           
                  LSR.W   D4,D3       *Move the bits
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                 
-    INCLUDE 'definitions.x68'
-           
-EXIT                 
-       SIMHALT   
 
 
 **TODO: PRINT INVALID OPCODES FOR REMAINING JMPS
@@ -240,9 +313,6 @@ ADDA_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
                
-               
-               
-*********************************************               
 ADD    
                JSR     ADD_BUFFER
                BRA     PRINT_BUFFER
@@ -251,34 +321,12 @@ ADD_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
-               JSR      GETSIZE_ADD
-               
-               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-               
-               CMP      #1,D6
-               BNE      ADD_DIRECTION_REVERSED
-               JSR      ADD_SRC
-               MOVE.B   #' ', (A6)+
-               JSR      ADD_DEST
-               BRA      ADD_DONE
-               
-ADD_DIRECTION_REVERSED
-
-               JSR      ADD_DEST
-               MOVE.B   #' ', (A6)+
-               JSR      ADD_SRC
-               BRA      ADD_DONE              
-               
+               MOVE.B   #'.', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-               
-ADD_DONE       CLR      D6
-               RTS     
-
-***********************************************          
-
-
-
+               MOVE.B   #' ', (A6)+
+               RTS               
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -287,8 +335,6 @@ ADDI
                 
 ADDI_SRC                        
                 MOVE.B  #'#', (A6)+
-                MOVE.B  #',', (A6)+
-                MOVE.B  #' ', (A6)+
                 RTS
                   ** TODO: IMPLEMENT THIS IN EA
                 ** Immediate field—Data immediately following the instruction.
@@ -314,17 +360,10 @@ ADDI_DES
                CMP      #%111011,D3 // complicated
                BEQ      INVALID_EA
                
-               JSR      bits11to13 ** grab bits to jump with\
-               MOVE     D3,D4
+               JSR      bits11to13 ** grab bits to jump with
                LEA     jmp_mode,A0    *Index into the table
                MULU    #6,D3       *Form offset     
                JSR     0(A0,D3)   *Jump indirect with index
-               
-               CLR     D3
-               JSR     bits14to16
-               JSR     insert_num
-               CLR     D4
-               
                RTS
                
                            
@@ -705,8 +744,8 @@ bits1to10
                RTS
 ** DN       
 MODE000         
-                MOVE.B  #'D',(A6)+     
-                RTS
+                MOVE.B  #'(', (A6)+
+                MOVE.B  #'A',(A6)+     
 
 ** AN
 MODE001         
@@ -726,7 +765,6 @@ MODE011
 
  ** -(AN)
 MODE100         
-                MOVE.B  #'-', (A6)+
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+
                 
@@ -854,62 +892,9 @@ COPY_OPCODE
                      CLR    D2  
                      MOVE.W D5,D2 
                      RTS  
-                     
-****************************
 
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-GETSIZE_ADD
-            JSR     bits8to10
-            CMP     #%000,D3
-            BNE     ADD_NOTBYTE
-            JSR     SIZEISBYTE
-            MOVE    #1,D6
-            CLR     D3
-            RTS
-        
-ADD_NOTBYTE 
-            CMP     #%001,D3
-            BNE     ADD_NOTWORD
-            JSR     SIZEISWORD
-            MOVE    #1,D6
-            CLR     D3
-            RTS
-            
-ADD_NOTWORD
-            CMP     #%010,D3
-            BNE     ADD_NOTLEFT
-            JSR     SIZEISLONG
-            MOVE    #1,D6
-            CLR     D3
-            RTS
-            
-ADD_NOTLEFT     ;check other direction
-            CMP     #%100,D3
-            BNE     ADD_NOTRIGHTBYTE
-            JSR     SIZEISBYTE
-            MOVE    #2,D6
-            CLR     D3
-            RTS
-            
-ADD_NOTRIGHTBYTE
-            CMP     #%101,D3
-            BNE     ADD_NOTRIGHTWORD
-            JSR     SIZEISWORD
-            MOVE    #2,D6
-            CLR     D3
-            RTS
-
-ADD_NOTRIGHTWORD
-            CMP     #%110,D3
-            BNE     INVALID_EA
-            JSR     SIZEISLONG
-            MOVE    #2,D6
-            CLR     D3
-            RTS 
-                             
-                     
+EXIT
+                    NOP
                      
 *****************************                  
 GETSIZE_ADDI
@@ -961,26 +946,38 @@ ADDA_NOTWORD
 SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
-       CLR      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
-       CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
-       CLR      D3
        RTS
+  
                 
      
-BUFFER DC.B '     ',0     
+BUFFER DC.L 1     
       
-
+      INCLUDE 'helpers.x68'
+      INCLUDE 'definitions.x68'
     END START 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

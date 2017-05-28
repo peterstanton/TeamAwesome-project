@@ -251,6 +251,7 @@ ADD
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
+               CLR      D6
                JSR      ADD_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
@@ -259,6 +260,7 @@ ADD
                
 ADD_DIRECTION_REVERSED
 
+               CLR      D6
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+

@@ -17,12 +17,12 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4EB0,D3 * JSR
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
+                  MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
-                 MOVE.W     #$47D5, D3
+                 ;MOVE.W     #$47D5, D3
                 ; MOVE.W     #$7E70, D3 *MOVEQ
-                MOVE.W     #$80C0, D3 *DIVU
+                ;MOVE.W     #$80C0, D3 *DIVU
   
 
                  
@@ -193,7 +193,7 @@ ADDA_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'A', (A6)+
-               MOVE.B   #'.', (A6)+
+               JSR      GETSIZE_ADDA
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE W (011) ,L (111)
                MOVE.B   #' ', (A6)+
@@ -353,7 +353,6 @@ ADDQ_BUFFER
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'Q', (A6)+
-               MOVE.B   #'.', (A6)+
                ** TODO: ADD SIZE BASED ON BITS 9 TO 10
                ** VALID SIZES ARE B (00),W (01) ,L (10)
                MOVE.B   #' ', (A6)+
@@ -656,13 +655,44 @@ COPY_OPCODE
                      CLR    D2  
                      MOVE.W D5,D2 
                      RTS  
+                     
+GETSIZE_ADDA
+        JSR     bits8to10
+        CMP     #%011,D3
+        BNE     NOTWORD
+        JSR     SIZEISWORD
+        RTS
+        
+        
+NOTWORD
+        CMP     #%111,D3
+        BNE     INVALID_EA
+        JSR     SIZEISLONG
+        RTS
+        
+    
+SIZEISBYTE
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'B',(A6)+
+       RTS
 
+SIZEISWORD    
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'W',(A6)+
+       RTS
+                
+SIZEISLONG    
+       MOVE.B   #'.',(A6)+
+       MOVE.B   #'L',(A6)+
+       RTS
                 
      
 BUFFER DC.B '     ',0     
       
 
     END START 
+
+
 
 
 

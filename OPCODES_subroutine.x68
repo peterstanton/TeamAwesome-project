@@ -16,9 +16,9 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
-                  MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
+                 ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
 
@@ -31,7 +31,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W        #$C000, D3 * AND
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
-                 MOVE.W        #$E393, D3  *LSL
+                 ;MOVE.W        #$E393, D3  *LSL
                  ;MOVE.W        #$E2DC, D3  *LSR
 
                  
@@ -261,6 +261,8 @@ ADDI
                 
 ADDI_SRC                        
                 MOVE.B  #'#', (A6)+
+                MOVE.B  #',', (A6)+
+                MOVE.B  #' ', (A6)+
                 RTS
                   ** TODO: IMPLEMENT THIS IN EA
                 ** Immediate field—Data immediately following the instruction.
@@ -286,10 +288,17 @@ ADDI_DES
                CMP      #%111011,D3 // complicated
                BEQ      INVALID_EA
                
-               JSR      bits11to13 ** grab bits to jump with
+               JSR      bits11to13 ** grab bits to jump with\
+               MOVE     D3,D4
                LEA     jmp_mode,A0    *Index into the table
                MULU    #6,D3       *Form offset     
                JSR     0(A0,D3)   *Jump indirect with index
+               
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               
                RTS
                
                            
@@ -670,8 +679,8 @@ bits1to10
                RTS
 ** DN       
 MODE000         
-                MOVE.B  #'(', (A6)+
-                MOVE.B  #'A',(A6)+     
+                MOVE.B  #'D',(A6)+     
+                RTS
 
 ** AN
 MODE001         
@@ -691,6 +700,7 @@ MODE011
 
  ** -(AN)
 MODE100         
+                MOVE.B  #'-', (A6)+
                 MOVE.B  #'(', (A6)+
                 MOVE.B  #'A',(A6)+
                 

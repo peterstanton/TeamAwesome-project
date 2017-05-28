@@ -20,7 +20,8 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D5FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
                  ; MOVE.W    #$5201,D3    *ADDQ
-                 MOVE.W     #$7E70, D3
+                 ; MOVE.W     #$7E70, D3 *MOVEQ
+                MOVE.W     #$80C0, D3 *DIVU
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
@@ -130,14 +131,15 @@ code0100
                 *LEA - if it's not the top codes, it's LEA
                 BRA     LEA
 code0101      
-              JSR   ADDQ
+                JSR   ADDQ
 
-code0110       STOP        #$2700
+code0110        STOP        #$2700
 
 code0111       
-               JSR       MOVEQ
+                JSR       MOVEQ
 
-code1000       STOP        #$2700
+code1000      
+                JSR        DIVU
 
 code1001       STOP        #$2700
 
@@ -348,7 +350,18 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
-                  
+               
+DIVU
+                JSR     DIVU_BUFFER
+                BRA     PRINT_BUFFER
+
+DIVU_BUFFER
+               MOVE.B   #'D',(A6)+
+               MOVE.B   #'I', (A6)+  
+               MOVE.B   #'V', (A6)+
+               MOVE.B   #'U', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS                  
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -563,6 +576,7 @@ BUFFER DC.B '     ',0
       
 
     END START 
+
 
 
 

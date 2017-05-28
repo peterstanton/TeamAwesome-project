@@ -240,8 +240,6 @@ ADDA_BUFFER
                MOVE.B   #'D', (A6)+
                MOVE.B   #'A', (A6)+
                JSR      GETSIZE_ADDA
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-               ** VALID SIZES ARE W (011) ,L (111)
                MOVE.B   #' ', (A6)+
                RTS
                

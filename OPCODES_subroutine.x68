@@ -12,7 +12,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                  * TEST OPCODES
-                 ; MOVE.W  #$45D7,D3 * LEA (A7), A2
+                  MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ; MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
@@ -20,7 +20,7 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
-                   MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
+                 ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -245,15 +245,8 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
-               BRA     PRINT_BUFFER
-                
-ADD_BUFFER
-               MOVE.B   #'A',(A6)+
-               MOVE.B   #'D', (A6)+  
-               MOVE.B   #'D', (A6)+
-               JSR      GETSIZE_ADD
-               
-               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               JSR     PRINT_BUFFER
+              ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
@@ -274,8 +267,31 @@ ADD_DIRECTION_REVERSED
                
 ADD_DONE       CLR      D6
                RTS     
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               JSR      GETSIZE_ADD
+               RTS
 
-***********************************************          
+
+***********************************************        
+
+
+
+
+ADD_SRC
+
+
+
+
+
+ADD_DEST
+                JSR    bits5to7
+                MOVE   D3,D4
+
+  
 
 
 
@@ -393,6 +409,7 @@ LEA_SRC
              BEQ      INVALID_EA
    
              JSR      bits11to13 ** grab mode bits to jump with
+             MOVE    D3,D4
 
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     

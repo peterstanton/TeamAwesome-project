@@ -20,7 +20,8 @@ START    ORG   $6000                 LEA     $A000,SP        *Load the SP
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
-                   MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
+                 ;  MOVE.W  #$DC1B, D3  * ADD.B (A3)+,D6
+                   MOVE.W  #$D9A5, D3  * ADD.L D4,-(A5)
                  ;  MOVE.W  #$D579, D3  * ADD.W D2,$FF0FF0FF
                  ; MOVE.W    #$5201,D3    *ADDQ
 

@@ -456,6 +456,7 @@ ONEPAREN        CMP     #%100,D4
                 BNE     DONE
                 MOVE.B  #')',(A6)+                
 
+                CLR     D4
 DONE            RTS
 
         

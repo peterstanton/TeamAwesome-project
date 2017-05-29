@@ -1070,7 +1070,7 @@ INVALID_EA
                 * TODO: IMPLEMENT
                 *** CLEAR OUT A6
                 ** PUT INVALID MESSAGE INTO A6
-                BRA EXIT
+                BRA MAIN_LOOP
 INVALID_OP  
                 ** TODO: IMPLEMENT
                *** CLEAR OUT A6
@@ -1093,7 +1093,7 @@ RTS
                     LEA     RTS_disp,A1          
                     MOVE.B  #14,D0
                     TRAP    #15 
-                    BRA     EXIT
+                    BRA     MAIN_LOOP
 JSR      
                     LEA     BUFFER, A6
                     MOVE.B #'J', (A6)+
@@ -1105,7 +1105,7 @@ JSR
                     ** BITS 13 - 16 REGISTER
                     MOVE.B  #14,D0
                     TRAP    #15 
-                    BRA     EXIT
+                    BRA     MAIN_LOOP
                   
 MOVEM      
                    
@@ -1120,7 +1120,7 @@ MOVEM
                    ** JSR     MOVEM_L
                     MOVE.B  #14,D0
                     TRAP    #15
-                    BRA     EXIT 
+                    BRA     MAIN_LOOP 
                     
 MOVEM_W 
                      LEA     MOVEM_disp,A1
@@ -1133,7 +1133,7 @@ MOVEM_W
                      MOVE.B  #14,D0
                      TRAP    #15 
         
-                     BRA     EXIT 
+                     BRA    MAIN_LOOP 
      
    
 COPY_OPCODE 
@@ -1400,6 +1400,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

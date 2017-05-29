@@ -87,7 +87,7 @@ MAIN_LOOP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
                  ; MOVE.W    #$5201,D3    *ADDQ
 
@@ -111,10 +111,17 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
+<<<<<<< Updated upstream
                  
                  CMP     A3,A2
                  BGT     EXIT
                  BRA     MAIN_LOOP
+=======
+                 ;CMP     A3,A2
+                 ;BGT     EXIT
+                 ;BRA     MAIN_LOOP
+                 BRA      EXIT
+>>>>>>> Stashed changes
                  
                  BRA      EXIT
                  

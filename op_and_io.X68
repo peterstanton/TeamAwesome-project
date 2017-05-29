@@ -614,7 +614,7 @@ ADDQ_BUFFER
 
 ****************************************               
 MOVEQ
-                JSR     MOVEQ_BUFFER
+                JSR     MOVEQ_BUFFER  
                 BRA     PRINT_BUFFER
 
 MOVEQ_BUFFER

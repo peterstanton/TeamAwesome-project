@@ -77,19 +77,17 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  (A2), D3
-                
-                 ; MOVE.W  (A2), D3
+                MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
-                 ; MOVE.W  #$4E71,D3 * NOP
+                 ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
                   MOVE.W    #$5201,D3    *ADDQ
 
@@ -103,22 +101,15 @@ MAIN_LOOP
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
-                 ;MOVE.W        #$E2DC, D3  *LSR
+                 ; MOVE.W        #$E2DC, D3  *LSR
+
                  JSR    PRINT_ADDRESS
-                 ADD.W   #2,A2
+                 ADD.W   #2,A2 * Can safely increment the current address by a word
                  MOVE.W  D3,D5       * Before manipulating opcode, store in D5 
                  MOVE.B  #12,D4      *Shift 12 bits to the right  
-
-                 JSR    PRINT_ADDRESS      
-                 
-                 
-                 
-                 MOVE.W  D3,D5
-                 MOVE.B  #12,D4          *Shift 12 bits to the right  
                  LSR.W   D4,D3       *Move the bits
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
-                 
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
                  CMP     A3,A2
                  BGT     EXIT
@@ -230,6 +221,7 @@ code0100
 code0101      
 
                 JSR   ADDQ
+                RTS
 
 code0110        STOP        #$2700
 
@@ -516,12 +508,7 @@ LEA_SRC
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
-             
-
-             CLR     D3
-             JSR     bits14to16
-             JSR     insert_num
-             
+ 
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
 
@@ -532,7 +519,6 @@ LEA_DEST
                 LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING            
                 MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
                 MOVE    D3,D4
-                LEA     jmp_mode,A0    *Index into the table
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
                 
@@ -580,8 +566,7 @@ ADDQ_BUFFER
                JSR      GETSIZE_ADDQ
                ** TODO: ADD SIZE BASED ON BITS 9 TO 10
                ** VALID SIZES ARE B (00),W (01) ,L (10)
-               RTS
-               
+               RTS               
 MOVEQ
                 JSR     MOVEQ_BUFFER
                 BRA     PRINT_BUFFER
@@ -594,10 +579,6 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
-               
-               
-
-            
 
 DIVU
                 JSR     DIVU_BUFFER
@@ -897,7 +878,10 @@ MODE110
 ** ABSOLUTE AND IMMEDIATE            
 MODE111         
                 *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
-               JSR ABSOLUTE_BUFFER  
+               MOVE.B   #'$', (A6)+  
+               JSR      PRINT_DEREF_ADDRESS
+               ADD.W    #2, A2
+               JSR      PRINT_DEREF_ADDRESS
                RTS            
                                         
 ADDRESS_BUFFER
@@ -933,16 +917,6 @@ ABSOLUTE_LONG_BUFFER
                        MOVE.B #'G', (A6)+ 
                        MOVE.B #'G', (A6)+
                        RTS 
-                                                    
-
-PRINT_BUFFER    
-               MOVE.B   #%0,  (A6)+ ** null terminate the string       
-               LEA      BUFFER, A1
-               MOVE.W   #14,D0
-               TRAP     #15
-               RTS
-               
-               
 
 INVALID_EA  
                 * TODO: IMPLEMENT
@@ -953,7 +927,14 @@ INVALID_OP
                 ** TODO: IMPLEMENT
                *** CLEAR OUT A6
                 ** PUT INVALID MESSAGE INTO A6
-                BRA EXIT             
+                    MOVE.B #'D', (A6)+
+                    MOVE.B #'A', (A6)+
+                    MOVE.B #'T', (A6)+
+                    MOVE.B #'A', (A6)+ 
+                    MOVE.B #' ', (A6)+ 
+                    JSR     PRINT_DEREF_ADDRESS
+                    BRA     EXIT
+          
                 
 NOP                 LEA     NOP_disp,A1          
                     MOVE.B  #14,D0
@@ -1023,9 +1004,35 @@ PRINT_ADDRESS
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
-                 RTS                    
-                 
-                 
+                 RTS     
+PRINT_BUFFER    
+               MOVE.B   #%0,  (A6)+ ** null terminate the string       
+               LEA      BUFFER, A1
+               MOVE.W   #14,D0
+               TRAP     #15
+               LEA     linebreak,A1            *appends line at the end of the user input
+               MOVE.B  #14,D0
+               TRAP    #15
+               RTS  
+
+PRINT_DEREF_ADDRESS
+               MOVE.B   #%0,  (A6)+ ** null terminate the string       
+               LEA      BUFFER, A1
+               MOVE.W   #14,D0
+               TRAP     #15
+               LEA      BUFFER, A6
+               CLR         D2
+               MOVE.B      #16,D2          // Setup for Base-16 conversion
+               MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
+               MOVE.B      #15,D0          
+               TRAP        #15 
+               RTS
+ 
+                   
+                   
+                   
+                   
+                   
 ***************************
 
 GETSIZE_ADDQ
@@ -1054,6 +1061,7 @@ ADDQ_NOTWORD
            RTS
                  
                                  
+****************************
 ****************************
 
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
@@ -1183,6 +1191,9 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
+
 
 
 

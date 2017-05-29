@@ -9,6 +9,8 @@ START  ORG $1000
                 LEA     welcome_msg, A1
                 MOVE.B  #13,D0
                 TRAP    #15
+                
+                MOVE.B  #7,linecount            *initializes a counter to keep track of how many lines on screen
 *-----------------------------------------------------------
 *Gets the starting and ending inputs
 *First, the start address prompt and location
@@ -62,18 +64,55 @@ IO_EndLoop      LEA     location_end_msg,A1
                 TRAP    #15
                 
                 
-                JSR    sub_endReadingData    *checks the validity of the start address
-                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
-                BEQ    IO_StartLoop            *starts loop over due to invalidity
+                JSR    sub_endReadingData       *checks the validity of the start address
+                CMP.B  #1, D7                   *checks of subroutine returned 1, if so then invalid
+                BEQ    IO_StartLoop             *starts loop over due to invalidity
 *-----------------------------------------------------------
-                CLR D1
-                CLR D2
-                CLR D3
-                CLR D4
-                CLR D5
-                CLR D6
-                CLR D7
-                JSR MAIN_LOOP
+IO_Screen       JSR    MAIN_LOOP
+                ADDQ.B  #1,linecount            *adds to the linecount after each line
+
+                
+                CMP     #29,linecount           *checks if the linecounter is at 29
+                BEQ     IO_PauseOutput          *if so, will pause the output
+                
+                CMPA.L  A4,A5                   *checks if the end of the input has been reached
+                BGE     IO_EndProgram
+                
+                ADDA.W  #2,A3                   If not, goes to the next opcode
+                BRA     IO_Screen               Start main loop over
+*-----------------------------------------------------------
+IO_PauseOutput  LEA     pause_msg,A1
+                MOVE.B  #14,D0
+                TRAP    #15
+                
+                MOVE.B  #5,D0                   *user press enter to continue
+                TRAP    #15
+                
+                MOVE.B  #0,linecount            *update linecount to 0
+                BRA     IO_Screen               *start the reading again
+*-----------------------------------------------------------
+IO_EndProgram   LEA     endTest_msg,A1
+                MOVE.B  #14,D0
+                TRAP    #15
+                
+*check the user input
+                LEA     input_buffer,A1
+                MOVE.B  #2,D0
+                TRAP    #15
+                
+                LEA     linebreak,A1
+                MOVE.B  #14,D0
+                TRAP    #15
+                
+                MOVE.B  #5,linebreak
+                
+                MOVE.B  input_buffer,D7         *puts the input buffer into D7
+                CMPI.L  #$79657300,D7           *checks of the input is yes
+                BEQ     IO_StartLoop            *if it is yes, then start over
+                
+                BRA     EXIT                    *else, end program
+*-----------------------------------------------------------
+                *JSR MAIN_LOOP
 
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
@@ -84,7 +123,6 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 
                  MOVE.W  (A2), D3
 
                  * TEST OPCODES
@@ -92,11 +130,14 @@ MAIN_LOOP
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                 ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+                 * MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
-                  ; MOVE.W    #$5613, D3    *ADDQ.B #$3, (A3)
+
+                  MOVE.W    #$5201,D3    *ADDQ
+
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
                  ; MOVE.W     #$86D9, D3 *DIVU (A1)+,D3                      
@@ -120,14 +161,14 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
-                 
+
                  CMP     A3,A2
                  BGT     EXIT
                  BRA     MAIN_LOOP
-                 
-                 ;BRA      EXIT
+                 *BRA      EXIT
                                 
     INCLUDE 'definitions.x68'
+    INCLUDE 'TEST_CODE.x68'
            
 EXIT                 
        SIMHALT   
@@ -138,8 +179,6 @@ jmp_table      JMP         code0000
                 *ADDI
 
                JMP         code0001
-               *MOVE
-               *MOVEA
 
                JMP         code0010
 
@@ -195,15 +234,11 @@ code0000
                BRA          ADDI  
 
 code0001      
-               JSR   MOVE_B
-               *MOVE.B
+               JSR       INVALID_OP
 
-code0010        
-                * MOVE.L
-                * MOVEA.L
-code0011        
-                *MOVEA.W
-                *MOVE.W
+code0010        JSR       INVALID_OP
+
+code0011        JSR       INVALID_OP
 
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
@@ -238,12 +273,12 @@ code0100
                 BRA     LEA
 code0101      
 
-                BRA   ADDQ
+                JSR   ADDQ
 
-code0110        BRA       INVALID_OP
+code0110         JSR       INVALID_OP
 
 code0111       
-                BRA      MOVEQ
+                JSR       MOVEQ
 
 code1000      
                 JSR        bits8to10
@@ -253,11 +288,11 @@ code1000
                 
 
 code1001       
-               BRA        SUB
-code1010       BRA       INVALID_OP
+               JSR         SUB
+code1010       JSR       INVALID_OP
 
 code1011       
-               BRA         CMP
+               JSR         CMP
 
 code1100      
                 JSR        bits8to10
@@ -313,17 +348,11 @@ code1110
                 
                 * ROR
 
-code1111       BRA      INVALID_OP
-
-MOVE_B
-               JSR     MOVEB_BUFFER
-MOVEB_BUFFER
-                NOP              
-* ----------------------------------
+code1111       JSR       INVALID_OP
 
 ADDA    
                JSR     ADDA_BUFFER
-               RTS
+               BRA     PRINT_BUFFER
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -348,6 +377,7 @@ ADD_BUFFER
                JSR      GETSIZE_ADD
                
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
                JSR      ADD_SRC
@@ -358,6 +388,7 @@ ADD_BUFFER
                
                
 ADD_DIRECTION_REVERSED
+
                CLR      D6
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
@@ -382,6 +413,10 @@ ADD_SRC
                 JSR    insert_num
                 RTS
 
+
+
+
+
 ADD_DEST
                 MOVE.W #%000,D3     ;Can only have a data register.
                 MOVE   D3,D4
@@ -392,12 +427,15 @@ ADD_DEST
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
+                        
+
+
 
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
                 JSR     ADDI_DES
-                RTS
+                BRA     PRINT_BUFFER
                 
 ADDI_SRC                        
                 MOVE.B  #'#', (A6)+
@@ -996,7 +1034,6 @@ MODE111
                JSR      PRINT_DEREF_ADDRESS
                ADD.W    #2, A2
                JSR      PRINT_DEREF_ADDRESS
-               ADD.W    #2, A2
                RTS            
                                         
 ADDRESS_BUFFER
@@ -1050,11 +1087,10 @@ INVALID_OP
                     JSR     PRINT_DEREF_ADDRESS
           
                 
-NOP                 MOVE.B #'N', (A6)+
-                    MOVE.B #'O', (A6)+
-                    MOVE.B #'P', (A6)+
-                    RTS
-
+NOP                 LEA     NOP_disp,A1          
+                    MOVE.B  #14,D0
+                    TRAP    #15
+                    BRA     EXIT
                  
 RTS      
                     LEA     RTS_disp,A1          
@@ -1136,24 +1172,14 @@ PRINT_DEREF_ADDRESS
                MOVE.W   #14,D0
                TRAP     #15
                LEA      BUFFER, A6
-               CLR      D2
-               CMP      #0, (A2)
-               BEQ      PRINT_ZEROES
-               BRA      PRINT_HEX
-               
-PRINT_ZEROES
-              LEA   BUFFER,A6
-              MOVE.B #'0', (A6)+
-              MOVE.B #'0', (A6)+
-              MOVE.B #'0', (A6)+
-              MOVE.B #'0', (A6)+
-              RTS
-PRINT_HEX
+               CLR         D2
                MOVE.B      #16,D2          // Setup for Base-16 conversion
-               MOVE.W      (A2),D1        // print the hex value in current address      
+               MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
+
+
  ***************************
 
 GETSIZE_ADDQ
@@ -1367,30 +1393,6 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

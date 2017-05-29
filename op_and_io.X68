@@ -111,26 +111,10 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                 
-                 CMP     A3,A2
-                 BGT     EXIT
-                 BRA     MAIN_LOOP
-=======
-=======
->>>>>>> Stashed changes
                  ;CMP     A3,A2
                  ;BGT     EXIT
                  ;BRA     MAIN_LOOP
                  BRA      EXIT
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-                 
-                 BRA      EXIT
-=======
->>>>>>> Stashed changes
-                 
                                 
     INCLUDE 'definitions.x68'
            
@@ -1140,6 +1124,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

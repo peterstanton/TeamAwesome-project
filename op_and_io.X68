@@ -77,7 +77,7 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                MOVE.W  (A2), D3
+                 MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -111,9 +111,12 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
+                 
                  CMP     A3,A2
                  BGT     EXIT
                  BRA     MAIN_LOOP
+                 
+                 BRA      EXIT
                  
                                 
     INCLUDE 'definitions.x68'
@@ -181,11 +184,12 @@ code0000
                BNE          INVALID_OP
                BRA          ADDI  
 
-code0001       STOP        #$2700
+code0001      
+               JSR       INVALID_OP
 
-code0010       STOP        #$2700
+code0010        JSR       INVALID_OP
 
-code0011       STOP        #$2700
+code0011        JSR       INVALID_OP
 
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
@@ -222,7 +226,7 @@ code0101
 
                 JSR   ADDQ
 
-code0110        STOP        #$2700
+code0110         JSR       INVALID_OP
 
 code0111       
                 JSR       MOVEQ
@@ -236,7 +240,7 @@ code1000
 
 code1001       
                JSR         SUB
-code1010       STOP        #$2700
+code1010       JSR       INVALID_OP
 
 code1011       
                JSR         CMP
@@ -297,7 +301,7 @@ code1110
                 
                 * ROR
 
-code1111       STOP        #$2700
+code1111       JSR       INVALID_OP
 
 ADDA    
                JSR     ADDA_BUFFER
@@ -317,7 +321,7 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
-               BRA     PRINT_BUFFER
+               RTS
                 
 ADD_BUFFER
                MOVE.B   #'A',(A6)+
@@ -333,7 +337,7 @@ ADD_BUFFER
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
                JSR      ADD_DEST
-               BRA      ADD_DONE
+               RTS
                
                
 ADD_DIRECTION_REVERSED
@@ -342,18 +346,10 @@ ADD_DIRECTION_REVERSED
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
-               JSR      ADD_SRC
-               BRA      ADD_DONE              
-               
+               JSR      ADD_SRC             
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
-ADD_DONE       
-               CLR      D6
-               JSR     PRINT_BUFFER
-
-                
-
 ***********************************************        
 
 
@@ -907,7 +903,6 @@ INVALID_OP
                     MOVE.B #'A', (A6)+ 
                     MOVE.B #' ', (A6)+ 
                     JSR     PRINT_DEREF_ADDRESS
-                    BRA     EXIT
           
                 
 NOP                 LEA     NOP_disp,A1          

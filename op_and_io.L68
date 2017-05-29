@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 5/28/2017 9:24:46 PM
+Created On: 5/28/2017 9:37:34 PM
 
 00001000                             1  START  ORG $1000
 00001000                             2  *-----------------------------------------------------------
@@ -1084,7 +1084,7 @@ Created On: 5/28/2017 9:24:46 PM
 00001B14  4DF9 00001C44           1080                 LEA      BUFFER, A6
 00001B1A  4242                    1081                 CLR         D2
 00001B1C  143C 0010               1082                 MOVE.B      #16,D2          // Setup for Base-16 conversion
-00001B20  2212                    1083                 MOVE.L      (A2),D1        // PRINT INVALID HEX OPCODE        
+00001B20  3212                    1083                 MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
 00001B22  103C 000F               1084                 MOVE.B      #15,D0          
 00001B26  4E4F                    1085                 TRAP        #15 
 00001B28  4E75                    1086                 RTS

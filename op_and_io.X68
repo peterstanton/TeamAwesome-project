@@ -994,11 +994,10 @@ PRINT_DEREF_ADDRESS
                LEA      BUFFER, A1
                MOVE.W   #14,D0
                TRAP     #15
-               CLR      A6
                LEA      BUFFER, A6
                CLR         D2
                MOVE.B      #16,D2          // Setup for Base-16 conversion
-               MOVE.L      (A2),D1        // PRINT INVALID HEX OPCODE        
+               MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS

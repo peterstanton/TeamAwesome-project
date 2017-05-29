@@ -361,6 +361,14 @@ ADDA_BUFFER
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
+               BRA     PRINT_BUFFER
+                
+ADD_BUFFER
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'D', (A6)+  
+               MOVE.B   #'D', (A6)+
+               JSR      GETSIZE_ADD
+               
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                
                CMP      #1,D6
@@ -371,16 +379,6 @@ ADD
                JSR      ADD_DEST
                BRA      ADD_DONE
                
-               BRA     PRINT_BUFFER
-                
-ADD_BUFFER
-               MOVE.B   #'A',(A6)+
-               MOVE.B   #'D', (A6)+  
-               MOVE.B   #'D', (A6)+
-               JSR      GETSIZE_ADD
-               RTS
-               
-
                
 ADD_DIRECTION_REVERSED
 
@@ -670,7 +668,6 @@ MULS_BUFFER
                MOVE.B   #'S', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
-
 
 AND    
                JSR     AND_BUFFER

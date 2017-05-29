@@ -77,20 +77,19 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  (A2), D3
+                 
+                 ;MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                 ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
-
-                  MOVE.W    #$5201,D3    *ADDQ
-
+                  ; MOVE.W    #$5613, D3    *ADDQ.B #$3, (A3)
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
                  ; MOVE.W     #$8000, D3 * OR
@@ -111,9 +110,11 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
+                 
                  ;CMP     A3,A2
                  ;BGT     EXIT
                  ;BRA     MAIN_LOOP
+                 
                  BRA      EXIT
                                 
     INCLUDE 'definitions.x68'
@@ -127,6 +128,8 @@ jmp_table      JMP         code0000
                 *ADDI
 
                JMP         code0001
+               *MOVE
+               *MOVEA
 
                JMP         code0010
 
@@ -182,11 +185,15 @@ code0000
                BRA          ADDI  
 
 code0001      
-               JSR       INVALID_OP
+               JSR   MOVE_B
+               *MOVE.B
 
-code0010        JSR       INVALID_OP
-
-code0011        JSR       INVALID_OP
+code0010        
+                * MOVE.L
+                * MOVEA.L
+code0011        
+                *MOVEA.W
+                *MOVE.W
 
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
@@ -221,12 +228,12 @@ code0100
                 BRA     LEA
 code0101      
 
-                JSR   ADDQ
+                BRA   ADDQ
 
-code0110         JSR       INVALID_OP
+code0110        BRA       INVALID_OP
 
 code0111       
-                JSR       MOVEQ
+                BRA      MOVEQ
 
 code1000      
                 JSR        bits8to10
@@ -236,11 +243,11 @@ code1000
                 
 
 code1001       
-               JSR         SUB
-code1010       JSR       INVALID_OP
+               BRA        SUB
+code1010       BRA       INVALID_OP
 
 code1011       
-               JSR         CMP
+               BRA         CMP
 
 code1100      
                 JSR        bits8to10
@@ -298,11 +305,17 @@ code1110
                 
                 * ROR
 
-code1111       JSR       INVALID_OP
+code1111       BRA      INVALID_OP
+
+MOVE_B
+               JSR     MOVEB_BUFFER
+MOVEB_BUFFER
+                NOP              
+* ----------------------------------
 
 ADDA    
                JSR     ADDA_BUFFER
-               BRA     PRINT_BUFFER
+               RTS
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -327,7 +340,6 @@ ADD_BUFFER
                JSR      GETSIZE_ADD
                
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-               
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
                JSR      ADD_SRC
@@ -338,7 +350,6 @@ ADD_BUFFER
                
                
 ADD_DIRECTION_REVERSED
-
                CLR      D6
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
@@ -363,10 +374,6 @@ ADD_SRC
                 JSR    insert_num
                 RTS
 
-
-
-
-
 ADD_DEST
                 MOVE.W #%000,D3     ;Can only have a data register.
                 MOVE   D3,D4
@@ -377,15 +384,12 @@ ADD_DEST
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
-                        
-
-
 
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
                 JSR     ADDI_DES
-                BRA     PRINT_BUFFER
+                RTS
                 
 ADDI_SRC                        
                 MOVE.B  #'#', (A6)+
@@ -875,6 +879,7 @@ MODE111
                JSR      PRINT_DEREF_ADDRESS
                ADD.W    #2, A2
                JSR      PRINT_DEREF_ADDRESS
+               ADD.W    #2, A2
                RTS            
                                         
 ADDRESS_BUFFER
@@ -928,10 +933,11 @@ INVALID_OP
                     JSR     PRINT_DEREF_ADDRESS
           
                 
-NOP                 LEA     NOP_disp,A1          
-                    MOVE.B  #14,D0
-                    TRAP    #15
-                    BRA     EXIT
+NOP                 MOVE.B #'N', (A6)+
+                    MOVE.B #'O', (A6)+
+                    MOVE.B #'P', (A6)+
+                    RTS
+
                  
 RTS      
                     LEA     RTS_disp,A1          
@@ -1013,14 +1019,24 @@ PRINT_DEREF_ADDRESS
                MOVE.W   #14,D0
                TRAP     #15
                LEA      BUFFER, A6
-               CLR         D2
+               CLR      D2
+               CMP      #0, (A2)
+               BEQ      PRINT_ZEROES
+               BRA      PRINT_HEX
+               
+PRINT_ZEROES
+              LEA   BUFFER,A6
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              RTS
+PRINT_HEX
                MOVE.B      #16,D2          // Setup for Base-16 conversion
-               MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
+               MOVE.W      (A2),D1        // print the hex value in current address      
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
-
-
  ***************************
 
 GETSIZE_ADDQ
@@ -1181,6 +1197,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

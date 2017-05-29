@@ -77,13 +77,10 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-<<<<<<< HEAD
                  MOVE.W  (A2), D3
-=======
                 
                  ; MOVE.W  (A2), D3
 
->>>>>>> c5e1597a450ad16a26895b5beb2f859ce8e0553b
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ; MOVE.W  #$4E71,D3 * NOP
@@ -107,12 +104,10 @@ MAIN_LOOP
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ;MOVE.W        #$E2DC, D3  *LSR
-<<<<<<< HEAD
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2
                  MOVE.W  D3,D5       * Before manipulating opcode, store in D5 
                  MOVE.B  #12,D4      *Shift 12 bits to the right  
-=======
 
                  JSR    PRINT_ADDRESS      
                  
@@ -120,7 +115,6 @@ MAIN_LOOP
                  
                  MOVE.W  D3,D5
                  MOVE.B  #12,D4          *Shift 12 bits to the right  
->>>>>>> c5e1597a450ad16a26895b5beb2f859ce8e0553b
                  LSR.W   D4,D3       *Move the bits
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
@@ -549,16 +543,16 @@ LEA_DEST
 
 ADDQ
                 JSR     ADDQ_BUFFER
-                BRA     PRINT_BUFFER
+                RTS                 ;BRA     PRINT_BUFFER
 
 ADDQ_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'Q', (A6)+
+               JSR      GETSIZE_ADDQ
                ** TODO: ADD SIZE BASED ON BITS 9 TO 10
                ** VALID SIZES ARE B (00),W (01) ,L (10)
-               MOVE.B   #' ', (A6)+
                RTS
                
 MOVEQ
@@ -999,6 +993,36 @@ PRINT_ADDRESS
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
                  RTS                    
+                 
+                 
+***************************
+
+GETSIZE_ADDQ
+                 
+               ** VALID SIZES ARE B (00),W (01) ,L (10)
+               
+           JSR      bits8to10
+           CMP      #%000,D3
+           BNE      ADDQ_NOTBYTE
+           JSR      SIZEISBYTE
+           CLR      D3
+           RTS
+           
+ADDQ_NOTBYTE
+           CMP      #%001,D3
+           BNE      ADDQ_NOTWORD
+           JSR      SIZEISWORD
+           CLR      D3
+           RTS
+           
+ADDQ_NOTWORD
+           CMP      #%010,D3
+           BNE      INVALID_EA
+           JSR      SIZEISLONG
+           CLR      D3
+           RTS
+                 
+                                 
 ****************************
 
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
@@ -1128,6 +1152,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

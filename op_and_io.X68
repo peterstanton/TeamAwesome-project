@@ -131,7 +131,7 @@ MAIN_LOOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
                  * MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                 ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+                  MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
 
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
@@ -151,7 +151,7 @@ MAIN_LOOP
                  ; MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
-                   MOVE.W        #$C9A5, D3   *AND                      
+                  ; MOVE.W        #$C9A5, D3   *AND                      
                       
 
                  JSR    PRINT_ADDRESS
@@ -351,9 +351,17 @@ code1110
 
 code1111       JSR       INVALID_OP
 
+****************************************************************************************
+
+
 ADDA    
                JSR     ADDA_BUFFER
-               BRA     PRINT_BUFFER
+               JSR     ADDA_SRC
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               JSR     ADDA_DEST
+               RTS                      ;BRA     PRINT_BUFFER
+               
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -363,9 +371,36 @@ ADDA_BUFFER
                JSR      GETSIZE_ADDA
                MOVE.B   #' ', (A6)+
                RTS
+
+ADDA_SRC
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+
+ADDA_DEST
+                MOVE.W #%001,D3     ;Can only have an address register.
+                MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index
+                
+                JSR     bits5to7
+                JSR     insert_num
+                RTS
+               
+
+
                
                
-               
+****************************************************************************************           
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
@@ -381,6 +416,7 @@ ADD_BUFFER
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
+               CLR      D6
                JSR      ADD_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
@@ -398,11 +434,9 @@ ADD_DIRECTION_REVERSED
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
-***********************************************        
 
 
 
-****************************************************************************************
 ADD_SRC
 
                 JSR    bits11to13
@@ -429,6 +463,7 @@ ADD_DEST
                 JSR     insert_num
                 RTS
                         
+****************************************************************************************
 
 
 
@@ -1712,8 +1747,7 @@ GETSIZE_ADDA
         CLR     D3
         RTS
         
-
-        
+       
 ADDA_NOTWORD
         CMP     #%111,D3
         BNE     INVALID_EA
@@ -1748,6 +1782,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

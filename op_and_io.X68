@@ -66,6 +66,13 @@ IO_EndLoop      LEA     location_end_msg,A1
                 CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
                 BEQ    IO_StartLoop            *starts loop over due to invalidity
 *-----------------------------------------------------------
+                CLR D1
+                CLR D2
+                CLR D3
+                CLR D4
+                CLR D5
+                CLR D6
+                CLR D7
                 JSR MAIN_LOOP
 
 *** D3 - ISOLATED BITS FOR COMPARISONS
@@ -78,7 +85,7 @@ MAIN_LOOP
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                  
-                 ;MOVE.W  (A2), D3
+                 MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -102,7 +109,7 @@ MAIN_LOOP
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
-                   MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
+                  ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                       
 
                  JSR    PRINT_ADDRESS
@@ -114,11 +121,11 @@ MAIN_LOOP
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
                  
-                 ;CMP     A3,A2
-                 ;BGT     EXIT
-                 ;BRA     MAIN_LOOP
+                 CMP     A3,A2
+                 BGT     EXIT
+                 BRA     MAIN_LOOP
                  
-                 BRA      EXIT
+                 ;BRA      EXIT
                                 
     INCLUDE 'definitions.x68'
            
@@ -292,12 +299,10 @@ code1110
                 CMP     #%1110000111,D3
                 BEQ     ASL
                 
-                ** TODO: MASK REGISTERS AND FIND SIZE RIGHT AWAY
-                * LSL
-                CLR     D4
-                MOVE.L  D3,D4
-                AND.L   #11110001,D4
-                CMP     #%111000111,D4
+                * LSL -- has register/immediate shift and 
+                
+                ** bit 8 is the direction
+                CMP     #%111000111,D3
                 BEQ     LSL
                 
                 * LSR
@@ -981,6 +986,12 @@ MODE110
 ** ABSOLUTE AND IMMEDIATE            
 MODE111         
                 *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
+              * JSR      PRINT_ABSOLUTE_WORD
+               *JSR      PRINT_ABSOLUTE_LONG
+               *JSR      PRINT_IMMEDIATE_WORD
+               *JSR      PRINT_IMMEDIATE_LONG
+               
+               *** PRINT ABSOLUTE LONG
                MOVE.B   #'$', (A6)+  
                JSR      PRINT_DEREF_ADDRESS
                ADD.W    #2, A2
@@ -1356,6 +1367,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

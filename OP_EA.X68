@@ -1,17 +1,19 @@
 START  ORG $1000
+               
+               MOVEA.L #$1000,A2 ** TEST START ADDRESS
+               MOVEA.L #$1030,A3 ** TEST END ADDRESS
                JSR MAIN_LOOP
-
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
 *** D5 - CURRENT OPCODE
 ***
 *** 
 MAIN_LOOP
-                 MOVEA.L #$1000,A2
+                 
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 ;MOVE.W  (A2), D3
+                 MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -24,7 +26,7 @@ MAIN_LOOP
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
-                  MOVE.W    #$5201,D3    *ADDQ
+                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
@@ -40,7 +42,6 @@ MAIN_LOOP
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                       
-
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
                  MOVE.W  D3,D5       * Before manipulating opcode, store in D5 
@@ -488,7 +489,7 @@ ADDQ_DEST
                CLR     D3
                RTS
                
-
+                    
 ADDQ_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'D', (A6)+  
@@ -1083,7 +1084,7 @@ INVALID_EA
                 * TODO: IMPLEMENT
                 *** CLEAR OUT A6
                 ** PUT INVALID MESSAGE INTO A6
-                BRA EXIT
+                BRA MAIN_LOOP
 INVALID_OP  
                 ** TODO: IMPLEMENT
                *** CLEAR OUT A6
@@ -1099,26 +1100,28 @@ INVALID_OP
 NOP                 LEA     NOP_disp,A1          
                     MOVE.B  #14,D0
                     TRAP    #15
-                    BRA     EXIT
+                    RTS
                  
 RTS      
                     LEA     RTS_disp,A1          
                     MOVE.B  #14,D0
                     TRAP    #15 
-                    BRA     EXIT
+                    RTS
 JSR      
-                    LEA     BUFFER, A6
                     MOVE.B #'J', (A6)+
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    LEA     BUFFER, A1
-                    ** BITS 10 - 12 MODE       
-                    ** BITS 13 - 16 REGISTER
-                    MOVE.B  #14,D0
-                    TRAP    #15 
-                    BRA     EXIT
-                  
+                    MOVE.B #' ', (A6)+
+                    JSR    PRINT_ABSOLUTE_LONG
+                    RTS
+PRINT_ABSOLUTE_LONG    
+               MOVE.B   #'$', (A6)+
+               ADD.W    #2, A2  
+               JSR      PRINT_DEREF_ADDRESS
+               ADD.W    #2, A2
+               JSR      PRINT_DEREF_ADDRESS
+              
 MOVEM      
                    
                     ** SIZE SUBROUTINE
@@ -1132,7 +1135,7 @@ MOVEM
                    ** JSR     MOVEM_L
                     MOVE.B  #14,D0
                     TRAP    #15
-                    BRA     EXIT 
+                    RTS 
                     
 MOVEM_W 
                      LEA     MOVEM_disp,A1
@@ -1145,7 +1148,7 @@ MOVEM_W
                      MOVE.B  #14,D0
                      TRAP    #15 
         
-                     BRA     EXIT 
+                     RTS
      
    
 COPY_OPCODE 
@@ -1183,7 +1186,7 @@ PRINT_DEREF_ADDRESS
                LEA      BUFFER, A6
                CLR         D2
                MOVE.B      #16,D2          // Setup for Base-16 conversion
-               MOVE.W      (A2),D1        // PRINT INVALID HEX OPCODE        
+               MOVE.W      (A2),D1        // PRINT HEX  OPCODE IN ADDRESS        
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
@@ -1523,6 +1526,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

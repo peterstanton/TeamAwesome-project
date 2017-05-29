@@ -131,7 +131,7 @@ MAIN_LOOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
                  * MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                  MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+                 ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
 
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
@@ -152,7 +152,7 @@ MAIN_LOOP
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                   ; MOVE.W        #$C9A5, D3   *AND                      
-                      
+                    MOVE.W        #$4E96, D3    JSR     (A6)                      
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -1312,17 +1312,48 @@ RTS
                     TRAP    #15 
                     BRA     EXIT
 JSR      
-                    LEA     BUFFER, A6
+                    ;LEA     BUFFER, A6
+                    JSR     bits5to7
+                    CMP     #%111,D3
+                    BNE     INVALID_EA
+                    CLR     D3
+                    JSR     bits8to10
+                    CMP     #%010,D3
+                    BNE     INVALID_EA
+                    CLR     D3
+                                       
+                    JSR     bits11to13
+                    MOVE    D3,D4
+                    CMP     #%000,D3
+                    BEQ     INVALID_EA
+                    CMP     #%001,D3
+                    BEQ     INVALID_EA
+                    CMP     #%011,D3
+                    BEQ     INVALID_EA
+                    CMP     #%100,D3
+                    BEQ     INVALID_EA
+                    
+                    
                     MOVE.B #'J', (A6)+
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    LEA     BUFFER, A1
+                    LEA     jmp_mode,A0    *Index into the table
+                    MULU    #6,D3       *Form offset     
+                    JSR     0(A0,D3)   *Jump indirect with index
+                    
+                    CLR     D3
+                    
+                    JSR     bits14to16
+                    JSR     insert_num
+                    CLR     D4
+
+                    ;LEA     BUFFER, A1
                     ** BITS 10 - 12 MODE       
                     ** BITS 13 - 16 REGISTER
-                    MOVE.B  #14,D0
-                    TRAP    #15 
-                    BRA     EXIT
+                    ;MOVE.B  #14,D0
+                    ;TRAP    #15 
+                    RTS
                   
 MOVEM      
                    
@@ -1782,6 +1813,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

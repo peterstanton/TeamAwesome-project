@@ -77,11 +77,11 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  (A2), D3
+                MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
-                 ; MOVE.W  #$4E71,D3 * NOP
+                 ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
@@ -1132,6 +1132,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

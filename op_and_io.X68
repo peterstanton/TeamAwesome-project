@@ -580,6 +580,8 @@ MOVEQ_BUFFER
                MOVE.B   #'V', (A6)+
                MOVE.B   #'E', (A6)+
                MOVE.B   #'Q', (A6)+
+               MOVE.B   #'.', (A6)+
+               MOVE.B   #'L', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
 
@@ -847,7 +849,8 @@ CMP_DEST
 
 ************************************************               
 
-               
+************************************************               
+              
 MULS
                 JSR     MULS_BUFFER
                 BRA     PRINT_BUFFER
@@ -857,8 +860,12 @@ MULS_BUFFER
                MOVE.B   #'U', (A6)+  
                MOVE.B   #'L', (A6)+
                MOVE.B   #'S', (A6)+
+               JSR      GETSIZE_MULS
                MOVE.B   #' ', (A6)+
                RTS
+
+
+************************************************               
 
 AND    
                JSR     AND_BUFFER
@@ -931,6 +938,9 @@ jmp_mode
 
                 
 insert_num
+                
+                CMP     #%111,D3
+                BEQ     FINISHER
                 
                 ;get number from D3
                 CMP     #%000,D3       ;0
@@ -1283,6 +1293,15 @@ ADDQ_NOTWORD
                  
                                  
 ****************************
+GETSIZE_MULS
+            
+
+
+
+
+****************************
+
+
 GETSIZE_CMP
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
@@ -1579,6 +1598,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

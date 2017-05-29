@@ -2,6 +2,7 @@
 Assembler used: EASy68K Editor/Assembler v5.15.04
 Created On: 5/28/2017 4:05:56 PM
 
+
 00000000                             1  *** D3 - ISOLATED BITS FOR COMPARISONS
 00000000                             2  *** D4 - MODE
 00000000                             3  *** D5 - CURRENT OPCODE

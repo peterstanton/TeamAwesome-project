@@ -89,9 +89,9 @@ MAIN_LOOP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
-                 ; MOVE.W    #$5201,D3    *ADDQ
+                  MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
@@ -532,6 +532,7 @@ LEA_DEST
                 LEA     jmp_mode,A0    * LOAD MODE TABLE FOR JUMPING            
                 MOVE.W  #%001,D3    * LEA CAN ONLY HAVE AN AS DESTINATION
                 MOVE    D3,D4
+                LEA     jmp_mode,A0    *Index into the table
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
                 
@@ -543,7 +544,33 @@ LEA_DEST
 
 ADDQ
                 JSR     ADDQ_BUFFER
+                JSR     ADDQ_SRC
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                JSR     ADDQ_DEST
                 RTS                 ;BRA     PRINT_BUFFER
+
+ADDQ_SRC
+                JSR     bits5to7
+                MOVE.B  #'#',(A6)+
+                MOVE.B  #%000,D4
+                JSR     insert_num
+                CLR     D4
+                RTS
+                
+ADDQ_DEST
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+               
 
 ADDQ_BUFFER
                MOVE.B   #'A',(A6)+
@@ -567,6 +594,10 @@ MOVEQ_BUFFER
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
+               
+               
+
+            
 
 DIVU
                 JSR     DIVU_BUFFER
@@ -1152,6 +1183,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

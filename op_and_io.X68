@@ -87,9 +87,9 @@ MAIN_LOOP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
-                 ; MOVE.W    #$5201,D3    *ADDQ
+                  MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
@@ -1181,6 +1181,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

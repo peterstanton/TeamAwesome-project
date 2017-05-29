@@ -1,4 +1,4 @@
-START ORG $1000
+START  ORG $1000
 *-----------------------------------------------------------
 * Title      :
 * Written by :
@@ -9,8 +9,6 @@ START ORG $1000
                 LEA     welcome_msg, A1
                 MOVE.B  #13,D0
                 TRAP    #15
-                
-                MOVE.B  #7,linecount            *initializes a counter to keep track of how many lines on screen
 *-----------------------------------------------------------
 *Gets the starting and ending inputs
 *First, the start address prompt and location
@@ -64,55 +62,24 @@ IO_EndLoop      LEA     location_end_msg,A1
                 TRAP    #15
                 
                 
-                JSR    sub_endReadingData       *checks the validity of the start address
-                CMP.B  #1, D7                   *checks of subroutine returned 1, if so then invalid
-                BEQ    IO_StartLoop             *starts loop over due to invalidity
+                JSR    sub_endReadingData    *checks the validity of the start address
+                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
+                BEQ    IO_StartLoop            *starts loop over due to invalidity
 *-----------------------------------------------------------
-IO_Screen       JSR    MAIN_LOOP
-                ADDQ.B  #1,linecount            *adds to the linecount after each line
+                CLR D1
+                CLR D2
+                CLR D3
+                CLR D4
+                CLR D5
+                CLR D6
+                CLR D7
+                JSR MAIN_LOOP
 
-                
-                CMP     #29,linecount           *checks if the linecounter is at 29
-                BEQ     IO_PauseOutput          *if so, will pause the output
-                
-                CMPA.L  A4,A5                   *checks if the end of the input has been reached
-                BGE     IO_EndProgram
-                
-                ADDA.W  #2,A3                   If not, goes to the next opcode
-                BRA     IO_Screen               Start main loop over
-*-----------------------------------------------------------
-IO_PauseOutput  LEA     pause_msg,A1
-                MOVE.B  #14,D0
-                TRAP    #15
-                
-                MOVE.B  #5,D0                   *user press enter to continue
-                TRAP    #15
-                
-                MOVE.B  #0,linecount            *update linecount to 0
-                BRA     IO_Screen               *start the reading again
-*-----------------------------------------------------------
-IO_EndProgram   LEA     endTest_msg,A1
-                MOVE.B  #14,D0
-                TRAP    #15
-                
-*check the user input
-                LEA     input_buffer,A1
-                MOVE.B  #2,D0
-                TRAP    #15
-                
-                LEA     linebreak,A1
-                MOVE.B  #14,D0
-                TRAP    #15
-                
-                MOVE.B  #5,linebreak
-                
-                MOVE.B  input_buffer,D7         *puts the input buffer into D7
-                CMPI.L  #$79657300,D7           *checks of the input is yes
-                BEQ     IO_StartLoop            *if it is yes, then start over
-                
-                BRA     EXIT                    *else, end program
-*-----------------------------------------------------------
-
+*** D3 - ISOLATED BITS FOR COMPARISONS
+*** D4 - MODE
+*** D5 - CURRENT OPCODE
+***
+*** 
 MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
@@ -1400,6 +1367,31 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

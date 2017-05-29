@@ -111,20 +111,10 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
-<<<<<<< Updated upstream
-                 
-                 CMP     A3,A2
-                 BGT     EXIT
-                 BRA     MAIN_LOOP
-=======
                  ;CMP     A3,A2
                  ;BGT     EXIT
                  ;BRA     MAIN_LOOP
                  BRA      EXIT
->>>>>>> Stashed changes
-                 
-                 BRA      EXIT
-                 
                                 
     INCLUDE 'definitions.x68'
            
@@ -532,17 +522,43 @@ LEA_DEST
 
 ADDQ
                 JSR     ADDQ_BUFFER
-                BRA     PRINT_BUFFER
+                JSR     ADDQ_SRC
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                JSR     ADDQ_DEST
+                RTS                 ;BRA     PRINT_BUFFER
+
+ADDQ_SRC
+                JSR     bits5to7
+                MOVE.B  #'#',(A6)+
+                MOVE.B  #%000,D4
+                JSR     insert_num
+                CLR     D4
+                RTS
+                
+ADDQ_DEST
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+               
 
 ADDQ_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'D', (A6)+  
                MOVE.B   #'D', (A6)+
                MOVE.B   #'Q', (A6)+
+               JSR      GETSIZE_ADDQ
                ** TODO: ADD SIZE BASED ON BITS 9 TO 10
                ** VALID SIZES ARE B (00),W (01) ,L (10)
-               MOVE.B   #' ', (A6)+
-               RTS
+               RTS               
                
 MOVEQ
                 JSR     MOVEQ_BUFFER
@@ -1003,7 +1019,38 @@ PRINT_DEREF_ADDRESS
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
- 
+
+
+ ***************************
+
+GETSIZE_ADDQ
+                 
+               ** VALID SIZES ARE B (00),W (01) ,L (10)
+               
+           JSR      bits8to10
+           CMP      #%000,D3
+           BNE      ADDQ_NOTBYTE
+           JSR      SIZEISBYTE
+           CLR      D3
+           RTS
+           
+ADDQ_NOTBYTE
+           CMP      #%001,D3
+           BNE      ADDQ_NOTWORD
+           JSR      SIZEISWORD
+           CLR      D3
+           RTS
+           
+ADDQ_NOTWORD
+           CMP      #%010,D3
+           BNE      INVALID_EA
+           JSR      SIZEISLONG
+           CLR      D3
+           RTS
+                 
+                                 
+****************************
+****************************
                    
 ****************************
 
@@ -1134,6 +1181,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

@@ -136,7 +136,7 @@ MAIN_LOOP
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
-                  MOVE.W    #$5201,D3    *ADDQ
+                 ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
@@ -145,12 +145,13 @@ MAIN_LOOP
                  ; MOVE.W        #$9000, D3 * SUB
                  ; MOVE.W        #$B000, D3 * CMP
                  ; MOVE.W        #$C1C0, D3 * MULS
-                  MOVE.W        #$C000, D3 * AND
+                 ; MOVE.W        #$C000, D3 * AND
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
+                   MOVE.W        #$C9A5, D3   *AND                      
                       
 
                  JSR    PRINT_ADDRESS
@@ -1747,6 +1748,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

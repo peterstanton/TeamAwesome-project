@@ -78,7 +78,8 @@ MAIN_LOOP
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                 
-                 MOVE.W  (A2), D3
+                 ; MOVE.W  (A2), D3
+
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
                  ; MOVE.W  #$4E71,D3 * NOP
@@ -87,7 +88,8 @@ MAIN_LOOP
                  ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ; MOVE.W  #$D64A, D3  * ADD.W A2,D3
+                 MOVE.W  #$D64A, D3  * ADD.W A2,D3
+
                  ; MOVE.W    #$5201,D3    *ADDQ
 
                  ; MOVE.W     #$7E70, D3 *MOVEQ
@@ -101,8 +103,8 @@ MAIN_LOOP
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ;MOVE.W        #$E2DC, D3  *LSR
-                 JSR    PRINT_ADDRESS
-      
+
+                 JSR    PRINT_ADDRESS      
                  
                  
                  
@@ -1007,6 +1009,7 @@ COPY_OPCODE
                      CLR    D2  
                      MOVE.W D5,D2 
                      RTS  
+
 PRINT_ADDRESS     
                  CLR         D2
                  MOVE.B      #16,D2          // Setup for Base-16 conversion
@@ -1017,8 +1020,7 @@ PRINT_ADDRESS
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
-                 RTS
-                    
+                 RTS                    
 ****************************
 
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
@@ -1132,13 +1134,15 @@ SIZEISBYTE
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
-        MOVE.B   #' ',(A6)+
+       MOVE.B   #' ',(A6)+
        CLR      D3
        RTS
                 
 SIZEISLONG    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
+       MOVE.B   #' ',(A6)+
+
        CLR      D3
        RTS
                 

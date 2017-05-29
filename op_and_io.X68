@@ -85,13 +85,13 @@ MAIN_LOOP
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
                   ; MOVE.W    #$5613, D3    *ADDQ.B #$3, (A3)
                  ; MOVE.W     #$7E70, D3 *MOVEQ
-                 ; MOVE.W     #$80C0, D3 *DIVU
+                  MOVE.W     #$80C0, D3 *DIVU
                  ; MOVE.W     #$8000, D3 * OR
                  ; MOVE.W        #$9000, D3 * SUB
                  ; MOVE.W        #$B000, D3 * CMP
@@ -577,9 +577,20 @@ MOVEQ_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
 
+
+****************************************
+
 DIVU
+                JSR     bits8to10
+                CMP     #%011,D3
+                BNE     INVALID_EA
+                CLR     D3
                 JSR     DIVU_BUFFER
-                BRA     PRINT_BUFFER
+                JSR     DIVU_SRC
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                JSR     DIVU_DEST
+                RTS                 ;BRA     PRINT_BUFFER
 
 DIVU_BUFFER
                MOVE.B   #'D',(A6)+
@@ -588,6 +599,38 @@ DIVU_BUFFER
                MOVE.B   #'U', (A6)+
                MOVE.B   #' ', (A6)+
                RTS  
+               
+               
+DIVU_SRC
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+               
+DIVU_DEST
+               MOVE    #%000,D3     ;DIVU destination can only be a data register.
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits5to7
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+               
+               
+               
+*****************************************               
+               
 OR    
                JSR     OR_BUFFER
                BRA     PRINT_BUFFER
@@ -1070,7 +1113,6 @@ ADDQ_NOTWORD
                    
 ****************************
 
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
 GETSIZE_ADD
@@ -1197,6 +1239,9 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
+
 
 
 

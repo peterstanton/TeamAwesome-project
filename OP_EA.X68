@@ -1072,7 +1072,11 @@ ASL_MEM
 
 ASR_REG     
                 JSR     ASR_BUFFER
-                BRA     PRINT_BUFFER
+                RTS         ;BRA     PRINT_BUFFER
+                
+ASL_REG
+                JSR     ASL_BUFFER
+                RTS                
 
 ASR_BUFFER
                MOVE.B   #'A',(A6)+
@@ -1088,6 +1092,10 @@ ASL_BUFFER
                MOVE.B   #'L', (A6)+
                MOVE.B   #' ', (A6)+
                RTS     
+
+
+**************************************************
+
 
 LSL     
                 JSR     LSL_BUFFER
@@ -1884,6 +1892,7 @@ BUFFER DC.L 1
     END START 
 
                
+
 
 
 *~Font name~Courier New~

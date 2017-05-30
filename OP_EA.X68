@@ -1,7 +1,7 @@
 START  ORG $1000
                
-               ;MOVEA.L #$1000,A2 ** TEST START ADDRESS
-              ; MOVEA.L #$1030,A3 ** TEST END ADDRESS
+               MOVEA.L #$1000,A2 ** TEST START ADDRESS
+               MOVEA.L #$1030,A3 ** TEST END ADDRESS
                
                
                JSR MAIN_LOOP
@@ -40,8 +40,8 @@ MAIN_LOOP
                  ; MOVE.W        #$C000, D3 * AND
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
-                  MOVE.W        #$E393, D3  *LSL
-                 ; MOVE.W        #$E2DC, D3  *LSR
+                  ; MOVE.W        #$E393, D3  *LSL
+                  MOVE.W        #$E2D1, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                       
                  JSR    PRINT_ADDRESS
@@ -882,7 +882,7 @@ ASL_BUFFER
 
 LSL     
                 JSR     LSL_BUFFER
-                BRA     PRINT_BUFFER
+                RTS
 
 LSL_BUFFER
                MOVE.B   #'L',(A6)+

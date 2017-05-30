@@ -841,6 +841,9 @@ CMP_DEST
               
 MULS
                 JSR     MULS_BUFFER
+                
+                ;go to word, long, etc.
+                
                 BRA     PRINT_BUFFER
 
 MULS_BUFFER
@@ -1734,6 +1737,7 @@ BUFFER DC.L 1
 
 =======
 >>>>>>> e891c9421631837c9b89106a30a027086048ffcf
+
 
 *~Font name~Courier New~
 *~Font size~10~

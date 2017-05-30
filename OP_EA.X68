@@ -287,6 +287,7 @@ MOVEA_L
         MOVE.B  #'A', (A6)+
         JSR     SIZEISLONG
         RTS
+        
 MOVE_BUFFER
         MOVE.B  #'M', (A6)+
         MOVE.B  #'O', (A6)+
@@ -328,7 +329,6 @@ ADD_BUFFER
                
                
 ADD_DIRECTION_REVERSED
-
                CLR      D6
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
@@ -343,7 +343,6 @@ ADD_DIRECTION_REVERSED
 
 ****************************************************************************************
 ADD_SRC
-
                 JSR    bits11to13
                 MOVE   D3,D4
                 LEA     jmp_mode,A0    *Index into the table
@@ -352,11 +351,7 @@ ADD_SRC
                 JSR    bits14to16
                 JSR    insert_num
                 RTS
-
-
-
-
-
+                
 ADD_DEST
                 MOVE.W #%000,D3     ;Can only have a data register.
                 MOVE   D3,D4
@@ -623,9 +618,7 @@ DIVU_DEST
 *****************************************               
                
 OR    
-               JSR     OR_BUFFER
-               
-                           
+               JSR     OR_BUFFER              
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                CMP      #1,D6
                BNE      OR_DIRECTION_REVERSED

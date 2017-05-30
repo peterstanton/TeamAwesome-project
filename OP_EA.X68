@@ -847,12 +847,26 @@ CMP_BUFFER
                
 ************************************************               
               
+************************************************               
+              
 MULS
-                JSR     MULS_BUFFER
+                JSR     MULS_BUFFER  ;returns with size bits in D3
+                CMP     #%000,D3
+                BNE     MULS_MAIN_SIZENOTWORD
+                CLR     D3
+                JSR     MULS_ISWORD
+                BRA     MULS_DONE
+                
+MULS_MAIN_SIZENOTWORD
+                CLR     D3
+                JSR     MULS_ISLONG
+                BRA     MULS_DONE
                 
                 ;go to word, long, etc.
                 
-                BRA     PRINT_BUFFER
+MULS_DONE                
+                RTS                     ;BRA     PRINT_BUFFER
+
 
 MULS_BUFFER
                MOVE.B   #'M',(A6)+
@@ -863,6 +877,59 @@ MULS_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
 
+
+
+MULS_ISWORD
+               CLR      D3
+               CLR      D4
+               JSR      bits11to13
+               CMP      #%001,D3
+               BEQ      INVALID_EA
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               MOVE.B  #'D',(A6)+
+               
+               JSR     bits5to7
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+               
+
+
+MULS_ISLONG
+               CLR      D3
+               CLR      D4
+               JSR      bits11to13
+               JSR      bits11to13
+               CMP      #%001,D3
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               MOVE.B  #'D',(A6)+
+               
+               MOVE.B  #%100,D3
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+
+************************************************    
 
 ************************************************    
 
@@ -948,7 +1015,8 @@ ASR_BUFFER
                MOVE.B   #' ', (A6)+
                RTS      
 
-ASL_REG     
+ASL_MEM     
+
                 JSR     ASL_BUFFER
                 BRA     PRINT_BUFFER
 
@@ -1364,9 +1432,23 @@ ADDQ_NOTWORD
 
 
 
-****************************
+****************************  
 GETSIZE_MULS
+            JSR     bits8to10
+            CMP     #%111,D3
+            BNE     MULS_NOTWORD
+            JSR     SIZEISWORD
+            RTS
+
+MULS_NOTWORD
+            CMP     #%000,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            RTS
             
+
+
+
 
 
 
@@ -1670,6 +1752,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
                
 *~Font name~Courier New~
 *~Font size~10~

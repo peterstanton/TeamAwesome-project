@@ -153,8 +153,8 @@ MAIN_LOOP
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                   ; MOVE.W        #$C9A5, D3   *AND                      
                   ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
-                    MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                                            
+                  ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
+                    MOVE.W       #$E342,D3      *ASL                                               
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -1983,6 +1983,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

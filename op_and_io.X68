@@ -146,13 +146,15 @@ MAIN_LOOP
                  ; MOVE.W        #$B000, D3 * CMP
                  ; MOVE.W        #$C1C0, D3 * MULS
                  ; MOVE.W        #$C000, D3 * AND
-                 ; MOVE.W        #$E0F8, D3  *ASR
+                  ;MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                   ; MOVE.W        #$C9A5, D3   *AND                      
-                    MOVE.W        #$4E96, D3    JSR     (A6)                      
+                  ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
+                    MOVE.W        #$E042,D3        ; ASR.W     #8,D2
+                                            
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -1016,29 +1018,150 @@ AND_BUFFER
 **************************************************
 
 
-
+**************************************************
 
 ASR     
                 JSR     ASR_BUFFER
-                BRA     PRINT_BUFFER
+ASL_ENTRY       JSR     bits11to13
+                MOVE    D3,D4
+                CMP     #%000,D3
+                BEQ     ASR_SHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     ASR_INREGISTER
+                
+                BRA     INVALID_EA
+
+ASR_SHIFTCOUNT
+                JSR     bits5to7
+                MOVE.B  #'#',(A6)+
+                JSR     SHIFTCOUNT_NUMBERPARSER
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                BRA     ASR_TARGET
+                
+                
+
+ASR_INREGISTER
+                JSR     bits5to7
+                MOVE.B  #'D',(A6)+
+                JSR     REGISTER_NUMBERPARSER
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                BRA     ASR_TARGET
+
+ASR_TARGET
+                CLR     D3
+                CLR     D4
+                JSR     bits14to16
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index  
+                CLR     D3
+                JSR     bits5to7    
+                JSR     insert_num
+                CLR     D3
+                CLR     D4                       
+                BRA     ASR_DONE             
+                              
+                
+ASR_DONE                
+                RTS         ; BRA     PRINT_BUFFER
 
 ASR_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'S', (A6)+  
                MOVE.B   #'R', (A6)+
+               JSR      GETSIZE_ASR
                MOVE.B   #' ', (A6)+
                RTS      
+               
+;~~~~~~~~~               
+REGISTER_NUMBERPARSER 
+              CMP       #%000,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_ONE
+              MOVE.B    #'0',(A6)+
+              CLR       D3
+              RTS    
+          
+    
+;~~~~~~~~~~~~~              
+SHIFTCOUNT_NUMBERPARSER
+              CMP       #%000,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_ONE
+              MOVE.B    #'8',(A6)+
+              CLR       D3
+              RTS    
+          
+SHIFTCOUNT_NUMBERPARSER_ONE 
+              CMP       #%001,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_TWO
+              MOVE.B    #'1',(A6)+
+              CLR       D3
+              RTS        
+               
+               
+SHIFTCOUNT_NUMBERPARSER_TWO 
+              CMP       #%010,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_THREE
+              MOVE.B    #'2',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_THREE 
+              CMP       #%011,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_FOUR
+              MOVE.B    #'3',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_FOUR 
+              CMP       #%100,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_FIVE
+              MOVE.B    #'4',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_FIVE 
+              CMP       #%101,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_SIX
+              MOVE.B    #'5',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_SIX 
+              CMP       #%110,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_SEVEN
+              MOVE.B    #'6',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_SEVEN 
+              CMP       #%111,D3
+              BNE       INVALID_EA
+              MOVE.B    #'7',(A6)+
+              CLR       D3
+              RTS        
+               
+;~~~~~~~~~~~~~               
+**************************************************
 
 ASL     
                 JSR     ASL_BUFFER
-                BRA     PRINT_BUFFER
+                JSR     ASL_ENTRY
+                RTS
 
 ASL_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'S', (A6)+  
                MOVE.B   #'L', (A6)+
+               JSR      GETSIZE_ASL
                MOVE.B   #' ', (A6)+
                RTS     
+
+
+*******************************************************
+
+
 
 LSL     
                 JSR     LSL_BUFFER
@@ -1767,7 +1890,54 @@ ADDI_NOTWORD
                             
                      
 ********************************          
-                     
+GETSIZE_ASR
+            JSR     bits8to10
+            CMP     #%000,D3
+            BNE     ASR_NOTBYTE
+            JSR     SIZEISBYTE
+            CLR     D3
+            RTS
+
+ASR_NOTBYTE
+            CMP     #%001,D3
+            BNE     ASR_NOTWORD
+            JSR     SIZEISWORD
+            CLR     D3
+            RTS
+            
+ASR_NOTWORD
+            CMP     #%010,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            CLR     D3
+            RTS
+    
+**************************************************
+GETSIZE_ASL
+            JSR     bits8to10
+            CMP     #%100,D3
+            BNE     ASL_NOTBYTE
+            JSR     SIZEISBYTE
+            CLR     D3
+            RTS
+
+ASL_NOTBYTE
+            CMP     #%101,D3
+            BNE     ASL_NOTWORD
+            JSR     SIZEISWORD
+            CLR     D3
+            RTS
+            
+ASL_NOTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            CLR     D3
+            RTS
+
+**************************************************
+
+             
                      
 ********************************                     
 GETSIZE_ADDA
@@ -1813,6 +1983,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

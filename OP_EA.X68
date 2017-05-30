@@ -1202,6 +1202,31 @@ ASR_REG
                 BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
                 CMP     #%100,D3
                 BEQ     AS_REG_HOLDSSHIFTREG
+
+ASL_REG
+
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     ASL_BUFFER          
+     
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
+             
+
                 
 AS_DONE
                 RTS
@@ -1268,8 +1293,6 @@ AS_REG_HOLDSSHIFTREG
                 CLR     D3
                 BRA     AS_GETDEST
                 
-
-
 
 
 AS_GETDEST                
@@ -2115,6 +2138,7 @@ BUFFER DC.L 1
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 =======
 >>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
 
 
 

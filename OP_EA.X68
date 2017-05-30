@@ -1089,8 +1089,40 @@ ASL_BUFFER
                MOVE.B   #' ', (A6)+
                RTS     
 
+
+****************************************************
 LSL     
+                JSR     bits5to7
+                CMP     #%001,D3
+                BNE     INVALID_EA
+                CLR     D3
+                
+                JSR     bits8to10
+                CMP     #100,D3
+                BEQ     INVALID_EA
+                CMP     #101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CLR     D3
+                
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                                         
                 JSR     LSL_BUFFER
+                
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR     bits14to16
+               JSR     insert_num
+                
                 RTS
 
 LSL_BUFFER
@@ -1101,8 +1133,29 @@ LSL_BUFFER
                RTS     
 
 LSR     
+                JSR     bits5to7
+                CMP     #%001,D3
+                BNE     INVALID_EA
+                CLR     D3
+                
+                JSR     bits8to10
+                CMP     #000,D3
+                BEQ     INVALID_EA
+                CMP     #001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CLR     D3
+                
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                                         
                 JSR     LSR_BUFFER
-                BRA     PRINT_BUFFER
+                
+               RTS                     ;BRA     PRINT_BUFFER
 
 LSR_BUFFER
                MOVE.B   #'L',(A6)+
@@ -1884,6 +1937,7 @@ BUFFER DC.L 1
     END START 
 
                
+
 
 
 *~Font name~Courier New~

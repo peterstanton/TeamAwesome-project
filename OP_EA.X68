@@ -1,7 +1,7 @@
 START  ORG $1000
                
-               MOVEA.L #$1000,A2 ** TEST START ADDRESS
-               MOVEA.L #$1030,A3 ** TEST END ADDRESS
+               ;MOVEA.L #$1000,A2 ** TEST START ADDRESS
+              ; MOVEA.L #$1030,A3 ** TEST END ADDRESS
                
                
                JSR MAIN_LOOP
@@ -15,7 +15,7 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 MOVE.W  (A2), D3
+                ; MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -40,7 +40,7 @@ MAIN_LOOP
                  ; MOVE.W        #$C000, D3 * AND
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
-                 ; MOVE.W        #$E393, D3  *LSL
+                  MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                       
@@ -53,10 +53,10 @@ MAIN_LOOP
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
 
-                 CMP     A3,A2
-                 BGT     EXIT
-                 BRA     MAIN_LOOP
-                 *BRA      EXIT
+                 ;CMP     A3,A2
+                 ;BGT     EXIT
+                 ;BRA     MAIN_LOOP
+                 BRA      EXIT
                                 
     INCLUDE 'definitions.x68'
     INCLUDE 'TEST_CODE.x68'
@@ -242,18 +242,18 @@ code1110
                 * LSL -- has register/immediate shift and 
                 
                 ** bit 8 is the direction
-                CMP     #%111000111,D3
+                CMP     #%1110001110,D3
                 BEQ     LSL
                 
                 * LSR
-                CMP     #%1110001011,D3
+                CMP     #%1110001010,D3
                 BEQ     LSR
                 
                 * ROL
                 
                 * ROR
 
-code1111       JSR       INVALID_OP
+code1111       BRA       INVALID_OP
 
 ADDA    
                JSR     ADDA_BUFFER
@@ -1031,7 +1031,7 @@ bits1to10
                CLR      D3
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%1111111111000000, D2
-               ROR.L    #6, D2
+               ROR.L    #6, D2 
                MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
 ** DN       
@@ -1571,6 +1571,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

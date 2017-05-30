@@ -22,9 +22,14 @@ MAIN_LOOP
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
+<<<<<<< HEAD
                  * MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ; MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
 
+=======
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
 
@@ -43,7 +48,15 @@ MAIN_LOOP
                   ; MOVE.W        #$E393, D3  *LSL
                   ; MOVE.W        #$E2D1, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
+<<<<<<< HEAD
                       
+=======
+                  ; MOVE.W        #$C9A5, D3   *AND                      
+                  ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
+                  ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
+                    MOVE.W       #$E342,D3      *ASL                                               
+
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
                  MOVE.W  D3,D5       * Before manipulating opcode, store in D5 
@@ -701,6 +714,7 @@ OR_DEST
 
 
 
+
 ***********************************************
 
 SUB   
@@ -737,6 +751,12 @@ SUB_BUFFER
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                MOVE.B   #' ', (A6)+
                RTS  
+<<<<<<< HEAD
+               
+               
+               
+SUB_SRC
+=======
                
                
                
@@ -767,6 +787,76 @@ SUB_DEST
                CLR     D4
                RTS   
               
+************************************************   
+************************************************               
+              
+               
+               
+CMP   
+               JSR     CMP_BUFFER
+                              ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               CMP      #1,D6
+               BNE      CMP_DIRECTION_REVERSED
+               CLR      D6
+               JSR      CMP_SRC
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      CMP_DEST
+               RTS
+               
+               
+CMP_DIRECTION_REVERSED
+               CLR      D6
+               JSR      CMP_DEST
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      CMP_SRC             
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA>                               
+               RTS                  ;BRA     PRINT_BUFFER
+               
+                              
+CMP_BUFFER
+               MOVE.B   #'C',(A6)+
+               MOVE.B   #'M', (A6)+  
+               MOVE.B   #'P', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS   
+               
+               
+               
+CMP_SRC
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+<<<<<<< HEAD
+               RTS
+
+
+SUB_DEST
+               MOVE.B  #%000,D3
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits5to7    
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS   
+              
 ************************************************               
                
                
@@ -777,6 +867,47 @@ SUB_DEST
 CMP   
                JSR     CMP_BUFFER
                               ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+=======
+               RTS
+
+
+CMP_DEST
+               MOVE.B  #%000,D3
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits5to7    
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS   
+
+************************************************
+               
+************************************************               
+              
+MULS
+                JSR     MULS_BUFFER
+                BRA     PRINT_BUFFER
+
+MULS_BUFFER
+               MOVE.B   #'M',(A6)+
+               MOVE.B   #'U', (A6)+  
+               MOVE.B   #'L', (A6)+
+               MOVE.B   #'S', (A6)+
+               JSR      GETSIZE_MULS
+               MOVE.B   #' ', (A6)+
+               RTS
+
+
+************************************************    
+
+AND    
+               JSR     AND_BUFFER
+                                             ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
                CMP      #1,D6
                BNE      CMP_DIRECTION_REVERSED
                CLR      D6
@@ -872,7 +1003,54 @@ AND_BUFFER
                MOVE.B   #' ', (A6)+
                RTS    
 
+<<<<<<< HEAD
 ASR     
+=======
+
+
+**************************************************
+ASR_MEM
+                JSR     ASR_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR      bits14to16
+               JSR      insert_num
+               RTS
+            
+**************************************************
+ASL_MEM
+                JSR     ASL_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR      bits14to16
+               JSR      insert_num
+               RTS 
+
+
+**************************************************
+
+ASR_REG     
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
                 JSR     ASR_BUFFER
                 BRA     PRINT_BUFFER
 
@@ -883,7 +1061,7 @@ ASR_BUFFER
                MOVE.B   #' ', (A6)+
                RTS      
 
-ASL     
+ASL_REG     
                 JSR     ASL_BUFFER
                 BRA     PRINT_BUFFER
 
@@ -1285,8 +1463,12 @@ ADDQ_NOTWORD
            JSR      SIZEISLONG
            CLR      D3
            RTS
-                 
-                                 
+           
+************************************                 
+
+
+
+
 ****************************
 GETSIZE_MULS
             
@@ -1601,12 +1783,15 @@ BUFFER DC.L 1
 
 
 
+<<<<<<< HEAD
 
 
 
 
 
 
+=======
+>>>>>>> e891c9421631837c9b89106a30a027086048ffcf
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

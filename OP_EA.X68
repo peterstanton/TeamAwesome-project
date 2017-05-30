@@ -964,19 +964,59 @@ AND
                JSR     AND_BUFFER
                                              ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                CMP      #1,D6
-               BNE      CMP_DIRECTION_REVERSED
+               BNE      AND_DIRECTION_REVERSED
                CLR      D6
                JSR      CMP_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
                JSR      CMP_DEST
                RTS
-                
+
+AND_DIRECTION_REVERSED
+               CLR      D6
+               JSR      AND_DEST
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      AND_SRC             
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA>                               
+               RTS                  ;BRA     PRINT_BUFFER
+               
+                             
+               
+                         
+AND_SRC
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+
+
+AND_DEST
+               MOVE.B  #%000,D3
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits5to7    
+               JSR     insert_num
+               CLR     D3
+               CLR     D4                       
+               RTS             
+
 AND_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'N', (A6)+  
                MOVE.B   #'D', (A6)+
-               MOVE.B   #'.', (A6)+
+               JSR      GETSIZE_AND
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
@@ -1482,6 +1522,59 @@ MULS_NOTWORD
 
 
 
+****************************
+
+GETSIZE_AND
+
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA>
+            JSR     bits8to10
+            CMP     #000,D3
+            BNE     AND_NOTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTBYTE 
+            CMP     #%001,D3
+            BNE     AND_NOTWORD
+            JSR     SIZEISWORD
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTWORD
+            CMP     #%010,D3
+            BNE     AND_NOTLEFT
+            JSR     SIZEISLONG
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTLEFT     ;check other direction
+            CMP     #%100,D3
+            BNE     AND_NOTRIGHTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+            
+AND_NOTRIGHTBYTE
+            CMP     #%101,D3
+            BNE     AND_NOTRIGHTWORD
+            JSR     SIZEISWORD
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+
+AND_NOTRIGHTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            MOVE    #2,D6
+            CLR     D3
+            RTS 
 
 
 
@@ -1786,6 +1879,7 @@ BUFFER DC.L 1
     END START 
 
                
+
 
 *~Font name~Courier New~
 *~Font size~10~

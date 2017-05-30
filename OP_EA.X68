@@ -1163,9 +1163,6 @@ ASL_MEM
 
 **************************************************
 
-ASR_REG     
-                JSR     ASR_BUFFER
-                BRA     PRINT_BUFFER
 
 ASR_BUFFER
                MOVE.B   #'A',(A6)+
@@ -1181,6 +1178,131 @@ ASL_BUFFER
                MOVE.B   #'L', (A6)+
                MOVE.B   #' ', (A6)+
                RTS     
+
+************************************************
+
+ASR_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     ASR_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     ASR_REG_HOLDSSHIFTREG
+                
+ASR_DONE
+                RTS
+                
+SHIFT_REG_HOLDSSHIFTCOUNT 
+
+                CLR     D3
+                JSR     bits5to7
+                MOVE.B  #'#',(A6)+
+                
+                CMP     #%000,D3
+                BNE     SHIFT_NOTEIGHT
+                MOVE.B  #'8',(A6)+
+                BRA     ASR_GETDEST
+                
+SHIFT_NOTEIGHT  
+                CMP     #%001,D3
+                BNE     SHIFT_NOTONE
+                MOVE.B  #'1',(A6)+
+                BRA     ASR_GETDEST
+                
+SHIFT_NOTONE    
+                CMP     #%010,D3
+                BNE     SHIFT_NOTTWO
+                MOVE.B  #'2',(A6)+
+                BRA     ASR_GETDEST
+                
+
+SHIFT_NOTTWO    
+                CMP     #%010,D3
+                BNE     SHIFT_NOTTHREE
+                MOVE.B  #'3',(A6)+
+                BRA     ASR_GETDEST
+
+SHIFT_NOTTHREE   
+                CMP     #%010,D3
+                BNE     SHIFT_NOTFOUR
+                MOVE.B  #'4',(A6)+
+                BRA     ASR_GETDEST
+
+SHIFT_NOTFOUR    
+                CMP     #%010,D3
+                BNE     SHIFT_NOTFIVE
+                MOVE.B  #'5',(A6)+
+                BRA     ASR_GETDEST
+
+SHIFT_NOTFIVE    
+                CMP     #%010,D3
+                BNE     SHIFT_NOTSIX
+                MOVE.B  #'6',(A6)+
+                BRA     ASR_GETDEST 
+
+SHIFT_NOTSIX    
+                CMP     #%010,D3
+                MOVE.B  #'7',(A6)+
+                BRA     ASR_GETDEST                             
+
+ASR_REG_HOLDSSHIFTREG
+                CLR     D3
+                JSR     bits5to7
+                MOVE.B  #'D',(A6)+
+                CLR     D4
+                JSR     insert_num
+                CLR     D3
+                BRA     ASR_GETDEST
+                
+
+
+
+
+ASR_GETDEST                
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                
+                CLR     D3
+                CLR     D4
+                MOVE.B  #'D',(A6)+
+                JSR     bits14to16
+                JSR     insert_num
+                RTS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*******************************************************
+
+
 
 LSL     
                 JSR     LSL_BUFFER
@@ -1985,11 +2107,15 @@ BUFFER DC.L 1
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
 =======
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
+=======
+>>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
 
 *~Font name~Courier New~
 *~Font size~10~

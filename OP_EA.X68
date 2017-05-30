@@ -856,6 +856,8 @@ MULS_ISWORD
                CLR      D3
                CLR      D4
                JSR      bits11to13
+               CMP      #%001,D3
+               BEQ      INVALID_EA
                MOVE     D3,D4
                LEA     jmp_mode,A0    *Index into the table
                MULU    #6,D3       *Form offset     
@@ -870,11 +872,35 @@ MULS_ISWORD
                
                JSR     bits5to7
                JSR     insert_num
+               CLR     D3
+               CLR     D4
                RTS
                
 
 
 MULS_ISLONG
+               CLR      D3
+               CLR      D4
+               JSR      bits11to13
+               JSR      bits11to13
+               CMP      #%001,D3
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               MOVE.B  #'D',(A6)+
+               
+               MOVE.B  #%100,D3
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
 
 ************************************************    
 
@@ -951,7 +977,7 @@ AND_BUFFER
 
 **************************************************
 
-ASR     
+ASR_MEM     
                 JSR     ASR_BUFFER
 ASL_ENTRY       JSR     bits11to13
                 MOVE    D3,D4
@@ -1076,7 +1102,7 @@ SHIFTCOUNT_NUMBERPARSER_SEVEN
 ;~~~~~~~~~~~~~               
 **************************************************
 
-ASL     
+ASL_MEM     
                 JSR     ASL_BUFFER
                 JSR     ASL_ENTRY
                 RTS

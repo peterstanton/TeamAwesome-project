@@ -15,7 +15,7 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                ; MOVE.W  (A2), D3
+                 MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -41,7 +41,7 @@ MAIN_LOOP
                  ; MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                   ; MOVE.W        #$E393, D3  *LSL
-                  MOVE.W        #$E2D1, D3  *LSR
+                  ; MOVE.W        #$E2D1, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
                       
                  JSR    PRINT_ADDRESS
@@ -53,9 +53,9 @@ MAIN_LOOP
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
 
-                 ;CMP     A3,A2
-                 ;BGT     EXIT
-                 ;BRA     MAIN_LOOP
+                 CMP     A3,A2
+                 BGT     EXIT
+                 BRA     MAIN_LOOP
                  BRA      EXIT
                                 
     INCLUDE 'definitions.x68'
@@ -63,9 +63,7 @@ MAIN_LOOP
            
 EXIT                 
        SIMHALT   
-
-
-**TODO: PRINT INVALID OPCODES FOR REMAINING JMPS
+       
 jmp_table      JMP         code0000
                 *ADDI
 
@@ -117,33 +115,39 @@ jmp_table      JMP         code0000
 
                JMP         code1111
 
-
+* complete check for invalid opcode
 code0000      
                JSR          bits5to8 // RETURNS INTO D3
                CMP.L        #%0110, D3
                BNE          INVALID_OP
+               JSR          CHECK_INVALID_MOVE
                BRA          ADDI  
 
+* complete check for invalid opcode
 code0001      
                * MOVE/A BYTE
                ** CHECK IF MOVEA
                JSR         bits8to10
                CMP         #%001,D3
-               
                BEQ         MOVEA_B
+               JSR         CHECK_INVALID_MOVE
                BRA         MOVE_B
 
+* complete check for invalid opcode
 code0010       * MOVE/A LONG
                * CHECK IF MOVEA
                JSR         bits8to10
                CMP         #%001,D3
                BEQ         MOVEA_L
+               JSR         CHECK_INVALID_MOVE
                BRA         MOVE_L
 
+* complete check for invalid opcode
 code0011       * MOVE/A WORD
                JSR         bits8to10
                CMP         #%001,D3
                BEQ         MOVEA_W
+               JSR         CHECK_INVALID_MOVE
                BRA         MOVE_W
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
@@ -153,17 +157,31 @@ code0100
                CMP.L   #%000111001110001, D2
                BEQ     NOP
                
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
                *RTS
                AND     #%0000111111111111,D2
                CMP.L   #%0000111001110101, D2
                BEQ     RTS
-
+                
+               * NONE OF THE FOLLOWING OPCODES CAN DO IMMEDIATE
+               JSR     bits11to16
+               CMP     #%111100,D3
+               BEQ     INVALID_OP
+               
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
                *JSR
                AND     #%0000111111000000,D2
                CMP.L   #%0000111010000000,D2
                BEQ     JSR
                
-               * MOVEM
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
+                *LEA - if it's not the top codes, it's LEA
+               AND     #%0000000110000000,D2
+               CMP.L   #%0000000110000000,D2
+               BEQ     LEA
+                
+                JSR     CHECK_INVALID_MOVE
+                              * MOVEM
                 ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
               ** AND     #%0000111110000000,D2
                * DATA REGISTER
@@ -171,11 +189,7 @@ code0100
                ** JSR      MOVEM
                * ADDRESS REGISTER (DECREMENTED)
                ** CMP.L  #%0000110010000000, D2
-               ** JSR    MOVEM
-                
-                ** TO DO: BRANCH IF INVALID OPCODE
-                *LEA - if it's not the top codes, it's LEA
-                BRA     LEA
+               BRA      MOVEM
 code0101      
 
                 BRA   ADDQ
@@ -1235,8 +1249,16 @@ PRINT_DEREF_ADDRESS
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
-
-
+               
+CHECK_INVALID_MOVE
+               JSR         bits11to16
+               CMP         #%111100,D3
+               BEQ         INVALID_OP
+               CMP         #%111010,D3
+               BEQ         INVALID_OP
+               CMP         #%111011,D3
+               BEQ         INVALID_OP
+               RTS
  ***************************
 
 GETSIZE_ADDQ
@@ -1571,6 +1593,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
 
 
 

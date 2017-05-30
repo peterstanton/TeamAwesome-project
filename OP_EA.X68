@@ -277,7 +277,11 @@ code1111       BRA       INVALID_OP
 
 ADDA    
                JSR     ADDA_BUFFER
-               BRA     PRINT_BUFFER
+               JSR     ADDA_SRC
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               JSR     ADDA_DEST
+               RTS                          ;BRA     PRINT_BUFFER
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -288,7 +292,25 @@ ADDA_BUFFER
                MOVE.B   #' ', (A6)+
                RTS
                
+ADDA_SRC
+               CLR      D3
+               CLR      D4
+               JSR      bits11to13
+               MOVE   D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU   #6,D3
+               JSR    0(A0,D3)     
+               JSR    bits14to16
+               JSR    insert_num
+               CLR    D3
+               CLR    D4
+               RTS
                
+
+ADDA_DEST    
+               JSR   bits5to7
+               JSR   insert_num
+               RTS           
                
 *********************************************
 MOVEA_B
@@ -1072,7 +1094,11 @@ ASL_MEM
 
 ASR_REG     
                 JSR     ASR_BUFFER
-                BRA     PRINT_BUFFER
+                RTS         ;BRA     PRINT_BUFFER
+                
+ASL_REG
+                JSR     ASL_BUFFER
+                RTS                
 
 ASR_BUFFER
                MOVE.B   #'A',(A6)+
@@ -1091,6 +1117,7 @@ ASL_BUFFER
 
 
 ****************************************************
+
 LSL     
                 JSR     bits5to7
                 CMP     #%001,D3
@@ -1935,11 +1962,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
-
                
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

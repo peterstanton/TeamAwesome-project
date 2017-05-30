@@ -657,6 +657,11 @@ LEA_SRC
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
+
+             JSR     bits14to16
+             JSR     insert_num
+             CLR     D3
+             CLR     D4 
  
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+
@@ -1198,7 +1203,93 @@ LSR_BUFFER
                MOVE.B   #'R', (A6)+
                MOVE.B   #' ', (A6)+
                RTS       
+ 
+**********************************************
+ROL_MEM
+               JSR      bits5to7
+               CMP      #%011,D3
+               BNE      INVALID_EA
+               CLR      D3
                
+               JSR      bits8to10
+               CMP      #%111,D3
+               BNE      INVALID_EA
+               CLR      D3
+               
+               JSR      bits11to13
+               CMP      #%000,D3
+               BEQ      INVALID_EA
+               CMP      #%001,D3
+               BEQ      INVALID_EA
+               
+               JSR      ROL_BUFFER
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+               
+
+
+ROR_MEM
+               JSR      bits5to7
+               CMP      #%011,D3
+               BNE      INVALID_EA
+               CLR      D3
+               
+               JSR      bits8to10
+               CMP      #%011,D3
+               BNE      INVALID_EA
+               CLR      D3
+               
+               JSR      bits11to13
+               CMP      #%000,D3
+               BEQ      INVALID_EA
+               CMP      #%001,D3
+               BEQ      INVALID_EA
+               
+               JSR     ROR_BUFFER
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+               
+
+
+
+ROR_BUFFER
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #'O',(A6)+
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #' ',(A6)+
+               RTS
+               
+ROL_BUFFER
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #'O',(A6)+
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #' ',(A6)+
+               RTS
+               
+****************************************************
+
+
+
+
+              
 jmp_mode
                 JMP     MODE000  ** DN
                 JMP     MODE001  ** AN
@@ -1479,7 +1570,7 @@ COPY_OPCODE
                      RTS  
 
 PRINT_ADDRESS     
-                 CLR         D2
+                 CLR.L         D2
                  MOVE.B      #16,D2          // Setup for Base-16 conversion
                  MOVE.L      A2,D1        
                  MOVE.B      #15,D0          
@@ -1505,7 +1596,7 @@ PRINT_DEREF_ADDRESS
                MOVE.W   #14,D0
                TRAP     #15
                LEA      BUFFER, A6
-               CLR      D2
+               CLR.L      D2
                CMP      #0, (A2)
                BEQ      PRINT_ZEROES
                BRA      PRINT_HEX
@@ -1544,21 +1635,21 @@ GETSIZE_ADDQ
            CMP      #%000,D3
            BNE      ADDQ_NOTBYTE
            JSR      SIZEISBYTE
-           CLR      D3
+           CLR.L      D3
            RTS
            
 ADDQ_NOTBYTE
            CMP      #%001,D3
            BNE      ADDQ_NOTWORD
            JSR      SIZEISWORD
-           CLR      D3
+           CLR.L      D3
            RTS
            
 ADDQ_NOTWORD
            CMP      #%010,D3
            BNE      INVALID_EA
            JSR      SIZEISLONG
-           CLR      D3
+           CLR.L      D3
            RTS
            
 ************************************                 
@@ -1600,7 +1691,7 @@ GETSIZE_CMP
             BNE     CMP_NOTBYTE
             JSR     SIZEISBYTE
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 CMP_NOTBYTE 
@@ -1608,7 +1699,7 @@ CMP_NOTBYTE
             BNE     CMP_NOTWORD
             JSR     SIZEISWORD
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 CMP_NOTWORD
@@ -1616,7 +1707,7 @@ CMP_NOTWORD
             BNE     CMP_NOTLEFT
             JSR     SIZEISLONG
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 CMP_NOTLEFT     ;check other direction
@@ -1624,7 +1715,7 @@ CMP_NOTLEFT     ;check other direction
             BNE     CMP_NOTRIGHTBYTE
             JSR     SIZEISBYTE
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 CMP_NOTRIGHTBYTE
@@ -1632,7 +1723,7 @@ CMP_NOTRIGHTBYTE
             BNE     CMP_NOTRIGHTWORD
             JSR     SIZEISWORD
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
 
 CMP_NOTRIGHTWORD
@@ -1640,7 +1731,7 @@ CMP_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS 
 
 
@@ -1658,7 +1749,7 @@ GETSIZE_SUB
             BNE     SUB_NOTBYTE
             JSR     SIZEISBYTE
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 SUB_NOTBYTE 
@@ -1666,7 +1757,7 @@ SUB_NOTBYTE
             BNE     SUB_NOTWORD
             JSR     SIZEISWORD
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 SUB_NOTWORD
@@ -1674,7 +1765,7 @@ SUB_NOTWORD
             BNE     SUB_NOTLEFT
             JSR     SIZEISLONG
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 SUB_NOTLEFT     ;check other direction
@@ -1682,7 +1773,7 @@ SUB_NOTLEFT     ;check other direction
             BNE     SUB_NOTRIGHTBYTE
             JSR     SIZEISBYTE
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 SUB_NOTRIGHTBYTE
@@ -1690,7 +1781,7 @@ SUB_NOTRIGHTBYTE
             BNE     SUB_NOTRIGHTWORD
             JSR     SIZEISWORD
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
 
 SUB_NOTRIGHTWORD
@@ -1698,7 +1789,7 @@ SUB_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS 
 
 
@@ -1712,7 +1803,7 @@ GETSIZE_OR
             BNE     OR_NOTBYTE
             JSR     SIZEISBYTE
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 OR_NOTBYTE 
@@ -1720,7 +1811,7 @@ OR_NOTBYTE
             BNE     OR_NOTWORD
             JSR     SIZEISWORD
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 OR_NOTWORD
@@ -1728,7 +1819,7 @@ OR_NOTWORD
             BNE     OR_NOTLEFT
             JSR     SIZEISLONG
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 OR_NOTLEFT     ;check other direction
@@ -1736,7 +1827,7 @@ OR_NOTLEFT     ;check other direction
             BNE     OR_NOTRIGHTBYTE
             JSR     SIZEISBYTE
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 OR_NOTRIGHTBYTE
@@ -1744,7 +1835,7 @@ OR_NOTRIGHTBYTE
             BNE     OR_NOTRIGHTWORD
             JSR     SIZEISWORD
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
 
 OR_NOTRIGHTWORD
@@ -1752,7 +1843,7 @@ OR_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS 
 
             
@@ -1768,7 +1859,7 @@ GETSIZE_ADD
             BNE     ADD_NOTBYTE
             JSR     SIZEISBYTE
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
         
 ADD_NOTBYTE 
@@ -1776,7 +1867,7 @@ ADD_NOTBYTE
             BNE     ADD_NOTWORD
             JSR     SIZEISWORD
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 ADD_NOTWORD
@@ -1784,7 +1875,7 @@ ADD_NOTWORD
             BNE     ADD_NOTLEFT
             JSR     SIZEISLONG
             MOVE    #1,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 ADD_NOTLEFT     ;check other direction
@@ -1792,7 +1883,7 @@ ADD_NOTLEFT     ;check other direction
             BNE     ADD_NOTRIGHTBYTE
             JSR     SIZEISBYTE
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
             
 ADD_NOTRIGHTBYTE
@@ -1800,7 +1891,7 @@ ADD_NOTRIGHTBYTE
             BNE     ADD_NOTRIGHTWORD
             JSR     SIZEISWORD
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS
 
 ADD_NOTRIGHTWORD
@@ -1808,7 +1899,7 @@ ADD_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR     D3
+            CLR.L     D3
             RTS 
                              
                      
@@ -1819,21 +1910,21 @@ GETSIZE_ADDI
         CMP     #%000,D3
         BNE     ADDI_NOTBYTE
         JSR     SIZEISBYTE
-        CLR     D3
+        CLR.L     D3
         RTS
 
 ADDI_NOTBYTE
         CMP     #%001,D3
         BNE     ADDI_NOTWORD
         JSR     SIZEISWORD
-        CLR     D3
+        CLR.L     D3
         RTS
         
 ADDI_NOTWORD
         CMP     #%010,D3
         BNE     INVALID_EA
         JSR     SIZEISLONG
-        CLR     D3
+        CLR.L     D3
         RTS
         
                             
@@ -1847,7 +1938,7 @@ GETSIZE_ADDA
         CMP     #%011,D3
         BNE     ADDA_NOTWORD
         JSR     SIZEISWORD
-        CLR     D3
+        CLR.L     D3
         RTS
         
 
@@ -1856,7 +1947,7 @@ ADDA_NOTWORD
         CMP     #%111,D3
         BNE     INVALID_EA
         JSR     SIZEISLONG
-        CLR     D3
+        CLR.L     D3
         RTS
 **********************************        
     
@@ -1864,14 +1955,14 @@ SIZEISBYTE
        MOVE.B   #'.',(A6)+
        MOVE.B   #'B',(A6)+
        MOVE.B   #' ',(A6)+
-       CLR      D3
+       CLR.L      D3
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
        MOVE.B   #' ',(A6)+
-       CLR      D3
+       CLR.L      D3
        RTS
                 
 SIZEISLONG    
@@ -1879,7 +1970,7 @@ SIZEISLONG
        MOVE.B   #'L',(A6)+
        MOVE.B   #' ',(A6)+
 
-       CLR      D3
+       CLR.L      D3
        RTS
                 
      
@@ -1893,8 +1984,12 @@ BUFFER DC.L 1
 
 
 
+<<<<<<< HEAD
 
 
+
+=======
+>>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 
 *~Font name~Courier New~
 *~Font size~10~

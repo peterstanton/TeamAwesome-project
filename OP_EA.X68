@@ -337,7 +337,7 @@ MOVE_L_SRC
         CMP     #%111001, D3 *** ABSOLUTE LONG 
         BEQ     ABSOLUTE_LONG
         CMP     #%111100, D3 *** IMMEDIATE
-       * BEQ     IMMEDIATE_LONG
+        BEQ     IMMEDIATE_LONG
         
         ** OTHERWISE SOURCE IS DIFFERENT
         JSR    bits11to13
@@ -348,8 +348,13 @@ MOVE_L_SRC
         JSR    bits14to16
         JSR    insert_num
         RTS
-        
-     
+
+IMMEDIATE_BYTE
+                NOP
+IMMEDIATE_WORD
+                NOP
+IMMEDIATE_LONG        
+                NOP
 ADD    
                JSR     ADD_BUFFER
                RTS
@@ -1786,6 +1791,7 @@ BUFFER DC.L 1
     END START 
 
                
+
 
 *~Font name~Courier New~
 *~Font size~10~

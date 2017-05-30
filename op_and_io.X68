@@ -96,6 +96,9 @@ MAIN_LOOP
                  ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
+
+                 ; MOVE.W    #$5201,D3    *ADDQ
+
                   ; MOVE.W    #$5613, D3    *ADDQ.B #$3, (A3)
                  ; MOVE.W     #$7E70, D3 *MOVEQ
                  ; MOVE.W     #$80C0, D3 *DIVU
@@ -105,12 +108,15 @@ MAIN_LOOP
                  ; MOVE.W        #$B000, D3 * CMP
                  ; MOVE.W        #$C1C0, D3 * MULS
                  ; MOVE.W        #$C000, D3 * AND
-                 ; MOVE.W        #$E0F8, D3  *ASR
+                  ;MOVE.W        #$E0F8, D3  *ASR
                  ; MOVE.W        #$E1E2, D3  *ASL
                  ; MOVE.W        #$E393, D3  *LSL
                  ; MOVE.W        #$E2DC, D3  *LSR
                   ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
-                      
+                  ; MOVE.W        #$C9A5, D3   *AND                      
+                  ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
+                  ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
+                    MOVE.W       #$E342,D3      *ASL                                               
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -321,9 +327,18 @@ MOVEB_BUFFER
                 NOP              
 * ----------------------------------
 
+****************************************************************************************
+
+
 ADDA    
                JSR     ADDA_BUFFER
-               RTS
+               JSR     ADDA_SRC
+               MOVE.B  #',',(A6)+
+               MOVE.B  #' ',(A6)+
+               JSR     ADDA_DEST
+               RTS                      ;BRA     PRINT_BUFFER
+               
+
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -333,9 +348,36 @@ ADDA_BUFFER
                JSR      GETSIZE_ADDA
                MOVE.B   #' ', (A6)+
                RTS
+
+ADDA_SRC
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D4
+               CLR     D3
+               RTS
+
+ADDA_DEST
+                MOVE.W #%001,D3     ;Can only have an address register.
+                MOVE   D3,D4
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index
+                
+                JSR     bits5to7
+                JSR     insert_num
+                RTS
+               
+
+
                
                
-               
+****************************************************************************************           
 *********************************************               
 ADD    
                JSR     ADD_BUFFER
@@ -350,6 +392,7 @@ ADD_BUFFER
                ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
+               CLR      D6
                JSR      ADD_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
@@ -366,11 +409,9 @@ ADD_DIRECTION_REVERSED
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
-***********************************************        
 
 
 
-****************************************************************************************
 ADD_SRC
 
                 JSR    bits11to13
@@ -392,6 +433,8 @@ ADD_DEST
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
+                        
+****************************************************************************************
 
 ADDI
                 JSR     ADDI_BUFFER
@@ -735,7 +778,7 @@ CMP_BUFFER
                MOVE.B   #'C',(A6)+
                MOVE.B   #'M', (A6)+  
                MOVE.B   #'P', (A6)+
-               MOVE.B   #'.', (A6)+
+               JSR      GETSIZE_CMP
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
@@ -756,40 +799,217 @@ MULS_BUFFER
 
 AND    
                JSR     AND_BUFFER
-               BRA     PRINT_BUFFER
+                                             ;Okay, the directionality bit in D6 should determine which order we should process bits in?
+               CMP      #1,D6
+               BNE      AND_DIRECTION_REVERSED
+               CLR      D6
+               JSR      AND_SRC
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      AND_DEST
+               RTS
+               
+               
+AND_DIRECTION_REVERSED
+               CLR      D6
+               JSR      AND_DEST
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+
+               JSR      AND_SRC             
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA>                               
+               RTS                  ;BRA     PRINT_BUFFER
+               
+                             
+               
+                         
+AND_SRC
+               JSR      bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+               RTS
+
+
+AND_DEST
+               MOVE.B  #%000,D3
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               JSR     bits5to7    
+               JSR     insert_num
+               CLR     D3
+               CLR     D4                       
+               RTS             
                 
 AND_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'N', (A6)+  
                MOVE.B   #'D', (A6)+
-               MOVE.B   #'.', (A6)+
+               JSR      GETSIZE_AND
                ** TODO: ADD SIZE BASED ON BITS 8 TO 10
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                MOVE.B   #' ', (A6)+
                RTS    
 
+
+
+**************************************************
+
+
+**************************************************
+
 ASR     
                 JSR     ASR_BUFFER
-                BRA     PRINT_BUFFER
+ASL_ENTRY       JSR     bits11to13
+                MOVE    D3,D4
+                CMP     #%000,D3
+                BEQ     ASR_SHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     ASR_INREGISTER
+                
+                BRA     INVALID_EA
+
+ASR_SHIFTCOUNT
+                JSR     bits5to7
+                MOVE.B  #'#',(A6)+
+                JSR     SHIFTCOUNT_NUMBERPARSER
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                BRA     ASR_TARGET
+                
+                
+
+ASR_INREGISTER
+                JSR     bits5to7
+                MOVE.B  #'D',(A6)+
+                JSR     REGISTER_NUMBERPARSER
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                BRA     ASR_TARGET
+
+ASR_TARGET
+                CLR     D3
+                CLR     D4
+                JSR     bits14to16
+                LEA     jmp_mode,A0    *Index into the table
+                MULU    #6,D3       *Form offset     
+                JSR     0(A0,D3)   *Jump indirect with index  
+                CLR     D3
+                JSR     bits5to7    
+                JSR     insert_num
+                CLR     D3
+                CLR     D4                       
+                BRA     ASR_DONE             
+                              
+                
+ASR_DONE                
+                RTS         ; BRA     PRINT_BUFFER
 
 ASR_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'S', (A6)+  
                MOVE.B   #'R', (A6)+
+               JSR      GETSIZE_ASR
                MOVE.B   #' ', (A6)+
                RTS      
+               
+;~~~~~~~~~               
+REGISTER_NUMBERPARSER 
+              CMP       #%000,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_ONE
+              MOVE.B    #'0',(A6)+
+              CLR       D3
+              RTS    
+          
+    
+;~~~~~~~~~~~~~              
+SHIFTCOUNT_NUMBERPARSER
+              CMP       #%000,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_ONE
+              MOVE.B    #'8',(A6)+
+              CLR       D3
+              RTS    
+          
+SHIFTCOUNT_NUMBERPARSER_ONE 
+              CMP       #%001,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_TWO
+              MOVE.B    #'1',(A6)+
+              CLR       D3
+              RTS        
+               
+               
+SHIFTCOUNT_NUMBERPARSER_TWO 
+              CMP       #%010,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_THREE
+              MOVE.B    #'2',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_THREE 
+              CMP       #%011,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_FOUR
+              MOVE.B    #'3',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_FOUR 
+              CMP       #%100,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_FIVE
+              MOVE.B    #'4',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_FIVE 
+              CMP       #%101,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_SIX
+              MOVE.B    #'5',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_SIX 
+              CMP       #%110,D3
+              BNE       SHIFTCOUNT_NUMBERPARSER_SEVEN
+              MOVE.B    #'6',(A6)+
+              CLR       D3
+              RTS        
+               
+SHIFTCOUNT_NUMBERPARSER_SEVEN 
+              CMP       #%111,D3
+              BNE       INVALID_EA
+              MOVE.B    #'7',(A6)+
+              CLR       D3
+              RTS        
+               
+;~~~~~~~~~~~~~               
+**************************************************
 
 ASL     
                 JSR     ASL_BUFFER
-                BRA     PRINT_BUFFER
+                JSR     ASL_ENTRY
+                RTS
 
 ASL_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'S', (A6)+  
                MOVE.B   #'L', (A6)+
+               JSR      GETSIZE_ASL
                MOVE.B   #' ', (A6)+
                RTS     
+
+
+*******************************************************
+
+
 
 LSL     
                 JSR     LSL_BUFFER
@@ -1062,17 +1282,48 @@ RTS
                     TRAP    #15 
                     BRA     EXIT
 JSR      
-                    LEA     BUFFER, A6
+                    ;LEA     BUFFER, A6
+                    JSR     bits5to7
+                    CMP     #%111,D3
+                    BNE     INVALID_EA
+                    CLR     D3
+                    JSR     bits8to10
+                    CMP     #%010,D3
+                    BNE     INVALID_EA
+                    CLR     D3
+                                       
+                    JSR     bits11to13
+                    MOVE    D3,D4
+                    CMP     #%000,D3
+                    BEQ     INVALID_EA
+                    CMP     #%001,D3
+                    BEQ     INVALID_EA
+                    CMP     #%011,D3
+                    BEQ     INVALID_EA
+                    CMP     #%100,D3
+                    BEQ     INVALID_EA
+                    
+                    
                     MOVE.B #'J', (A6)+
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    LEA     BUFFER, A1
+                    LEA     jmp_mode,A0    *Index into the table
+                    MULU    #6,D3       *Form offset     
+                    JSR     0(A0,D3)   *Jump indirect with index
+                    
+                    CLR     D3
+                    
+                    JSR     bits14to16
+                    JSR     insert_num
+                    CLR     D4
+
+                    ;LEA     BUFFER, A1
                     ** BITS 10 - 12 MODE       
                     ** BITS 13 - 16 REGISTER
-                    MOVE.B  #14,D0
-                    TRAP    #15 
-                    BRA     EXIT
+                    ;MOVE.B  #14,D0
+                    ;TRAP    #15 
+                    RTS
                   
 MOVEM      
                    
@@ -1183,6 +1434,183 @@ ADDQ_NOTWORD
                  
                                  
 ****************************
+GETSIZE_MULS
+            
+
+
+
+
+****************************
+
+GETSIZE_AND
+
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA>
+            JSR     bits8to10
+            CMP     #000,D3
+            BNE     AND_NOTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTBYTE 
+            CMP     #%001,D3
+            BNE     AND_NOTWORD
+            JSR     SIZEISWORD
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTWORD
+            CMP     #%010,D3
+            BNE     AND_NOTLEFT
+            JSR     SIZEISLONG
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+AND_NOTLEFT     ;check other direction
+            CMP     #%100,D3
+            BNE     AND_NOTRIGHTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+            
+AND_NOTRIGHTBYTE
+            CMP     #%101,D3
+            BNE     AND_NOTRIGHTWORD
+            JSR     SIZEISWORD
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+
+AND_NOTRIGHTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            MOVE    #2,D6
+            CLR     D3
+            RTS 
+
+****************************
+ 
+
+
+GETSIZE_CMP
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+
+            JSR     bits8to10
+            CMP     #000,D3
+            BNE     CMP_NOTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+CMP_NOTBYTE 
+            CMP     #%001,D3
+            BNE     CMP_NOTWORD
+            JSR     SIZEISWORD
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+CMP_NOTWORD
+            CMP     #%010,D3
+            BNE     CMP_NOTLEFT
+            JSR     SIZEISLONG
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+CMP_NOTLEFT     ;check other direction
+            CMP     #%100,D3
+            BNE     CMP_NOTRIGHTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+            
+CMP_NOTRIGHTBYTE
+            CMP     #%101,D3
+            BNE     CMP_NOTRIGHTWORD
+            JSR     SIZEISWORD
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+
+CMP_NOTRIGHTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            MOVE    #2,D6
+            CLR     D3
+            RTS 
+
+
+
+
+****************************
+
+
+GETSIZE_SUB
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+            JSR     bits8to10
+            CMP     #000,D3
+            BNE     SUB_NOTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+SUB_NOTBYTE 
+            CMP     #%001,D3
+            BNE     SUB_NOTWORD
+            JSR     SIZEISWORD
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+SUB_NOTWORD
+            CMP     #%010,D3
+            BNE     SUB_NOTLEFT
+            JSR     SIZEISLONG
+            MOVE    #1,D6
+            CLR     D3
+            RTS
+            
+SUB_NOTLEFT     ;check other direction
+            CMP     #%100,D3
+            BNE     SUB_NOTRIGHTBYTE
+            JSR     SIZEISBYTE
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+            
+SUB_NOTRIGHTBYTE
+            CMP     #%101,D3
+            BNE     SUB_NOTRIGHTWORD
+            JSR     SIZEISWORD
+            MOVE    #2,D6
+            CLR     D3
+            RTS
+
+SUB_NOTRIGHTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            MOVE    #2,D6
+            CLR     D3
+            RTS 
+
+
+
 ****************************
 GETSIZE_OR
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
@@ -1320,7 +1748,54 @@ ADDI_NOTWORD
                             
                      
 ********************************          
-                     
+GETSIZE_ASR
+            JSR     bits8to10
+            CMP     #%000,D3
+            BNE     ASR_NOTBYTE
+            JSR     SIZEISBYTE
+            CLR     D3
+            RTS
+
+ASR_NOTBYTE
+            CMP     #%001,D3
+            BNE     ASR_NOTWORD
+            JSR     SIZEISWORD
+            CLR     D3
+            RTS
+            
+ASR_NOTWORD
+            CMP     #%010,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            CLR     D3
+            RTS
+    
+**************************************************
+GETSIZE_ASL
+            JSR     bits8to10
+            CMP     #%100,D3
+            BNE     ASL_NOTBYTE
+            JSR     SIZEISBYTE
+            CLR     D3
+            RTS
+
+ASL_NOTBYTE
+            CMP     #%101,D3
+            BNE     ASL_NOTWORD
+            JSR     SIZEISWORD
+            CLR     D3
+            RTS
+            
+ASL_NOTWORD
+            CMP     #%110,D3
+            BNE     INVALID_EA
+            JSR     SIZEISLONG
+            CLR     D3
+            RTS
+
+**************************************************
+
+             
                      
 ********************************                     
 GETSIZE_ADDA
@@ -1331,8 +1806,7 @@ GETSIZE_ADDA
         CLR     D3
         RTS
         
-
-        
+       
 ADDA_NOTWORD
         CMP     #%111,D3
         BNE     INVALID_EA
@@ -1367,36 +1841,6 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

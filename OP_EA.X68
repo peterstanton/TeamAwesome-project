@@ -250,11 +250,11 @@ code1110
                 * ASR
                 JSR     bits1to10
                 CMP     #%1110000011,D3
-                BEQ     ASR
+                BEQ     ASR_MEM
                 
                 * ASL
                 CMP     #%1110000111,D3
-                BEQ     ASL
+                BEQ     ASL_MEM
                 
                 * LSL -- has register/immediate shift and 
                 
@@ -811,15 +811,7 @@ CMP_SRC
                JSR     insert_num
                CLR     D3
                CLR     D4
-               RTS
-
-
-
-              
-************************************************               
-               
-               
-************************************************                           
+               RTS                      
 
 
 CMP_DEST
@@ -832,6 +824,21 @@ CMP_DEST
                JSR     bits5to7    
                JSR     insert_num
                CLR     D3
+               CLR     D4
+               RTS   
+               
+CMP_BUFFER
+               MOVE.B   #'C',(A6)+
+               MOVE.B   #'M', (A6)+  
+               MOVE.B   #'P', (A6)+
+               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
+                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
+               MOVE.B   #' ', (A6)+
+               RTS   
+               
+               
+               
                CLR     D4
                RTS   
 
@@ -858,74 +865,8 @@ MULS_BUFFER
 
 ************************************************    
 
-AND    
-               JSR     AND_BUFFER
-                                             ;Okay, the directionality bit in D6 should determine which order we should process bits in?
-               CMP      #1,D6
-               BNE      CMP_DIRECTION_REVERSED
-               CLR      D6
-               JSR      CMP_SRC
-               MOVE.B   #',', (A6)+
-               MOVE.B   #' ', (A6)+
-               JSR      CMP_DEST
-               RTS
-               
-                              
-CMP_BUFFER
-               MOVE.B   #'C',(A6)+
-               MOVE.B   #'M', (A6)+  
-               MOVE.B   #'P', (A6)+
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
-               ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
-                               ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
-               MOVE.B   #' ', (A6)+
-               RTS   
-               
-               
-               
-CMP_SRC
-               JSR      bits11to13
-               MOVE     D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR     D3
-               JSR     bits14to16
-               JSR     insert_num
-               CLR     D3
-               CLR     D4
-               RTS
-
-
-CMP_DEST
-               MOVE.B  #%000,D3
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR     D3
-               JSR     bits5to7    
-               JSR     insert_num
-               CLR     D3
-               CLR     D4
-               RTS   
 
 ************************************************               
-
-************************************************               
-              
-MULS
-                JSR     MULS_BUFFER
-                BRA     PRINT_BUFFER
-
-MULS_BUFFER
-               MOVE.B   #'M',(A6)+
-               MOVE.B   #'U', (A6)+  
-               MOVE.B   #'L', (A6)+
-               MOVE.B   #'S', (A6)+
-               JSR      GETSIZE_MULS
-               MOVE.B   #' ', (A6)+
-               RTS
 
 
 ************************************************               

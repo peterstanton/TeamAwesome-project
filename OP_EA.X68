@@ -10,7 +10,7 @@ MAIN_LOOP
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
                  
-                 MOVE.W  (A2), D3
+                 ;MOVE.W  (A2), D3
 
                  * TEST OPCODES
                  ; MOVE.W  #$45D7,D3 * LEA (A7), A2
@@ -41,7 +41,8 @@ MAIN_LOOP
                   ; MOVE.W        #$C9A5, D3   *AND                      
                   ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
                   ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                   ; MOVE.W       #$E342,D3      *ASL                                               
+                   ; MOVE.W       #$E342,D3      *ASL   
+                 MOVE.W  #$2A3C,D3 *MOVE.L                                          
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -119,23 +120,42 @@ jmp_table      JMP         code0000
                JMP         code1111
 
 
+* todo: complete check for invalid opcode
 code0000      
                JSR          bits5to8 // RETURNS INTO D3
                CMP.L        #%0110, D3
                BNE          INVALID_OP
                BRA          ADDI  
 
+
+* todo: complete check for invalid opcode
 code0001      
-               JSR   MOVE_B
-               *MOVE.B
+               * MOVE/A BYTE
+               ** CHECK IF MOVEA
+               JSR         bits8to10
+               CMP         #%001,D3
+               BEQ         MOVEA_B
+               JSR         CHECK_INVALID_IMMEDIATE  ***TO DO: SHOULD ALSO CHECK ADDRESS REGISTER FOR MOVES
+               BRA         MOVE_B
 
-code0010        
-                * MOVE.L
-                * MOVEA.L
-code0011        
-                *MOVEA.W
-                *MOVE.W
+* todo: complete check for invalid opcode
+code0010       * MOVE/A LONG
+               * CHECK IF MOVEA
+               JSR         bits8to10
+               CMP         #%001,D3
+               BEQ         MOVEA_L
+               JSR         CHECK_INVALID_IMMEDIATE
+               BRA         MOVE_L
 
+* todo: complete check for invalid opcode
+code0011       * MOVE/A WORD
+               JSR         bits8to10
+               CMP         #%001,D3
+               BEQ         MOVEA_W
+               JSR         CHECK_INVALID_IMMEDIATE
+               BRA         MOVE_W
+               
+* TO DO: CHECK MOVEM AND LEA, ALL OTHER OPCODES CHECKED
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
                 
@@ -154,7 +174,13 @@ code0100
                CMP.L   #%0000111010000000,D2
                BEQ     JSR
                
-               * MOVEM
+
+               JSR COPY_OPCODE // Makes a copy of Opcode into d2
+               AND     #%0000000110000000,D2
+               CMP.L   #%0000000110000000,D2
+               BEQ     LEA
+                
+                              * MOVEM
                 ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
               ** AND     #%0000111110000000,D2
                * DATA REGISTER
@@ -162,11 +188,10 @@ code0100
                ** JSR      MOVEM
                * ADDRESS REGISTER (DECREMENTED)
                ** CMP.L  #%0000110010000000, D2
-               ** JSR    MOVEM
-                
-                ** TO DO: BRANCH IF INVALID OPCODE
-                *LEA - if it's not the top codes, it's LEA
-                BRA     LEA
+
+               BRA      MOVEM
+               
+* TO DO: CHECK REMAINING OPCODES
 code0101      
 
                 BRA   ADDQ
@@ -305,8 +330,67 @@ ADDA_DEST
 
                
                
-****************************************************************************************           
-*********************************************               
+           
+*********************************************
+MOVEA_B
+         JSR MOVE_BUFFER
+         MOVE.B  #'A', (A6)+
+         JSR     SIZEISBYTE
+         RTS
+MOVEA_W
+        JSR     MOVE_BUFFER
+        MOVE.B  #'A', (A6)+
+        JSR     SIZEISWORD
+        RTS
+        
+MOVEA_L
+        JSR     MOVE_BUFFER
+        MOVE.B  #'A', (A6)+
+        JSR     SIZEISLONG
+        RTS
+        
+MOVE_BUFFER
+        MOVE.B  #'M', (A6)+
+        MOVE.B  #'O', (A6)+
+        MOVE.B  #'V', (A6)+
+        MOVE.B  #'E', (A6)+
+        RTS
+        
+MOVE_B
+        JSR     MOVE_BUFFER
+        JSR     SIZEISBYTE
+        RTS
+MOVE_W
+        JSR     MOVE_BUFFER
+        JSR     SIZEISWORD
+        RTS
+MOVE_L    
+        JSR     MOVE_BUFFER
+        JSR     SIZEISLONG
+        JSR     MOVE_L_SRC
+        *JSR     MOVE_L_DEST
+        RTS
+        
+MOVE_L_SRC
+        JSR     bits11to16
+        CMP     #%111000, D3 *** ABSOLUTE WORD
+        BEQ     ABSOLUTE_WORD
+        CMP     #%111001, D3 *** ABSOLUTE LONG 
+        BEQ     ABSOLUTE_LONG
+        CMP     #%111100, D3 *** IMMEDIATE
+       * BEQ     IMMEDIATE_LONG
+        
+        ** OTHERWISE SOURCE IS DIFFERENT
+        JSR    bits11to13
+        MOVE   D3,D4
+        LEA     jmp_mode,A0    *Index into the table
+        MULU   #6,D3
+        JSR    0(A0,D3)     
+        JSR    bits14to16
+        JSR    insert_num
+        RTS
+        
+     
 ADD    
                JSR     ADD_BUFFER
                RTS
@@ -352,12 +436,12 @@ ADD_SRC
                 RTS
 
 ADD_DEST
-                MOVE.W #%000,D3     ;Can only have a data register.
-                MOVE   D3,D4
+                *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
+                MOVE.W  #%000,D3     ;Can only have a data register.
+                MOVE    D3,D4
                 LEA     jmp_mode,A0    *Index into the table
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
-                
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
@@ -376,7 +460,7 @@ ADDI_SRC
                 MOVE.B  #' ', (A6)+
                 RTS
                   ** TODO: IMPLEMENT THIS IN EA
-                ** Immediate field—Data immediately following the instruction.
+                ** Immediate field Data immediately following the instruction.
                 **If size = 00, the data is the low-order byte of the immediate word.
                 **If size = 01, the data is the entire immediate word.
                 **If size = 10, the data is the next two immediate words. 
@@ -1107,6 +1191,7 @@ ASL_MEM
                 JSR     ASL_ENTRY
                 RTS
 
+
 ASL_BUFFER
                MOVE.B   #'A',(A6)+
                MOVE.B   #'S', (A6)+  
@@ -1233,6 +1318,14 @@ bits5to8
                JSR      COPY_OPCODE  // opcode copied to D2
                AND      #%0000111100000000, D2
                ROR.L    #8, D2          // rotate bits so isolated at the end
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS
+
+bits5to10
+               CLR      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000111100000000, D2
+               ROR.L    #6, D2          // rotate bits so isolated at the end
                MOVE.W   D2,D3 // moving isolated bits into d3
                RTS
                
@@ -1417,23 +1510,26 @@ JSR
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    LEA     jmp_mode,A0    *Index into the table
-                    MULU    #6,D3       *Form offset     
-                    JSR     0(A0,D3)   *Jump indirect with index
-                    
-                    CLR     D3
-                    
-                    JSR     bits14to16
-                    JSR     insert_num
-                    CLR     D4
 
-                    ;LEA     BUFFER, A1
-                    ** BITS 10 - 12 MODE       
-                    ** BITS 13 - 16 REGISTER
-                    ;MOVE.B  #14,D0
-                    ;TRAP    #15 
+                    MOVE.B #' ', (A6)+
+                    JSR    ABSOLUTE_LONG
                     RTS
-                  
+ABSOLUTE_WORD    
+               MOVE.B   #'$', (A6)+
+               MOVE.L   A2, A5
+               ADD.W    #2, A5  
+               JSR      PRINT_DEREF_ADDRESS
+               ADD.W    #2, A5
+               JSR      PRINT_DEREF_ADDRESS 
+ABSOLUTE_LONG    
+               MOVE.B   #'$', (A6)+
+               MOVE.L   A2, A5
+               ADD.W    #2, A5  
+               JSR      PRINT_DEREF_ADDRESS
+               ADD.W    #2, A5
+               JSR      PRINT_DEREF_ADDRESS
+           
+** TODO: CHANGE MOVEM TO GET SIZE LIKE OTHER OPCODES   
 MOVEM      
                    
                     ** SIZE SUBROUTINE
@@ -1449,18 +1545,16 @@ MOVEM
                     TRAP    #15
                     BRA     EXIT 
                     
-MOVEM_W 
-                     LEA     MOVEM_disp,A1
-                    * PRINT MOVEM
-                     MOVE.B  #14,D0
-                     TRAP    #15
-        
-                    * PRINT WORD PORTION
-                     LEA     size_w, A0
-                     MOVE.B  #14,D0
-                     TRAP    #15 
-        
-                     BRA     EXIT 
+
+
+
+MOVEM_W             MOVE.B #'M', (A6)+
+                    MOVE.B #'O', (A6)+
+                    MOVE.B #'V', (A6)+
+                    MOVE.B #'E', (A6)+
+                    MOVE.B #'M', (A6)+
+                    RTS
+
      
    
 COPY_OPCODE 
@@ -1513,6 +1607,18 @@ PRINT_HEX
                MOVE.W      (A2),D1        // print the hex value in current address      
                MOVE.B      #15,D0          
                TRAP        #15 
+               RTS
+
+
+** USED FOR MOVE INVALID SOURCE
+CHECK_INVALID_IMMEDIATE
+               JSR         bits5to10
+               CMP         #%111100,D3
+               BEQ         INVALID_OP
+               CMP         #%111010,D3
+               BEQ         INVALID_OP
+               CMP         #%111011,D3
+               BEQ         INVALID_OP
                RTS
  ***************************
 
@@ -1974,6 +2080,9 @@ BUFFER DC.L 1
 
 
 
+
+
+               
 
 *~Font name~Courier New~
 *~Font size~10~

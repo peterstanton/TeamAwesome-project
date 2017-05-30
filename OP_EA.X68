@@ -1036,10 +1036,6 @@ ASR_BUFFER
                MOVE.B   #' ', (A6)+
                RTS      
 
-ASL_MEM     
-
-                JSR     ASL_BUFFER
-                BRA     PRINT_BUFFER
 
 ASL_BUFFER
                MOVE.B   #'A',(A6)+
@@ -1790,6 +1786,7 @@ BUFFER DC.L 1
     END START 
 
                
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

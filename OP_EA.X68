@@ -15,6 +15,7 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
+                 
                  MOVE.W  (A2), D3
 
                  * TEST OPCODES
@@ -45,7 +46,7 @@ MAIN_LOOP
                   ; MOVE.W        #$C9A5, D3   *AND                      
                   ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
                   ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                    MOVE.W       #$E342,D3      *ASL                                               
+                   ; MOVE.W       #$E342,D3      *ASL                                               
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -1166,7 +1167,8 @@ MODE111
                JSR      PRINT_DEREF_ADDRESS
                ADD.W    #2, A2
                JSR      PRINT_DEREF_ADDRESS
-               RTS            
+               ADD.W    #2, A2
+               RTS                 
                                         
 ADDRESS_BUFFER
                 MOVE.B  #'A',(A6)+ 
@@ -1219,15 +1221,15 @@ INVALID_OP
                     JSR     PRINT_DEREF_ADDRESS
           
                 
-NOP                 LEA     NOP_disp,A1          
-                    MOVE.B  #14,D0
-                    TRAP    #15
+NOP                 MOVE.B #'N', (A6)+
+                 	MOVE.B #'O', (A6)+
+                    MOVE.B #'P', (A6)+
                     RTS
                  
 RTS      
-                    LEA     RTS_disp,A1          
-                    MOVE.B  #14,D0
-                    TRAP    #15 
+                    MOVE.B #'R', (A6)+
+                 	MOVE.B #'T', (A6)+
+                    MOVE.B #'S', (A6)+
                     RTS
 JSR      
                     MOVE.B #'J', (A6)+
@@ -1244,9 +1246,9 @@ PRINT_ABSOLUTE_LONG
                JSR      PRINT_DEREF_ADDRESS
                ADD.W    #2, A5
                JSR      PRINT_DEREF_ADDRESS
-              
+           
+** TODO: CHANGE MOVEM TO GET SIZE LIKE OTHER OPCODES   
 MOVEM      
-                   
                     ** SIZE SUBROUTINE
                     ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
                     AND #%0000000001000000,D2 
@@ -1260,17 +1262,12 @@ MOVEM
                     TRAP    #15
                     RTS 
                     
-MOVEM_W 
-                     LEA     MOVEM_disp,A1
-                    * PRINT MOVEM
-                     MOVE.B  #14,D0
-                     TRAP    #15
-        
-                    * PRINT WORD PORTION
-                     LEA     size_w, A0
-                     MOVE.B  #14,D0
-                     TRAP    #15 
-        
+MOVEM_W             MOVE.B #'M', (A6)+
+                    MOVE.B #'O', (A6)+
+                    MOVE.B #'V', (A6)+
+                    MOVE.B #'E', (A6)+
+                    MOVE.B #'M', (A6)+
+
                      RTS
      
    
@@ -1307,9 +1304,21 @@ PRINT_DEREF_ADDRESS
                MOVE.W   #14,D0
                TRAP     #15
                LEA      BUFFER, A6
-               CLR         D2
+               CLR      D2
+               CMP      #0, (A2)
+               BEQ      PRINT_ZEROES
+               BRA      PRINT_HEX
+               
+PRINT_ZEROES
+              LEA   BUFFER,A6
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              MOVE.B #'0', (A6)+
+              RTS
+PRINT_HEX
                MOVE.B      #16,D2          // Setup for Base-16 conversion
-               MOVE.W      (A2),D1        // PRINT HEX  OPCODE IN ADDRESS        
+               MOVE.W      (A2),D1        // print the hex value in current address      
                MOVE.B      #15,D0          
                TRAP        #15 
                RTS
@@ -1661,25 +1670,7 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
-
-
-
-
-
-
-
-
-<<<<<<< HEAD
-
-
-
-
-
-
-=======
->>>>>>> e891c9421631837c9b89106a30a027086048ffcf
-
-
+               
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

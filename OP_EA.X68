@@ -2,6 +2,8 @@ START  ORG $1000
                
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
                MOVEA.L #$1030,A3 ** TEST END ADDRESS
+               
+               
                JSR MAIN_LOOP
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
@@ -123,12 +125,26 @@ code0000
                BRA          ADDI  
 
 code0001      
-               BRA     INVALID_OP
+               * MOVE/A BYTE
+               ** CHECK IF MOVEA
+               JSR         bits8to10
+               CMP         #%001,D3
+               
+               BEQ         MOVEA_B
+               BRA         MOVE_B
 
-code0010        BRA       INVALID_OP
+code0010       * MOVE/A LONG
+               * CHECK IF MOVEA
+               JSR         bits8to10
+               CMP         #%001,D3
+               BEQ         MOVEA_L
+               BRA         MOVE_L
 
-code0011        BRA       INVALID_OP
-
+code0011       * MOVE/A WORD
+               JSR         bits8to10
+               CMP         #%001,D3
+               BEQ         MOVEA_W
+               BRA         MOVE_W
 code0100       
                JSR COPY_OPCODE // Makes a copy of Opcode into d2
                 
@@ -254,7 +270,42 @@ ADDA_BUFFER
                
                
                
-*********************************************               
+*********************************************
+MOVEA_B
+         JSR MOVE_BUFFER
+         MOVE.B  #'A', (A6)+
+         JSR     SIZEISBYTE
+         RTS
+MOVEA_W
+        JSR     MOVE_BUFFER
+        MOVE.B  #'A', (A6)+
+        JSR     SIZEISWORD
+        RTS
+        
+MOVEA_L
+        JSR     MOVE_BUFFER
+        MOVE.B  #'A', (A6)+
+        JSR     SIZEISLONG
+        RTS
+MOVE_BUFFER
+        MOVE.B  #'M', (A6)+
+        MOVE.B  #'O', (A6)+
+        MOVE.B  #'V', (A6)+
+        MOVE.B  #'E', (A6)+
+        RTS
+        
+MOVE_B
+        JSR     MOVE_BUFFER
+        JSR     SIZEISBYTE
+        RTS
+MOVE_W
+        JSR     MOVE_BUFFER
+        JSR     SIZEISWORD
+        RTS
+MOVE_L    
+        JSR     MOVE_BUFFER
+        JSR     SIZEISLONG
+        RTS         
 ADD    
                JSR     ADD_BUFFER
                RTS
@@ -1117,9 +1168,10 @@ JSR
                     RTS
 PRINT_ABSOLUTE_LONG    
                MOVE.B   #'$', (A6)+
-               ADD.W    #2, A2  
+               MOVE.L   A2, A5
+               ADD.W    #2, A5  
                JSR      PRINT_DEREF_ADDRESS
-               ADD.W    #2, A2
+               ADD.W    #2, A5
                JSR      PRINT_DEREF_ADDRESS
               
 MOVEM      

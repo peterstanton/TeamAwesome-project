@@ -17,7 +17,7 @@ MAIN_LOOP
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
@@ -41,7 +41,7 @@ MAIN_LOOP
                   ; MOVE.W        #$C9A5, D3   *AND                      
                   ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
                   ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                   ; MOVE.W       #$E342,D3      *ASL                                               
+                    MOVE.W       #$E342,D3      *ASL                                               
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -904,11 +904,47 @@ AND_BUFFER
 
 
 **************************************************
+ASR_MEM
+                JSR     ASR_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR      bits14to16
+               JSR      insert_num
+               RTS
+            
+**************************************************
+ASL_MEM
+                JSR     ASL_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR      bits14to16
+               JSR      insert_num
+               RTS 
 
 
 **************************************************
 
-ASR     
+ASR_REG     
                 JSR     ASR_BUFFER
 ASL_ENTRY       JSR     bits11to13
                 MOVE    D3,D4
@@ -1033,7 +1069,7 @@ SHIFTCOUNT_NUMBERPARSER_SEVEN
 ;~~~~~~~~~~~~~               
 **************************************************
 
-ASL     
+ASL_REG     
                 JSR     ASL_BUFFER
                 JSR     ASL_ENTRY
                 RTS
@@ -1885,6 +1921,8 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
 
 
 

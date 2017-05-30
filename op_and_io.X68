@@ -3,7 +3,7 @@ START  ORG $1000
 * Title      :
 * Written by :
 * Date       :
-* Description:
+* Description: blah blah let me commit
 *-----------------------------------------------------------
 *Displays welcome message
                 LEA     welcome_msg, A1
@@ -92,7 +92,7 @@ MAIN_LOOP
                  ;MOVE.W  #$4E71,D3 * NOP
                  ; MOVE.W  #$4E75,D3 * RTS
                  ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
+                  MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
                  ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
                  ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
                  ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
@@ -116,7 +116,7 @@ MAIN_LOOP
                   ; MOVE.W        #$C9A5, D3   *AND                      
                   ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
                   ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                    MOVE.W       #$E342,D3      *ASL                                               
+                   ; MOVE.W       #$E342,D3      *ASL                                               
 
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -299,11 +299,14 @@ code1110
                 * ASR
                 JSR     bits1to10
                 CMP     #%1110000011,D3
-                BEQ     ASR
+                BEQ     ASR_MEM
+                
                 
                 * ASL
                 CMP     #%1110000111,D3
-                BEQ     ASL
+                BEQ     ASL_MEM
+                
+                
                 
                 * LSL -- has register/immediate shift and 
                 
@@ -1841,6 +1844,9 @@ SIZEISLONG
 BUFFER DC.L 1     
     INCLUDE 'helpers.x68'
     END START 
+
+
+
 
 
 

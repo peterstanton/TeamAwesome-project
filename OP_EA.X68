@@ -551,6 +551,11 @@ LEA_SRC
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
+
+             JSR     bits14to16
+             JSR     insert_num
+             CLR     D3
+             CLR     D4 
  
              MOVE.B     #',', (A6)+
              MOVE.B     #' ', (A6)+

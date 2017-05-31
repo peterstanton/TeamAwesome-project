@@ -1,62 +1,15 @@
 TEST  ORG $1000                       
-    SUB.B        D1,D4
-    SUB.B        (A5),D5
-    SUB.B        (A3)+,D6
-    SUB.B        -(A2),D7
-    SUB.B        $0,D6
-    SUB.B        $1000,D0
-    SUB.B        $8000,D1
-    SUB.B        $FF0FF0FF,D2
-    SUB.B        #0,D3
-    SUB.B        #$FF,D4
-    SUB.B        D0,(A1)
-    SUB.B        D2,(A3)+
-    SUB.B        D4,-(A5)
-    SUB.B        D6,$0
-    SUB.B        D0,$1000
-    SUB.B        D1,$8000
-    SUB.B        D2,$FF0FF0FF
+    CMP.B        D1,D4
+    CMP.B        (A5),D5
+    CMP.B        (A3)+,D6
+    CMP.B        -(A2),D7
+    CMP.B        $0,D6
+    CMP.B        $1000,D0
+    CMP.B        $8000,D1
+    CMP.B        $FF0FF0FF,D2
+    CMP.B        #0,D3
+    CMP.B        #$FF,D4
     
-    SUB.W        D1,D4
-    SUB.W        A1,D0
-    SUB.W        (A5),D5
-    SUB.W        (A3)+,D6
-    SUB.W        -(A2),D7
-    SUB.W        $0,D6
-    SUB.W        $1000,D0
-    SUB.W        $8000,D1
-    SUB.W        $FF0FF0FF,D2
-    SUB.W        #0,D3
-    SUB.W        #$FF,D4
-    SUB.W        #$23FF,D4
-    SUB.W        D0,(A1)
-    SUB.W        D2,(A3)+
-    SUB.W        D4,-(A5)
-    SUB.W        D6,$0
-    SUB.W        D0,$1000
-    SUB.W        D1,$8000
-    SUB.W        D2,$FF0FF0FF
-    
-    SUB.L        D1,D4
-    SUB.L        A2,D0
-    SUB.L        (A5),D5
-    SUB.L        (A3)+,D6
-    SUB.L        -(A2),D7
-    SUB.L        $0,D6
-    SUB.L        $1000,D0
-    SUB.L        $8000,D1
-    SUB.L        $FF0FF0FF,D2
-    SUB.L        #0,D3
-    SUB.L        #$FF,D4
-    SUB.L        #$23FF,D4
-    SUB.L        #$FF0023FF,D4
-    SUB.L        D0,(A1)
-    SUB.L        D2,(A3)+
-    SUB.L        D4,-(A5)
-    SUB.L        D6,$0
-    SUB.L        D0,$1000
-    SUB.L        D1,$8000
-    SUB.L        D2,$FF0FF0FF 
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -1108,7 +1061,7 @@ CMP_BUFFER
                MOVE.B   #'C',(A6)+
                MOVE.B   #'M', (A6)+  
                MOVE.B   #'P', (A6)+
-               ** TODO: ADD SIZE BASED ON BITS 8 TO 10
+               JSR      GETSIZE_CMP
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                MOVE.B   #' ', (A6)+
@@ -2426,6 +2379,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

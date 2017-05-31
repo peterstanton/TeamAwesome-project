@@ -1,19 +1,9 @@
 TEST  ORG $1000 
-    ADD.W  $7000,D0                            
-    ADD.B  D3,(A4)+               
-    ADD.B  D4,-(A5)               
-    ADD.B  D5,$6000              
-    ADD.B  D6,$8000              
-    
-    ADD.W  D0,D0                 
-    ADD.W  A0,D1                 
-    ADD.W  (A1),D2                
-    ADD.W  (A2)+,D3               
-    ADD.W  -(A3),D4               
-    ADD.W  $4000,D5               
-    ADD.W  $A000,D6               
-    ADD.W  $70,D7               
-    ADD.W  $7000,D0                 
+    JSR     (A6)
+    JSR     $0
+    JSR     $1000
+    JSR     $8000
+    JSR     $FFEE0000              
         
 
 START  ORG $6000
@@ -1836,12 +1826,35 @@ RTS
                     MOVE.B #'S', (A6)+
                     RTS
 JSR      
+                    
+                    JSR    bits5to7
+                    CMP    #%111,D3
+                    BNE    INVALID_EA
+                    CLR    D3
+                    
+                    JSR    bits8to10
+                    CMP    #%010,D3
+                    BNE    INVALID_EA
+                    CLR    D3
+
                     MOVE.B #'J', (A6)+
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    MOVE.B #' ', (A6)+
-                    JSR    ABSOLUTE_LONG
+                    
+                    JSR    bits11to13
+                    MOVE    D3,D4
+                    LEA     jmp_mode,A0    *Index into the table
+                    MULU    #6,D3       *Form offset     
+                    JSR     0(A0,D3)   *Jump indirect with index  
+                    CLR     D3
+                    
+                    JSR     bits14to16
+                    JSR     insert_num
+                    CLR     D4
+                    CLR     D3
+
+                    ;JSR    ABSOLUTE_LONG
                     RTS
 ABSOLUTE_WORD    
                MOVE.B   #'$', (A6)+
@@ -2344,6 +2357,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

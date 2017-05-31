@@ -1,11 +1,29 @@
 TEST  ORG $1000                       
-               
-    ADD.B  D5,$6000              
-    ADD.B  D6,$8000                      
-    ADD.W  $4000,D5               
-    ADD.W  $A000,D6               
-    ADD.W  $70,D7               
-    ADD.W  $7000,D0                 
+    CLR.B   $0    
+    CLR.B   $1000     
+    CLR.B   D0
+    CLR.B   (A2)
+    CLR.B   (A3)+
+    CLR.B   -(A4)
+    
+    CLR.B   $8000
+    CLR.B   $FFEF0000    
+    CLR.W   D0
+    CLR.W   (A2)
+    CLR.W   (A3)+
+    CLR.W   -(A4)
+    CLR.W   $0
+    CLR.W   $1000
+    CLR.W   $8000
+    CLR.W   $FFEF0000   
+    CLR.L   D0
+    CLR.L   (A2)
+    CLR.L   (A3)+
+    CLR.L   -(A4)
+    CLR.L   $0
+    CLR.L   $1000
+    CLR.L   $8000
+    CLR.L   $FFEF0000              
         
 
 START  ORG $6000
@@ -2275,6 +2293,8 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
 
 
 

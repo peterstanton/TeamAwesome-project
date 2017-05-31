@@ -1,13 +1,62 @@
 TEST  ORG $1000                       
-    ADD.W  $4000,D5              
-    ADD.L  $A000,D6               
-    ADD.B  $70,D7               
-    ADD.B  D0,D1                 
-    ADD.B  D2,(A3)                
-    ADD.B  D3,(A4)+               
-    ADD.B  D4,-(A5)               
-    ADD.B  D5,$6000              
-    ADD.B  D6,$8000    
+    SUB.B        D1,D4
+    SUB.B        (A5),D5
+    SUB.B        (A3)+,D6
+    SUB.B        -(A2),D7
+    SUB.B        $0,D6
+    SUB.B        $1000,D0
+    SUB.B        $8000,D1
+    SUB.B        $FF0FF0FF,D2
+    SUB.B        #0,D3
+    SUB.B        #$FF,D4
+    SUB.B        D0,(A1)
+    SUB.B        D2,(A3)+
+    SUB.B        D4,-(A5)
+    SUB.B        D6,$0
+    SUB.B        D0,$1000
+    SUB.B        D1,$8000
+    SUB.B        D2,$FF0FF0FF
+    
+    SUB.W        D1,D4
+    SUB.W        A1,D0
+    SUB.W        (A5),D5
+    SUB.W        (A3)+,D6
+    SUB.W        -(A2),D7
+    SUB.W        $0,D6
+    SUB.W        $1000,D0
+    SUB.W        $8000,D1
+    SUB.W        $FF0FF0FF,D2
+    SUB.W        #0,D3
+    SUB.W        #$FF,D4
+    SUB.W        #$23FF,D4
+    SUB.W        D0,(A1)
+    SUB.W        D2,(A3)+
+    SUB.W        D4,-(A5)
+    SUB.W        D6,$0
+    SUB.W        D0,$1000
+    SUB.W        D1,$8000
+    SUB.W        D2,$FF0FF0FF
+    
+    SUB.L        D1,D4
+    SUB.L        A2,D0
+    SUB.L        (A5),D5
+    SUB.L        (A3)+,D6
+    SUB.L        -(A2),D7
+    SUB.L        $0,D6
+    SUB.L        $1000,D0
+    SUB.L        $8000,D1
+    SUB.L        $FF0FF0FF,D2
+    SUB.L        #0,D3
+    SUB.L        #$FF,D4
+    SUB.L        #$23FF,D4
+    SUB.L        #$FF0023FF,D4
+    SUB.L        D0,(A1)
+    SUB.L        D2,(A3)+
+    SUB.L        D4,-(A5)
+    SUB.L        D6,$0
+    SUB.L        D0,$1000
+    SUB.L        D1,$8000
+    SUB.L        D2,$FF0FF0FF 
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -793,6 +842,12 @@ DIVU_BUFFER
                
                
 DIVU_SRC
+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+
+
                JSR      bits11to13
                MOVE     D3,D4
                LEA     jmp_mode,A0    *Index into the table
@@ -800,7 +855,10 @@ DIVU_SRC
                JSR     0(A0,D3)   *Jump indirect with index  
                CLR     D3
                JSR     bits14to16
-               JSR     insert_num
+               
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
+                
                CLR     D4
                CLR     D3
                RTS
@@ -860,6 +918,12 @@ OR_BUFFER
                
                
 OR_SRC
+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                
+                
                JSR      bits11to13
                CMP      #%001,D3
                BEQ      INVALID_EA
@@ -869,7 +933,10 @@ OR_SRC
                JSR     0(A0,D3)   *Jump indirect with index  
                CLR     D3
                JSR     bits14to16
-               JSR     insert_num
+               
+                  CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
+                
                CLR     D3
                CLR     D4
                RTS
@@ -932,6 +999,14 @@ SUB_BUFFER
              
                
 SUB_SRC
+
+
+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                
+                
                JSR      bits11to13
                MOVE     D3,D4
                LEA     jmp_mode,A0    *Index into the table
@@ -939,7 +1014,10 @@ SUB_SRC
                JSR     0(A0,D3)   *Jump indirect with index  
                CLR     D3
                JSR     bits14to16
-               JSR     insert_num
+               
+                 CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
+               
                CLR     D3
                CLR     D4
                RTS
@@ -989,6 +1067,13 @@ CMP_DIRECTION_REVERSED
                
                
 CMP_SRC
+
+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                
+                
                JSR      bits11to13
                MOVE     D3,D4
                LEA     jmp_mode,A0    *Index into the table
@@ -996,7 +1081,11 @@ CMP_SRC
                JSR     0(A0,D3)   *Jump indirect with index  
                CLR     D3
                JSR     bits14to16
-               JSR     insert_num
+               
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
+               
+               
                CLR     D3
                CLR     D4
                RTS                      
@@ -1093,6 +1182,12 @@ MULS_ISWORD
 
 
 MULS_ISLONG
+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                
+                
                CLR      D3
                CLR      D4
                JSR      bits11to13
@@ -1104,7 +1199,9 @@ MULS_ISLONG
                JSR     0(A0,D3)   *Jump indirect with index  
                CLR     D3
                JSR     bits14to16
-               JSR     insert_num
+               
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
                
                MOVE.B  #',',(A6)+
                MOVE.B  #' ',(A6)+
@@ -1130,7 +1227,7 @@ AND
                JSR     AND_BUFFER
                                              ;Okay, the directionality bit in D6 should determine which order we should process bits in?
                CMP      #1,D6
-               BNE      CMP_DIRECTION_REVERSED
+               BNE      CMP_DIRECTION_REVERSED  ;?????
                CLR      D6
                JSR      CMP_SRC
                MOVE.B   #',', (A6)+
@@ -2329,6 +2426,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

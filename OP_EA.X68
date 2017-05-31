@@ -25,6 +25,11 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
+                 
+                 ADDQ.B  #1,linecount
+                 CMPI.B  #29,linecount
+                 BEQ     IO_PauseOutput
+                 
                  MOVE.W  (A2), D3                                     
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
@@ -35,9 +40,9 @@ MAIN_LOOP
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
                  CMP     A3,A2
-                 BGT     EXIT
+                 BGT     END_PROGRAM
                  BRA     MAIN_LOOP
-                 BRA     EXIT
+                 BRA     END_PROGRAM
                                 
     INCLUDE 'definitions.x68'
     INCLUDE 'TEST_CODE.x68'
@@ -2379,6 +2384,10 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
+
+
 
 
 

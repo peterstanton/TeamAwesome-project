@@ -50,8 +50,7 @@ as_ERROR                LEA     'err',A1            *will display error if conve
 *This subroutine is used to check the validity of the start
 *address inputted by user
 *-----------------------------------------------------------
-sub_StartReadingData    
-                        BTST    #0,D1                   *checks if Least Significant Bit is 1, (looks at XNZVC and sees if Z is 1) 
+sub_StartReadingData    BTST    #0,D1                   *checks if Least Significant Bit is 1, (looks at XNZVC and sees if Z is 1) 
                         BNE     srdFailAddrOddB         *if 1, then address is odd and invalid
                         
                         MOVE.L  #0,D7                   *if D7 equals 0, then address is valid
@@ -62,14 +61,14 @@ srdFailAddrOddB         LEA     addr_oddBit_msg,A1
                         TRAP    #15
                         
                         MOVE.L  #1,D7               *if D7 equals 1, then address is invalid
-                        BRA     srdFinish
+                        BRA     srdFinish       
+*-----------------------------------------------------------
 *-----------------------------------------------------------
 *end reading data helper method
 *This subroutine is used to check the validity of the end
 *address inputted by user
 *-----------------------------------------------------------
-sub_EndReadingData  
-                        BTST    #0,D1               *checks if LSB is 1, 
+sub_EndReadingData      BTST    #0,D1               *checks if LSB is 1, 
                         BNE     erdFailAddrOddB     *if 1, then address is odd and invalid
                         
                         CMP.L   A3,A2               *end address must be greater than start address
@@ -90,8 +89,7 @@ erdFailAddrOddB         LEA     addr_oddBit_msg,A1
                         
                         MOVE.L  #1,D7               *if D7 equals 1, then address is invalid
                         BRA     erdFinish
-                        
-
+*-----------------------------------------------------------
 
 
 

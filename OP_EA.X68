@@ -1,20 +1,20 @@
-TEST  ORG $1000                       
-    CMP.B        D1,D4
-    CMP.B        (A5),D5
-    CMP.B        (A3)+,D6
-    CMP.B        -(A2),D7
-    CMP.B        $0,D6
-    CMP.B        $1000,D0
-    CMP.B        $8000,D1
-    CMP.B        $FF0FF0FF,D2
-    CMP.B        #0,D3
-    CMP.B        #$FF,D4
-    
-
-START  ORG $6000
-               MOVEA.L #$1000,A2 ** TEST START ADDRESS
-               MOVEA.L #$1040,A3 ** TEST END ADDRESS
-               JSR MAIN_LOOP
+*TEST  ORG $1000                       
+*    CMP.B        D1,D4
+*    CMP.B        (A5),D5
+*    CMP.B        (A3)+,D6
+*    CMP.B        -(A2),D7
+*    CMP.B        $0,D6
+*    CMP.B        $1000,D0
+*    CMP.B        $8000,D1
+*    CMP.B        $FF0FF0FF,D2
+*    CMP.B        #0,D3
+*    CMP.B        #$FF,D4
+*    
+*
+*START  ORG $6000
+*               MOVEA.L #$1000,A2 ** TEST START ADDRESS
+*               MOVEA.L #$1040,A3 ** TEST END ADDRESS
+*               JSR MAIN_LOOP
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
 *** D5 - CURRENT OPCODE
@@ -40,15 +40,15 @@ MAIN_LOOP
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
                  CMP     A3,A2
-                 BGT     END_PROGRAM
+                 BGT     IO_EndProgram
                  BRA     MAIN_LOOP
                  BRA     END_PROGRAM
                                 
-    INCLUDE 'definitions.x68'
-    INCLUDE 'TEST_CODE.x68'
-           
-EXIT                 
-       SIMHALT   
+*    INCLUDE 'definitions.x68'
+*    INCLUDE 'TEST_CODE.x68'
+*           
+*EXIT                 
+*       SIMHALT   
        
 jmp_table      JMP         code0000
                 *ADDI
@@ -207,9 +207,9 @@ code1000
                 BRA        OR       ** OTHERWISE OR
                 
 
-code1001       
-               BRA         SUB
-code1010       BRA       INVALID_OP
+code1001       BRA         SUB
+
+code1010       BRA         INVALID_OP
 
 code1011       
                BRA         CMP
@@ -1412,7 +1412,7 @@ LSL_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
                 
-                JSR     LSL_BUFFER
+               JSR     LSL_BUFFER
                MOVE    D3,D4
                LEA     jmp_mode,A0    *Index into the table
                MULU    #6,D3       *Form offset     
@@ -1910,16 +1910,16 @@ ABSOLUTE_LONG
 MOVEM      
                     ** SIZE SUBROUTINE
                     ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
-                    AND #%0000000001000000,D2 
-                    * WORD
-                    CMP.L   #%0000000001000000,D2
-                    JSR     MOVEM_W 
-                    *LONG
-                    CMP.L   #%0000000001000000,D2 
-                   ** JSR     MOVEM_L
-                    MOVE.B  #14,D0
-                    TRAP    #15
-                    RTS 
+*                    AND #%0000000001000000,D2 
+*                    * WORD
+*                    CMP.L   #%0000000001000000,D2
+*                    JSR     MOVEM_W 
+*                    *LONG
+*                    CMP.L   #%0000000001000000,D2 
+*                   ** JSR     MOVEM_L
+*                    MOVE.B  #14,D0
+*                    TRAP    #15
+*                    RTS 
                     
 MOVEM_W             MOVE.B #'M', (A6)+
                     MOVE.B #'O', (A6)+
@@ -1951,6 +1951,7 @@ PRINT_BUFFER
                LEA      BUFFER, A1
                MOVE.W   #14,D0
                TRAP     #15
+              
                LEA     linebreak,A1            *appends line at the end of the user input
                MOVE.B  #14,D0
                TRAP    #15
@@ -2379,11 +2380,13 @@ SIZEISLONG
                 
      
 BUFFER DC.L 1     
-    INCLUDE 'helpers.x68'
-    END START 
-    END TEST
+*    INCLUDE 'helpers.x68'
+*    END START 
+*    END TEST
 
                
+
+
 
 
 

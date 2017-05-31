@@ -158,6 +158,11 @@ code0100
                AND     #%0000000110000000,D2
                CMP.L   #%0000000110000000,D2
                BEQ     LEA
+
+               JSR COPY_OPCODE //makes a copy of OPcode into d2
+               AND     #%0000111100000000,D2
+               CMP.L   #%0000001000000000,D2
+               BEQ     CLR
                 
                               * MOVEM
                 ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
@@ -248,6 +253,47 @@ code1110
                 * ROR
 
 code1111       BRA       INVALID_OP
+
+
+*************************************
+CLR 
+               JSR     bits8to10
+               CMP     #%011,D3
+               BEQ     INVALID_EA
+               
+               JSR     bits11to13
+               CMP     #%001,D3
+               BEQ     INVALID_EA
+               CLR     D3
+               
+               
+               JSR     CLR_BUFFER
+               
+               CLR.L   D3
+               
+               JSR     bits11to13
+               MOVE     D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index
+
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4 
+               RTS
+               
+               
+CLR_BUFFER
+               MOVE.B  #'C',(A6)+
+               MOVE.B  #'L',(A6)+
+               MOVE.B  #'R',(A6)+
+               JSR     GETSIZE_CLR
+               RTS
+            
+
+*************************************
+
 
 ADDA    
                JSR     ADDA_BUFFER
@@ -1876,6 +1922,33 @@ ADDQ_NOTWORD
            
 ************************************                 
 
+************************************                 
+GETSIZE_CLR
+           CLR     D3
+           JSR     bits8to10
+           CMP     #000,D3
+           BNE     CLR_NOTBYTE
+           JSR     SIZEISBYTE
+           CLR.L   D3
+           RTS
+           
+CLR_NOTBYTE
+           CMP     #001,D3
+           BNE     CLR_NOTWORD
+           JSR     SIZEISWORD
+           CLR.L   D3
+           RTS
+
+CLR_NOTWORD
+           CMP     #010,D3
+           BNE     INVALID_EA
+           JSR     SIZEISLONG
+           CLR.L   D3
+           RTS
+
+
+
+****************************  
 
 
 

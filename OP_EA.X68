@@ -1,13 +1,12 @@
 TEST  ORG $1000                       
-    CLR.B   $0    
-    CLR.B   $1000     
     CLR.B   D0
     CLR.B   (A2)
     CLR.B   (A3)+
     CLR.B   -(A4)
-    
+    CLR.B   $0
+    CLR.B   $1000
     CLR.B   $8000
-    CLR.B   $FFEF0000    
+    CLR.B   $FFEF0000
     CLR.W   D0
     CLR.W   (A2)
     CLR.W   (A3)+
@@ -23,8 +22,7 @@ TEST  ORG $1000
     CLR.L   $0
     CLR.L   $1000
     CLR.L   $8000
-    CLR.L   $FFEF0000              
-        
+    CLR.L   $FFEF0000
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -2293,6 +2291,9 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
+
 
 
 

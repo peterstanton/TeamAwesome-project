@@ -1,28 +1,12 @@
 TEST  ORG $1000                       
-    CLR.B   D0
-    CLR.B   (A2)
-    CLR.B   (A3)+
-    CLR.B   -(A4)
-    CLR.B   $0
-    CLR.B   $1000
-    CLR.B   $8000
-    CLR.B   $FFEF0000
-    CLR.W   D0
-    CLR.W   (A2)
-    CLR.W   (A3)+
-    CLR.W   -(A4)
-    CLR.W   $0
-    CLR.W   $1000
-    CLR.W   $8000
-    CLR.W   $FFEF0000   
-    CLR.L   D0
-    CLR.L   (A2)
-    CLR.L   (A3)+
-    CLR.L   -(A4)
-    CLR.L   $0
-    CLR.L   $1000
-    CLR.L   $8000
-    CLR.L   $FFEF0000
+    JSR     (A6)
+    JSR     $0
+    JSR     $1000
+    JSR     $8000
+    JSR     $FFEE0000
+
+
+
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -275,6 +259,47 @@ code1110
                 * ROR
 
 code1111       BRA       INVALID_OP
+
+*************************************
+
+
+
+BCC
+           MOVE.B   #'B',(A6)+
+           MOVE.B   #'C',(A6)+
+           MOVE.B   #'C',(A6)+
+           MOVE.B   #' ',(A6)+
+
+
+
+
+
+
+
+*************************************
+
+BGT
+           MOVE.B   #'B',(A6)+
+           MOVE.B   #'G',(A6)+
+           MOVE.B   #'T',(A6)+
+           MOVE.B   #' ',(A6)+
+
+
+
+
+
+*************************************
+
+BLE
+           MOVE.B   #'B',(A6)+
+           MOVE.B   #'L',(A6)+
+           MOVE.B   #'E',(A6)+
+           MOVE.B   #' ',(A6)+
+
+
+
+*************************************
+
 
 ADDA    
                JSR     ADDA_BUFFER
@@ -1769,13 +1794,37 @@ RTS
                     MOVE.B #'S', (A6)+
                     RTS
 JSR      
+                    
+                    JSR    bits5to7
+                    CMP    #%111,D3
+                    BNE    INVALID_EA
+                    CLR    D3
+                    
+                    JSR    bits8to10
+                    CMP    #%010,D3
+                    BNE    INVALID_EA
+                    CLR    D3
+
                     MOVE.B #'J', (A6)+
                     MOVE.B #'S', (A6)+
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
-                    MOVE.B #' ', (A6)+
-                    JSR    ABSOLUTE_LONG
+                    
+                    JSR    bits11to13
+                    MOVE    D3,D4
+                    LEA     jmp_mode,A0    *Index into the table
+                    MULU    #6,D3       *Form offset     
+                    JSR     0(A0,D3)   *Jump indirect with index  
+                    CLR     D3
+                    
+                    JSR     bits14to16
+                    JSR     insert_num
+                    CLR     D4
+                    CLR     D3
+
+                    ;JSR    ABSOLUTE_LONG
                     RTS
+                    
 ABSOLUTE_WORD    
                MOVE.B   #'$', (A6)+
                JSR      PRINT_DEREF_ADDRESS
@@ -2229,6 +2278,8 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
 
 
 

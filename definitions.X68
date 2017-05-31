@@ -18,7 +18,7 @@ location_start_msg  DC.B    'Enter Start location address',CR,LF,0
 location_end_msg    DC.B    'Enter End location address',CR,LF,0
 addr_oddBit_msg     DC.B    'Address cannot end on an odd byte.',CR,LF,CR,LF,0
 addr_order_check    DC.B    'Ending Address cannot go before the starting address.',CR,LF,CR,LF,0
-pause_msg           DC.B    'Press enter to continue!',CR,LF
+pause_msg           DC.B    'Press enter to continue!',CR,LF,0
 endTest_msg         DC.B    'Reached end of test data.', CR,LF
                     DC.B    'Try another location? (yes/no): ',0
 linebreak           DC.B    CR,LF,0

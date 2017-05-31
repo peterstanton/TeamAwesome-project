@@ -12,6 +12,7 @@
 *Start of Move test code.***************************************************
 ****************************************************************************
 *Done
+    add.w   #100, d3
     MOVE.L  $123,D5
     MOVE.L  D1,D2
     MOVE.L  A5,D4
@@ -23,13 +24,21 @@
     MOVE.L  $8000,D2
     MOVE.L  $20000,D3
     
-     ADD.W   $68,D1
-    ADD.W  D3,D4
-    ADD.W   (A3),D6
-    ADD.W   -(A3),D5
-    ADD.W   D7,-(A3)
-    
-              
+      
+    ADDA.W   $1111,A2
+    ADDA.W   $8000,A2
+    ADDA.W   $0,A2
+    ADDA.W   $1111,A2
+    ADDA.W   $11111111,A2
+    ADDA.W   $1111,A2
+    ADDA.W   $0,A2
+    ADDA.W   $1111,A1
+    ADDA.W   D1,A7
+    ADDA.W   A1,A6
+    ADDA.W   (A0),A5
+    ADDA.W   (A7)+,A4
+    ADDA.W   -(A7),A4
+        
     CLR.L   D0
     CLR.L   (A2)
     CLR.L   (A3)+
@@ -39,7 +48,7 @@
     CLR.L   $8000
     CLR.L   $FFEF0000
     
-    SUB.B   68,D1
+    SUB.B   #68,D1
     SUB.B   D3,D4
     SUB.B   (A3),D6
     SUB.B   -(A3),D5
@@ -55,6 +64,80 @@
     CLR.L   (A4)
     CLR.W   (A4)+
     CLR.W   -(A4)
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
     
     MOVE.L  #$123,(A4)
     MOVE.L  D1,(A4)
@@ -1198,6 +1281,7 @@ INPUT
 * Put variables and constants here
 
 *    END    START        ; last line of source
+
 
 
 

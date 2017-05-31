@@ -236,11 +236,11 @@ code1110
                 
                 ** bit 8 is the direction
                 CMP     #%1110001110,D3
-                BEQ     LSL
+                BEQ     LSL_MEM
                 
                 * LSR
                 CMP     #%1110001010,D3
-                BEQ     LSR
+                BEQ     LSR_MEM
                 
                 * ROL
                 
@@ -1162,7 +1162,7 @@ ASR_REG
                 CMP     #%000,D3
                 BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
                 CMP     #%100,D3
-                BEQ     ASR_REG_HOLDSSHIFTREG
+                BEQ     AS_REG_HOLDSSHIFTREG
                 
 AS_DONE
                 RTS
@@ -1371,6 +1371,58 @@ LSR_BUFFER
                MOVE.B   #'R', (A6)+
                MOVE.B   #' ', (A6)+
                RTS       
+               
+               
+               
+               
+               
+LSR_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     LSR_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
+                
+
+
+LSL_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     LSL_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
+                RTS
+
  
 **********************************************
  
@@ -2151,18 +2203,6 @@ BUFFER DC.L 1
 
                
 
-
-
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
-=======
->>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
 
 
 

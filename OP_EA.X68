@@ -1,11 +1,20 @@
-TEST  ORG $1000
-    ADD.B  D0,D0                 
-    ADD.B  (A1),D2                
-    ADD.B  (A2)+,D3              
-    ADD.B  -(A3),D4               
-    ADD.B  $4000,D5              
-    ADD.B  $A000,D6               
-    ADD.B  #$70,D7     
+TEST  ORG $1000 
+    ADD.W  $7000,D0                            
+    ADD.B  D3,(A4)+               
+    ADD.B  D4,-(A5)               
+    ADD.B  D5,$6000              
+    ADD.B  D6,$8000              
+    
+    ADD.W  D0,D0                 
+    ADD.W  A0,D1                 
+    ADD.W  (A1),D2                
+    ADD.W  (A2)+,D3               
+    ADD.W  -(A3),D4               
+    ADD.W  $4000,D5               
+    ADD.W  $A000,D6               
+    ADD.W  $70,D7               
+    ADD.W  $7000,D0                 
+        
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -452,6 +461,8 @@ IMMEDIATE_LONG
                JSR     ABSOLUTE_LONG     
                RTS
 ADD    
+               CLR.L   D6
+               CLR.L   D7
                JSR     ADD_BUFFER
                RTS
                 
@@ -465,6 +476,13 @@ ADD_BUFFER
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
+               JSR     bits11to16
+               CMP     #%111000, D3 *** ABSOLUTE WORD
+               BEQ     ABSOLUTE_WORD
+               CMP     #%111001, D3 *** ABSOLUTE LONG 
+               BEQ     ABSOLUTE_LONG
+               CMP     #%111100, D3 *** IMMEDIATE
+               BEQ     IMMEDIATE_BYTE
                JSR      ADD_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
@@ -477,6 +495,13 @@ ADD_DIRECTION_REVERSED
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
+               JSR     bits11to16
+               CMP     #%111000, D3 *** ABSOLUTE WORD
+               BEQ     ABSOLUTE_WORD
+               CMP     #%111001, D3 *** ABSOLUTE LONG 
+               BEQ     ABSOLUTE_LONG
+               CMP     #%111100, D3 *** IMMEDIATE
+               BEQ     IMMEDIATE_BYTE
                JSR      ADD_SRC             
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
@@ -496,7 +521,7 @@ ADD_SRC
                 JSR    insert_num
                 RTS
                 
-ADD_DEST
+ADD_DEST                
                 *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
                 MOVE.W  #%000,D3     ;Can only have a data register.
                 MOVE    D3,D4
@@ -2202,6 +2227,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

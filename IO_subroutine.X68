@@ -85,8 +85,8 @@ IO_PauseOutput  LEA     pause_msg,A1          *prints pause message to the scree
                 
                 MOVE.B  #0,linecount
                 
-                CMPA.L  A4,A5
-                BGE     IO_EndProgram
+                *CMPA.L  A4,A5
+                *BGE     IO_EndProgram
                 
                 BRA     MAIN_LOOP
                 

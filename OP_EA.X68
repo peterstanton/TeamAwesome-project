@@ -1164,7 +1164,7 @@ ASR_REG
                 CMP     #%100,D3
                 BEQ     ASR_REG_HOLDSSHIFTREG
                 
-ASR_DONE
+AS_DONE
                 RTS
                 
 SHIFT_REG_HOLDSSHIFTCOUNT 
@@ -1176,64 +1176,64 @@ SHIFT_REG_HOLDSSHIFTCOUNT
                 CMP     #%000,D3
                 BNE     SHIFT_NOTEIGHT
                 MOVE.B  #'8',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
                 
 SHIFT_NOTEIGHT  
                 CMP     #%001,D3
                 BNE     SHIFT_NOTONE
                 MOVE.B  #'1',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
                 
 SHIFT_NOTONE    
                 CMP     #%010,D3
                 BNE     SHIFT_NOTTWO
                 MOVE.B  #'2',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
                 
 
 SHIFT_NOTTWO    
                 CMP     #%010,D3
                 BNE     SHIFT_NOTTHREE
                 MOVE.B  #'3',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
 
 SHIFT_NOTTHREE   
                 CMP     #%010,D3
                 BNE     SHIFT_NOTFOUR
                 MOVE.B  #'4',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
 
 SHIFT_NOTFOUR    
                 CMP     #%010,D3
                 BNE     SHIFT_NOTFIVE
                 MOVE.B  #'5',(A6)+
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
 
 SHIFT_NOTFIVE    
                 CMP     #%010,D3
                 BNE     SHIFT_NOTSIX
                 MOVE.B  #'6',(A6)+
-                BRA     ASR_GETDEST 
+                BRA     AS_GETDEST 
 
 SHIFT_NOTSIX    
                 CMP     #%010,D3
                 MOVE.B  #'7',(A6)+
-                BRA     ASR_GETDEST                             
+                BRA     AS_GETDEST                             
 
-ASR_REG_HOLDSSHIFTREG
+AS_REG_HOLDSSHIFTREG
                 CLR     D3
                 JSR     bits5to7
                 MOVE.B  #'D',(A6)+
                 CLR     D4
                 JSR     insert_num
                 CLR     D3
-                BRA     ASR_GETDEST
+                BRA     AS_GETDEST
                 
 
 
 
 
-ASR_GETDEST                
+AS_GETDEST                
                 MOVE.B  #',',(A6)+
                 MOVE.B  #' ',(A6)+
                 
@@ -1242,7 +1242,37 @@ ASR_GETDEST
                 MOVE.B  #'D',(A6)+
                 JSR     bits14to16
                 JSR     insert_num
+                BRA     AS_DONE
+
+
+
+ASL_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     ASL_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
                 RTS
+
+
+
+
+
 
 
 
@@ -1386,7 +1416,7 @@ jmp_mode
                 
 insert_num
                 
-                CMP     #%111,D3
+                CMP     #%111,D4
                 BEQ     FINISHER
                 
                 ;get number from D3

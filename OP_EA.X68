@@ -1,24 +1,11 @@
 TEST  ORG $1000
-    MOVE.W  D0,D1
-    MOVE.W  D1,A2 
-    MOVE.W  A2,(A3)
-    MOVE.W  (A3),(A4)+ 
-    MOVE.W  (A4)+,-(A5) 
-    MOVE.W  -(A5),$6000 
-    MOVE.W  $6000,$7000
-    MOVE.W  $7000,$8000
-    MOVE.W  $8000,$7000
-    MOVE.W  $8000,$9000 
-    MOVE.W  #$70,$4000
-    MOVE.W  #$70,$A000
-    MOVE.W  #$7000,$4000
-    MOVE.W  #$7000,$A000
+    LEA (A1),A2                            
+    LEA $4000,A5               
+    LEA $A000,A6    
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
                MOVEA.L #$1040,A3 ** TEST END ADDRESS
-               
-               
                JSR MAIN_LOOP
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
@@ -30,40 +17,7 @@ MAIN_LOOP
                  LEA     jmp_table,A0    *Index into the table
                  LEA     BUFFER, A6      * Load buffer into A6
                  CLR.L   D3              *Zero it
-                 
-                 MOVE.W  (A2), D3
-
-                 * TEST OPCODES
-                 ; MOVE.W  #$45D7,D3 * LEA (A7), A2
-                 ;MOVE.W  #$4E71,D3 * NOP
-                 ; MOVE.W  #$4E75,D3 * RTS
-                 ; MOVE.W  #$4EB0,D3 * JSR
-                 ; MOVE.W  #$0642,D3   *ADDI.W  #1000,D2
-                 ;MOVE.W  #$D4FC,D3   *ADDA.W   #1000, A2
-                 ; MOVE.W  #$D5FC,D3   *ADDA.L   #1000, A2
-                 ;MOVE.W  #$D64A, D3  * ADD.W A2,D3
-
-                  ; MOVE.W    #$5201,D3    *ADDQ
-
-                 ; MOVE.W     #$7E70, D3 *MOVEQ
-                 ; MOVE.W     #$80C0, D3 *DIVU
-                 ; MOVE.W     #$86D9, D3 *DIVU (A1)+,D3                      
-                 ; MOVE.W     #$8000, D3 * OR
-                 ; MOVE.W        #$9000, D3 * SUB
-                  ;MOVE.W        #$B000, D3 * CMP
-                 ; MOVE.W        #$C1C0, D3 * MULS
-                 ; MOVE.W        #$C000, D3 * AND
-                 ; MOVE.W        #$E0F8, D3  *ASR
-                 ; MOVE.W        #$E1E2, D3  *ASL
-                  ; MOVE.W        #$E393, D3  *LSL
-                  ; MOVE.W        #$E2D1, D3  *LSR
-                  ; MOVE.W        #$8E62, D3  *OR.W        -(A2),D7
-                  ; MOVE.W        #$C9A5, D3   *AND                      
-                  ;  MOVE.W        #$4E96, D3   ; JSR     (A6)
-                  ;  MOVE.W        #$E042,D3        ; ASR.W     #8,D2
-                   ; MOVE.W       #$E342,D3      *ASL   
-                ; MOVE.W  #$2A3C,D3 *MOVE.L                                          
-
+                 MOVE.W  (A2), D3                                     
                  JSR    PRINT_ADDRESS
                  ADD.W   #2,A2 * Can safely increment the current address by a word
                  MOVE.W  D3,D5       * Before manipulating opcode, store in D5 
@@ -72,11 +26,10 @@ MAIN_LOOP
                  MULU    #6,D3       *Form offset     
                  JSR     0(A0,D3)   *Jump indirect with index
                  JSR     PRINT_BUFFER * GOT OPCODE AND EA LINE, PRINT IT
-
                  CMP     A3,A2
                  BGT     EXIT
                  BRA     MAIN_LOOP
-                 BRA      EXIT
+                 BRA     EXIT
                                 
     INCLUDE 'definitions.x68'
     INCLUDE 'TEST_CODE.x68'
@@ -617,6 +570,8 @@ LEA
                BNE      INVALID_OP
                JSR      LEA_BUFFER
                JSR      LEA_SRC
+               MOVE.B     #',', (A6)+
+               MOVE.B     #' ', (A6)+
                JSR      LEA_DEST
                RTS
                
@@ -651,9 +606,13 @@ LEA_SRC
              CMP      #%111011,D3 // complicated
              BEQ      INVALID_EA
    
-             JSR      bits11to13 ** grab mode bits to jump with
-             MOVE    D3,D4
+             JSR     bits11to16 ** finds if absolute long or word
+             CMP     #%111000, D3
+             BEQ     ABSOLUTE_WORD
+             CMP     #%111001, D3
+             BEQ     ABSOLUTE_LONG
 
+             JSR      bits11to13  // source mode - D3
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
@@ -662,9 +621,6 @@ LEA_SRC
              JSR     insert_num
              CLR     D3
              CLR     D4 
- 
-             MOVE.B     #',', (A6)+
-             MOVE.B     #' ', (A6)+
 
              RTS
              
@@ -2115,6 +2071,9 @@ BUFFER DC.L 1
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 =======
 >>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
+
+
 
 
 *~Font name~Courier New~

@@ -1426,6 +1426,13 @@ LSL_REG
  
 **********************************************
  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 **********************************************
 ROL_MEM
                JSR      bits5to7
@@ -1443,7 +1450,7 @@ ROL_MEM
                BEQ      INVALID_EA
                CMP      #%001,D3
                BEQ      INVALID_EA
-               
+                              
                JSR      ROL_BUFFER
                MOVE    D3,D4
                LEA     jmp_mode,A0    *Index into the table
@@ -1496,6 +1503,7 @@ ROR_BUFFER
                MOVE.B   #'R',(A6)+
                MOVE.B   #'O',(A6)+
                MOVE.B   #'R',(A6)+
+               JSR      GETSIZE_RO
                MOVE.B   #' ',(A6)+
                RTS
                
@@ -1503,10 +1511,71 @@ ROL_BUFFER
                MOVE.B   #'R',(A6)+
                MOVE.B   #'O',(A6)+
                MOVE.B   #'L',(A6)+
+               JSR      GETSIZE_RO
                MOVE.B   #' ',(A6)+
                RTS
                
+               
+               
+               
+               
+ROR_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     ROR_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
+                
+
+
+ROL_REG     
+                JSR     bits11to13
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                CMP     #%010,D3
+                BEQ     INVALID_EA
+                CMP     #%011,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                JSR     ROL_BUFFER
+                                
+                CMP     #%000,D3
+                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
+                CMP     #%100,D3
+                BEQ     AS_REG_HOLDSSHIFTREG
+                RTS
+
+
+
+               
 ****************************************************
+
+
+
+
+
+
 
 
 
@@ -2171,7 +2240,55 @@ ADDA_NOTWORD
         JSR     SIZEISLONG
         CLR.L     D3
         RTS
-**********************************        
+**********************************      
+GETSIZE_RO
+        JSR     bits8to10
+        CMP     #%000,D3
+        BNE     RO_NOTBYTE
+        JSR     SIZEISBYTE
+        CLR.L   D3
+        RTS
+ 
+RO_NOTBYTE
+        CMP     #001,D3
+        BNE     RO_NOTWORD
+        JSR     SIZEISWORD
+        CLR.L   D3
+        RTS
+        
+RO_NOTWORD
+        CMP    #%010,D3
+        BNE    RO_NOTLEFT
+        JSR    SIZEISLONG
+        CLR.L  D3
+        RTS
+        
+RO_NOTLEFT      
+        CMP    #%100,D3
+        BNE    RO_NOTLEFTBYTE
+        JSR    SIZEISBYTE
+        CLR.L  D3
+        RTS
+
+RO_NOTLEFTBYTE
+        CMP    #%101,D3
+        BNE    RO_NOTLEFTWORD
+        JSR    SIZEISWORD
+        CLR.L  D3
+        RTS
+        
+RO_NOTLEFTWORD
+        CMP   #%110,D3
+        BNE   INVALID_EA
+        JSR   SIZEISLONG
+        CLR.L D3
+        RTS
+        
+        
+
+
+
+  
     
 SIZEISBYTE
        MOVE.B   #'.',(A6)+

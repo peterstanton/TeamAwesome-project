@@ -613,6 +613,7 @@ LEA_SRC
              BEQ     ABSOLUTE_LONG
 
              JSR      bits11to13  // source mode - D3
+             MOVE     D3,D4
              LEA     jmp_mode,A0    *Index into the table
              MULU    #6,D3       *Form offset     
              JSR     0(A0,D3)   *Jump indirect with index
@@ -2071,6 +2072,7 @@ BUFFER DC.L 1
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 =======
 >>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
 
 
 

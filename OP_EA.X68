@@ -1,10 +1,13 @@
 TEST  ORG $1000                       
-    JSR     $1000
-    JSR     $8000
-    JSR     $FFEE0000
-
-
-
+    ADD.B  $4000,D5              
+    ADD.B  $A000,D6               
+    ADD.B  $70,D7               
+    ADD.B  D0,D1                 
+    ADD.B  D2,(A3)                
+    ADD.B  D3,(A4)+               
+    ADD.B  D4,-(A5)               
+    ADD.B  D5,$6000              
+    ADD.B  D6,$8000    
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -539,14 +542,14 @@ ADD_DIRECTION_REVERSED
 
 ****************************************************************************************
 *ADD_SRC
-*                JSR    bits11to13
-*                MOVE   D3,D4
-*                LEA     jmp_mode,A0    *Index into the table
 *                CLR.L   D7
 *                JSR     bits14to16
-*                MOVE.B  D3,D7
-*                MULU    #6,D4
-*                JSR     0(A0,D4) 
+*                MOVE.B  D3,D7 ** need to know if immediate or absolute
+*                JSR     bits11to13
+*                MOVE.B  D3,D4
+*                LEA     jmp_mode,A0    *Index into the table
+*                MULU    #6,D3
+*                JSR     0(A0,D3) 
 *                CMP.B   #$FF,D7
 *                BNE     NUM_INSERT    
 *                RTS
@@ -565,15 +568,20 @@ ADD_DIRECTION_REVERSED
 *                RTS
 ADD_SRC
 
-                JSR    bits11to13
-                MOVE   D3,D4
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                JSR     bits11to13
+                MOVE.B  D3,D4
                 LEA     jmp_mode,A0    *Index into the table
-                MULU   #6,D3
-                JSR    0(A0,D3)     
-                JSR    bits14to16
-                JSR    insert_num
+                MULU    #6,D3
+                JSR     0(A0,D3) 
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
                 RTS
-
+NUM_INSERT  
+            JSR insert_num
+            RTS   
 ADD_DEST
                 MOVE.W #%000,D3     ;Can only have a data register.
                 MOVE   D3,D4
@@ -2301,6 +2309,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

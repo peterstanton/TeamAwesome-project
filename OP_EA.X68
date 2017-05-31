@@ -1,6 +1,6 @@
 TEST  ORG $1000                       
-    ADD.B  $4000,D5              
-    ADD.B  $A000,D6               
+    ADD.W  #$4000,D5              
+    ADD.L  $A000,D6               
     ADD.B  $70,D7               
     ADD.B  D0,D1                 
     ADD.B  D2,(A3)                
@@ -177,6 +177,7 @@ code0101
                 BRA   ADDQ
 
 code0110
+                ***TODO: ADDI
                 JSR     COPY_OPCODE //make a copy of OPcode into d2
                 AND     #%0000111100000000,D2
                 CMP.L   #%0000010000000000,D2
@@ -270,12 +271,6 @@ BCC
            MOVE.B   #'C',(A6)+
            MOVE.B   #'C',(A6)+
            MOVE.B   #' ',(A6)+
-
-
-
-
-
-
 
 *************************************
 
@@ -536,49 +531,20 @@ ADD_DIRECTION_REVERSED
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
-***********************************************        
-
-
-
-****************************************************************************************
-*ADD_SRC
-*                CLR.L   D7
-*                JSR     bits14to16
-*                MOVE.B  D3,D7 ** need to know if immediate or absolute
-*                JSR     bits11to13
-*                MOVE.B  D3,D4
-*                LEA     jmp_mode,A0    *Index into the table
-*                MULU    #6,D3
-*                JSR     0(A0,D3) 
-*                CMP.B   #$FF,D7
-*                BNE     NUM_INSERT    
-*                RTS
-*NUM_INSERT
-*                JSR     bits14to16
-*                JSR     insert_num               
-*ADD_DEST                
-*                *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
-*                MOVE.W  #%000,D3     ;Can only have a data register.
-*                MOVE    D3,D4
-*                LEA     jmp_mode,A0    *Index into the table
-*                MULU    #6,D3       *Form offset     
-*                JSR     0(A0,D3)   *Jump indirect with index
-*                JSR     bits5to7
-*                JSR     insert_num
-*                RTS
 ADD_SRC
-
                 CLR.L   D7
                 JSR     bits14to16
                 MOVE.B  D3,D7 ** need to know if immediate or absolute
-                JSR     bits11to13
+                JSR     bits11to13  ** mode to jump with 
                 MOVE.B  D3,D4
-                LEA     jmp_mode,A0    *Index into the table
+                LEA     jmp_mode,A0  *Index into the table
                 MULU    #6,D3
                 JSR     0(A0,D3) 
+                JSR     bits14to16 ** register number if not absolute or immediate
                 CMP.B   #$FF,D7
                 BNE     NUM_INSERT    
                 RTS
+                
 NUM_INSERT  
             JSR insert_num
             RTS   
@@ -588,21 +554,30 @@ ADD_DEST
                 LEA     jmp_mode,A0    *Index into the table
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
-                
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
-                                       
+                              
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
                 JSR     ADDI_DES
-                BRA     PRINT_BUFFER
+                RTS
                 
 ADDI_SRC                        
-                MOVE.B  #'#', (A6)+
-                MOVE.B  #',', (A6)+
-                MOVE.B  #' ', (A6)+
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7 ** need to know if immediate or absolute
+                JSR     bits11to13  ** mode to jump with 
+                MOVE.B  D3,D4
+                LEA     jmp_mode,A0  *Index into the table
+                MULU    #6,D3
+                JSR     0(A0,D3) 
+                JSR     bits14to16 ** register number if not absolute or immediate
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
+                RTS
+
                 RTS
                   ** TODO: IMPLEMENT THIS IN EA
                 ** Immediate field Data immediately following the instruction.
@@ -1787,7 +1762,9 @@ ABS_L_MODE
             RTS 
 
 IMMEDIATE 
-            JSR  IMMEDIATE_WORD
+            CMP.B   #%10, D1
+            BEQ     IMMEDIATE_LONG
+            BRA     IMMEDIATE_WORD 
             RTS           
                                         
 ADDRESS_BUFFER
@@ -1958,8 +1935,7 @@ CHECK_INVALID_IMMEDIATE
 
 GETSIZE_ADDQ
                  
-               ** VALID SIZES ARE B (00),W (01) ,L (10)
-               
+           ** VALID SIZES ARE B (00),W (01) ,L (10)    
            JSR      bits8to10
            CMP      #%000,D3
            BNE      ADDQ_NOTBYTE
@@ -2186,6 +2162,11 @@ GETSIZE_ADD
             JSR     bits8to10
             CMP     #%000,D3
             BNE     ADD_NOTBYTE
+            ****
+            CLR.L   D1
+            MOVE.B  #%00, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISBYTE
             MOVE    #1,D6
             CLR.L    D3
@@ -2194,6 +2175,12 @@ GETSIZE_ADD
 ADD_NOTBYTE 
             CMP     #%001,D3
             BNE     ADD_NOTWORD
+            ****
+            CLR.L   D1
+            MOVE.B  #%01, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
+            MOVE.B  #%01, D1
             JSR     SIZEISWORD
             MOVE    #1,D6
             CLR.L     D3
@@ -2202,6 +2189,11 @@ ADD_NOTBYTE
 ADD_NOTWORD
             CMP     #%010,D3
             BNE     ADD_NOTLEFT
+            ****
+            CLR.L   D1
+            MOVE.B  #%10, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISLONG
             MOVE    #1,D6
             CLR.L    D3
@@ -2210,6 +2202,11 @@ ADD_NOTWORD
 ADD_NOTLEFT     ;check other direction
             CMP     #%100,D3
             BNE     ADD_NOTRIGHTBYTE
+             ****
+            CLR.L   D1
+            MOVE.B  #%00, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISBYTE
             MOVE    #2,D6
             CLR.L   D3
@@ -2218,6 +2215,11 @@ ADD_NOTLEFT     ;check other direction
 ADD_NOTRIGHTBYTE
             CMP     #%101,D3
             BNE     ADD_NOTRIGHTWORD
+            ****
+            CLR.L   D1
+            MOVE.B  #%01, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISWORD
             MOVE    #2,D6
             CLR.L    D3
@@ -2226,6 +2228,11 @@ ADD_NOTRIGHTBYTE
 ADD_NOTRIGHTWORD
             CMP     #%110,D3
             BNE     INVALID_EA
+            ****
+            CLR.L   D1
+            MOVE.B  #%10, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISLONG
             MOVE    #2,D6
             CLR.L   D3
@@ -2309,6 +2316,8 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
 
 
 

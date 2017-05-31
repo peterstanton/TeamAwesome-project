@@ -307,7 +307,7 @@ BLE
 
 ADDA    
                JSR     ADDA_BUFFER
-               BRA     PRINT_BUFFER
+               RTS
                 
 ADDA_BUFFER
                MOVE.B   #'A',(A6)+
@@ -762,7 +762,7 @@ ADDQ_BUFFER
 ****************************************               
 MOVEQ
                 JSR     MOVEQ_BUFFER  
-                BRA     PRINT_BUFFER
+                RTS
 
 MOVEQ_BUFFER
                MOVE.B   #'M',(A6)+
@@ -2385,6 +2385,7 @@ BUFFER DC.L 1
 *    END TEST
 
                
+
 
 
 

@@ -74,6 +74,7 @@ jmp_table      JMP         code0000
                 
       
                JMP         code0110
+               
                * BCC
                * BGT
                * BLE
@@ -195,7 +196,17 @@ code0101
 
                 BRA   ADDQ
 
-code0110         BRA       INVALID_OP
+code0110
+                JSR     COPY_OPCODE //make a copy of OPcode into d2
+                AND     #%0000111100000000,D2
+                CMP.L   #%0000010000000000,D2
+                BEQ     BCC
+                
+                CMP     #%0000111000000000,D2
+                BEQ     BGT
+                
+                CMP     #%0000111100000000,D2
+                BEQ     BLE
 
 code0111       
                 BRA       MOVEQ
@@ -2291,6 +2302,8 @@ BUFFER DC.L 1
     END TEST
 
                
+
+
 
 
 

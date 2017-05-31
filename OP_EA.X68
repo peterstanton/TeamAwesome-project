@@ -1293,10 +1293,36 @@ ASL_REG
 
 *******************************************************
 
-
-
-LSL     
+LSL_MEM     
+                JSR     bits5to7
+                CMP     #%001,D3
+                BNE     INVALID_EA
+                
+                CLR     D3
+                JSR     bits8to10
+                
+                CMP     #%111,D3
+                BNE     INVALID_EA
+                CLR     D3
+                
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                
                 JSR     LSL_BUFFER
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+                
                 RTS
 
 LSL_BUFFER
@@ -1306,9 +1332,38 @@ LSL_BUFFER
                MOVE.B   #' ', (A6)+
                RTS     
 
-LSR     
+LSR_MEM     
+                JSR     bits5to7
+                CMP     #%001,D3
+                BNE     INVALID_EA
+                
+                CLR     D3
+                JSR     bits8to10
+                
+                CMP     #%011,D3
+                BNE     INVALID_EA
+                CLR     D3
+                
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+                
                 JSR     LSR_BUFFER
-                BRA     PRINT_BUFFER
+               MOVE    D3,D4
+               LEA     jmp_mode,A0    *Index into the table
+               MULU    #6,D3       *Form offset     
+               JSR     0(A0,D3)   *Jump indirect with index  
+               CLR     D3
+               
+               JSR     bits14to16
+               JSR     insert_num
+               CLR     D3
+               CLR     D4
+                
+                RTS
+
 
 LSR_BUFFER
                MOVE.B   #'L',(A6)+
@@ -1316,6 +1371,8 @@ LSR_BUFFER
                MOVE.B   #'R', (A6)+
                MOVE.B   #' ', (A6)+
                RTS       
+ 
+**********************************************
  
 **********************************************
 ROL_MEM

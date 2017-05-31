@@ -1,6 +1,4 @@
 TEST  ORG $1000                       
-    JSR     (A6)
-    JSR     $0
     JSR     $1000
     JSR     $8000
     JSR     $FFEE0000
@@ -540,31 +538,53 @@ ADD_DIRECTION_REVERSED
 
 
 ****************************************************************************************
+*ADD_SRC
+*                JSR    bits11to13
+*                MOVE   D3,D4
+*                LEA     jmp_mode,A0    *Index into the table
+*                CLR.L   D7
+*                JSR     bits14to16
+*                MOVE.B  D3,D7
+*                MULU    #6,D4
+*                JSR     0(A0,D4) 
+*                CMP.B   #$FF,D7
+*                BNE     NUM_INSERT    
+*                RTS
+*NUM_INSERT
+*                JSR     bits14to16
+*                JSR     insert_num               
+*ADD_DEST                
+*                *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
+*                MOVE.W  #%000,D3     ;Can only have a data register.
+*                MOVE    D3,D4
+*                LEA     jmp_mode,A0    *Index into the table
+*                MULU    #6,D3       *Form offset     
+*                JSR     0(A0,D3)   *Jump indirect with index
+*                JSR     bits5to7
+*                JSR     insert_num
+*                RTS
 ADD_SRC
+
                 JSR    bits11to13
                 MOVE   D3,D4
                 LEA     jmp_mode,A0    *Index into the table
-                CLR.L   D7
-                JSR     bits14to16
-                MOVE.B  D3,D7
-                MULU    #6,D4
-                JSR     0(A0,D4) 
-                CMP.B   #$FF,D7
-                BNE     NUM_INSERT    
+                MULU   #6,D3
+                JSR    0(A0,D3)     
+                JSR    bits14to16
+                JSR    insert_num
                 RTS
-NUM_INSERT
-                JSR     bits14to16
-                JSR     insert_num               
-ADD_DEST                
-                *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
-                MOVE.W  #%000,D3     ;Can only have a data register.
-                MOVE    D3,D4
+
+ADD_DEST
+                MOVE.W #%000,D3     ;Can only have a data register.
+                MOVE   D3,D4
                 LEA     jmp_mode,A0    *Index into the table
                 MULU    #6,D3       *Form offset     
                 JSR     0(A0,D3)   *Jump indirect with index
+                
                 JSR     bits5to7
                 JSR     insert_num
                 RTS
+                                       
 ADDI
                 JSR     ADDI_BUFFER
                 JSR     ADDI_SRC
@@ -1810,6 +1830,9 @@ JSR
                     MOVE.B #'R', (A6)+
                     MOVE.B #' ', (A6)+
                     
+                    CLR.L   D7
+                    JSR     bits14to16
+                    MOVE.B  D3,D7
                     JSR    bits11to13
                     MOVE    D3,D4
                     LEA     jmp_mode,A0    *Index into the table
@@ -2278,6 +2301,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

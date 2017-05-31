@@ -1,15 +1,7 @@
-TEST  ORG $1000 
-    ADD.W  $7000,D0                            
-    ADD.B  D3,(A4)+               
-    ADD.B  D4,-(A5)               
+TEST  ORG $1000                       
+               
     ADD.B  D5,$6000              
-    ADD.B  D6,$8000              
-    
-    ADD.W  D0,D0                 
-    ADD.W  A0,D1                 
-    ADD.W  (A1),D2                
-    ADD.W  (A2)+,D3               
-    ADD.W  -(A3),D4               
+    ADD.B  D6,$8000                      
     ADD.W  $4000,D5               
     ADD.W  $A000,D6               
     ADD.W  $70,D7               
@@ -461,8 +453,6 @@ IMMEDIATE_LONG
                JSR     ABSOLUTE_LONG     
                RTS
 ADD    
-               CLR.L   D6
-               CLR.L   D7
                JSR     ADD_BUFFER
                RTS
                 
@@ -476,13 +466,6 @@ ADD_BUFFER
                
                CMP      #1,D6
                BNE      ADD_DIRECTION_REVERSED
-               JSR     bits11to16
-               CMP     #%111000, D3 *** ABSOLUTE WORD
-               BEQ     ABSOLUTE_WORD
-               CMP     #%111001, D3 *** ABSOLUTE LONG 
-               BEQ     ABSOLUTE_LONG
-               CMP     #%111100, D3 *** IMMEDIATE
-               BEQ     IMMEDIATE_BYTE
                JSR      ADD_SRC
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
@@ -495,14 +478,8 @@ ADD_DIRECTION_REVERSED
                JSR      ADD_DEST
                MOVE.B   #',', (A6)+
                MOVE.B   #' ', (A6)+
-               JSR     bits11to16
-               CMP     #%111000, D3 *** ABSOLUTE WORD
-               BEQ     ABSOLUTE_WORD
-               CMP     #%111001, D3 *** ABSOLUTE LONG 
-               BEQ     ABSOLUTE_LONG
-               CMP     #%111100, D3 *** IMMEDIATE
-               BEQ     IMMEDIATE_BYTE
-               JSR      ADD_SRC             
+               JSR      ADD_SRC      
+               RTS       
                ** VALID SIZES ARE B (000) , W (001) ,L (010) ---> <EA> + DN --> DN 
                                ** B (100) , W (101) ,L (110) --->  DN + <EA> --> <EA> 
                
@@ -515,12 +492,17 @@ ADD_SRC
                 JSR    bits11to13
                 MOVE   D3,D4
                 LEA     jmp_mode,A0    *Index into the table
-                MULU   #6,D3
-                JSR    0(A0,D3)     
-                JSR    bits14to16
-                JSR    insert_num
+                CLR.L   D7
+                JSR     bits14to16
+                MOVE.B  D3,D7
+                MULU    #6,D4
+                JSR     0(A0,D4) 
+                CMP.B   #$FF,D7
+                BNE     NUM_INSERT    
                 RTS
-                
+NUM_INSERT
+                JSR     bits14to16
+                JSR     insert_num               
 ADD_DEST                
                 *TODO: GRAB THE ACTUAL BITS AND DO A CMP WITH 000, IF IT'S NOT 000 BRA INVALID_EA
                 MOVE.W  #%000,D3     ;Can only have a data register.
@@ -1295,27 +1277,6 @@ ASL_REG
                 RTS
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 *******************************************************
 
 LSL_MEM     
@@ -1721,19 +1682,33 @@ MODE110
 
 ** ABSOLUTE AND IMMEDIATE            
 MODE111         
-                *TO DO CHECK IF ABSOLUTE OR IMMEDIATE
-              * JSR      PRINT_ABSOLUTE_WORD
-               *JSR      PRINT_ABSOLUTE_LONG
-               *JSR      PRINT_IMMEDIATE_WORD
-               *JSR      PRINT_IMMEDIATE_LONG
-               
-               *** PRINT ABSOLUTE LONG
-               MOVE.B   #'$', (A6)+  
-               JSR      PRINT_DEREF_ADDRESS
-               ADD.W    #2, A2
-               JSR      PRINT_DEREF_ADDRESS
-               ADD.W    #2, A2
-               RTS                 
+                LEA     sub_mode,A0    *Index into the table
+                MULU    #6,D7       *Form offset     
+                JSR     0(A0,D7)   *Jump indirect with index
+                CLR.L   D7
+                MOVE.B  #$FF,D7
+                RTS
+
+sub_mode        JMP     ABS_W_MODE  
+                JMP     ABS_L_MODE
+                JMP     INVALID_EA  
+                JMP     INVALID_EA
+                JMP     IMMEDIATE
+                JMP     INVALID_EA  
+                JMP     INVALID_EA 
+                JMP     INVALID_EA  
+                RTS
+ABS_W_MODE  
+            JSR  ABSOLUTE_WORD
+            RTS     
+
+ABS_L_MODE  
+            JSR  ABSOLUTE_LONG
+            RTS 
+
+IMMEDIATE 
+            JSR  IMMEDIATE_WORD
+            RTS           
                                         
 ADDRESS_BUFFER
                 MOVE.B  #'A',(A6)+ 
@@ -2227,6 +2202,7 @@ BUFFER DC.L 1
     END TEST
 
                
+
 
 
 

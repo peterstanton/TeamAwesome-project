@@ -1,13 +1,11 @@
 TEST  ORG $1000
-    MOVEA.W  D0,A0                  
-    MOVEA.W  A0,A1                  
-    MOVEA.W  (A1),A2               
-    MOVEA.W  (A2)+,A3              
-    MOVEA.W  -(A3),A4              
-    MOVEA.W  $4000,A5               
-    MOVEA.W  $A000,A6              
-    MOVEA.W  #$70,A7                
-    MOVEA.W  #$7000,A0      
+    ADD.B  D0,D0                 
+    ADD.B  (A1),D2                
+    ADD.B  (A2)+,D3              
+    ADD.B  -(A3),D4               
+    ADD.B  $4000,D5              
+    ADD.B  $A000,D6               
+    ADD.B  #$70,D7     
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -1928,7 +1926,7 @@ OR_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR.L     D3
+            CLR.L   D3
             RTS 
 
             
@@ -1944,7 +1942,7 @@ GETSIZE_ADD
             BNE     ADD_NOTBYTE
             JSR     SIZEISBYTE
             MOVE    #1,D6
-            CLR.L     D3
+            CLR.L    D3
             RTS
         
 ADD_NOTBYTE 
@@ -1960,7 +1958,7 @@ ADD_NOTWORD
             BNE     ADD_NOTLEFT
             JSR     SIZEISLONG
             MOVE    #1,D6
-            CLR.L     D3
+            CLR.L    D3
             RTS
             
 ADD_NOTLEFT     ;check other direction
@@ -1968,7 +1966,7 @@ ADD_NOTLEFT     ;check other direction
             BNE     ADD_NOTRIGHTBYTE
             JSR     SIZEISBYTE
             MOVE    #2,D6
-            CLR.L     D3
+            CLR.L   D3
             RTS
             
 ADD_NOTRIGHTBYTE
@@ -1976,7 +1974,7 @@ ADD_NOTRIGHTBYTE
             BNE     ADD_NOTRIGHTWORD
             JSR     SIZEISWORD
             MOVE    #2,D6
-            CLR.L     D3
+            CLR.L    D3
             RTS
 
 ADD_NOTRIGHTWORD
@@ -1984,7 +1982,7 @@ ADD_NOTRIGHTWORD
             BNE     INVALID_EA
             JSR     SIZEISLONG
             MOVE    #2,D6
-            CLR.L     D3
+            CLR.L   D3
             RTS 
                              
                      
@@ -2078,6 +2076,7 @@ BUFFER DC.L 1
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 =======
 >>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
 
 
 

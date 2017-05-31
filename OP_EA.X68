@@ -1,7 +1,13 @@
 TEST  ORG $1000
-    LEA (A1),A2                            
-    LEA $4000,A5               
-    LEA $A000,A6    
+    MOVEA.W  D0,A0                  
+    MOVEA.W  A0,A1                  
+    MOVEA.W  (A1),A2               
+    MOVEA.W  (A2)+,A3              
+    MOVEA.W  -(A3),A4              
+    MOVEA.W  $4000,A5               
+    MOVEA.W  $A000,A6              
+    MOVEA.W  #$70,A7                
+    MOVEA.W  #$7000,A0      
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -2072,6 +2078,7 @@ BUFFER DC.L 1
 >>>>>>> 15feda41aa9cc05f56d7bfd8028fb5f52f5c57e5
 =======
 >>>>>>> 166d487004a1797b51efa2d5b35173c27dd60b20
+
 
 
 

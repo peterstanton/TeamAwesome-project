@@ -1,16 +1,20 @@
 
 TEST  ORG $1000  
-    ASL     $A000                                               
-    ASL     (A0)
-    ASR     (A1)+
-    ASL     -(A2)
-    ASR     $4000
-   
     
-    ASL.B   #$7,D0
-    ASL.W   #$8,D1
-    ASL.L   D3,D2
-            
+    BCC         $6100
+    BCC         $20
+    BCC         $FF
+    BCC         $FFFFFF00
+    
+    BGT         $6100
+    BGT         $20
+    BGT         $FF
+    BGT         $FFFFFF00
+    
+    BLE         $6100
+    BLE         $20
+    BLE         $FF
+    BLE         $FFFFFF00
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -306,16 +310,15 @@ BCC
            MOVE.B   #'C',(A6)+
            MOVE.B   #'C',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B    $00,D3
            BEQ      DISPLACED_16
            
-           CMP      #$FF,D3
-           BEQ      DISPLACED_32
            
-           MOVE.W   D3,(A6)+
+           
+           
+           MOVE.B   D3,(A6)+
            RTS
 
 *************************************
@@ -325,17 +328,14 @@ BGT
            MOVE.B   #'G',(A6)+
            MOVE.B   #'T',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
            
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B      #$00,D3
            BEQ      DISPLACED_16
            
-           CMP      #$FF,D3
-           BEQ      DISPLACED_32
            
-           MOVE.W   D3,(A6)+
+           MOVE.B   D3,(A6)+
            RTS
 
 
@@ -348,28 +348,27 @@ BLE
            MOVE.B   #'L',(A6)+
            MOVE.B   #'E',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
            
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B      #$00,D3
            BEQ      DISPLACED_16
-           
-           CMP      #$FF,D3
-           BEQ      DISPLACED_32
-           
-           MOVE.W   D3,(A6)+
+                      
+           MOVE.B   D3,(A6)+
 
            RTS
 
 
 *************************************
 DISPLACED_16
+           CMP.W    #$FF00,D3
+           BEQ      DISPLACED_32
+           ;stuff
 
-           RTS
 
 
 DISPLACED_32
+           ;stuff
 
            RTS
 
@@ -873,19 +872,6 @@ MOVEQ
 
 
                 
-
-TRANSLATE
-                CMP     #$A,D3
-                BLE     TRANSLATE_IS_NUM
-               * ADD     *whatever number to convert to letter in ASCII,D3
-                MOVE    D3,(A6)+
-                RTS  
-                  
-TRANSLATE_IS_NUM
-               *  ADD     *whatever number to convert to a number in ASCII,D3
-                MOVE    D3,(A6)+        
-                RTS
-
 MOVEQ_BUFFER
                MOVE.B   #'M', (A6)+
                MOVE.B   #'O', (A6)+  
@@ -2516,6 +2502,7 @@ BUFFER DC.L 1
    END TEST
 
                
+
 
 *~Font name~Courier New~
 *~Font size~10~

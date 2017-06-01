@@ -787,9 +787,26 @@ MOVEQ
 
                 JSR     bits8to16
                 MOVE    D3,D4
+                MASK    #$00F0,D3
+                rotate so it's like #$000F,D3
+                Do a translate
+                
+                MOVE    D4,D3
+                MASK    #$000F,D3
+                JSR     TRANSLATE
+                RTS 
+                
 
-
- 
+TRANSLATE
+                CMP     #$A,D3
+                BLE     TRANSLATE_IS_NUM
+                ADD     *whatever number to convert to letter in ASCII,D3
+                MOVE    D3,(A6)+
+                RTS  
+                  
+TRANSLATE_IS_NUM
+                ADD     *whatever number to convert to a number in ASCII,D3
+                MOVE    D3,(A6)+        
                 RTS
 
 MOVEQ_BUFFER
@@ -2447,6 +2464,7 @@ BUFFER DC.L 1
    END TEST
 
                
+
 
 
 

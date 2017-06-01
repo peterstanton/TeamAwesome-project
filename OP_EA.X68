@@ -1,5 +1,5 @@
 TEST  ORG $1000                       
-    ADD.W  $4000,D5              
+    ADD.W  #$4000,D5              
     ADD.L  $A000,D6               
     ADD.B  $70,D7               
     ADD.B  D0,D1                 
@@ -178,7 +178,6 @@ code0101
 
 code0110
                 ***TODO: ADDI
-                
                 JSR     COPY_OPCODE //make a copy of OPcode into d2
                 AND     #%0000111100000000,D2
                 CMP.L   #%0000010000000000,D2
@@ -536,18 +535,14 @@ ADD_SRC
                 CLR.L   D7
                 JSR     bits14to16
                 MOVE.B  D3,D7 ** need to know if immediate or absolute
-                
                 JSR     bits11to13  ** mode to jump with 
                 MOVE.B  D3,D4
-                
                 LEA     jmp_mode,A0  *Index into the table
                 MULU    #6,D3
                 JSR     0(A0,D3) 
                 JSR     bits14to16 ** register number if not absolute or immediate
-                
                 CMP.B   #$FF,D7
                 BNE     NUM_INSERT    
-                
                 RTS
                 
 NUM_INSERT  
@@ -2185,6 +2180,7 @@ ADD_NOTBYTE
             MOVE.B  #%01, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
             CLR.L   D6
             ****
+            MOVE.B  #%01, D1
             JSR     SIZEISWORD
             MOVE    #1,D6
             CLR.L     D3
@@ -2206,6 +2202,11 @@ ADD_NOTWORD
 ADD_NOTLEFT     ;check other direction
             CMP     #%100,D3
             BNE     ADD_NOTRIGHTBYTE
+             ****
+            CLR.L   D1
+            MOVE.B  #%00, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
+            CLR.L   D6
+            ****
             JSR     SIZEISBYTE
             MOVE    #2,D6
             CLR.L   D3
@@ -2291,22 +2292,12 @@ SIZEISBYTE
        MOVE.B   #'B',(A6)+
        MOVE.B   #' ',(A6)+
        CLR.L      D3
-                    ****
-            CLR.L   D1
-            MOVE.B  #%00, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
-            CLR.L   D6
-            ****
        RTS
 
 SIZEISWORD    
        MOVE.B   #'.',(A6)+
        MOVE.B   #'W',(A6)+
        MOVE.B   #' ',(A6)+
-                    ****
-            CLR.L   D1
-            MOVE.B  #%01, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
-            CLR.L   D6
-            ****
        CLR.L      D3
        RTS
                 
@@ -2314,11 +2305,7 @@ SIZEISLONG
        MOVE.B   #'.',(A6)+
        MOVE.B   #'L',(A6)+
        MOVE.B   #' ',(A6)+
-       ****
-        CLR.L   D1
-        MOVE.B  #%10, D1 ** RECORD SIZE IN D1 FOR IMMEDIATE ADDRESSING
-        CLR.L   D6
-        ****
+
        CLR.L      D3
        RTS
                 
@@ -2329,7 +2316,6 @@ BUFFER DC.L 1
     END TEST
 
                
-
 
 
 

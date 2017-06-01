@@ -786,20 +786,22 @@ MOVEQ
                 JSR     MOVEQ_BUFFER 
 
                 JSR     bits8to16
-                
+                MOVE    D3,D4
+
 
  
                 RTS
 
 MOVEQ_BUFFER
-               MOVE.B   #'M',(A6)+
+               MOVE.B   #'M', (A6)+
                MOVE.B   #'O', (A6)+  
                MOVE.B   #'V', (A6)+
                MOVE.B   #'E', (A6)+
                MOVE.B   #'Q', (A6)+
                MOVE.B   #' ', (A6)+
+               MOVE.B   #'#', (A6)+
                RTS
-
+ 
 
 ****************************************
 

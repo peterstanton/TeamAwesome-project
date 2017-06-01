@@ -12,7 +12,38 @@
 *Start of Move test code.***************************************************
 ****************************************************************************
 *Done
-    MOVE.L  #$123,D5
+     ADDI.L   #4,D1   *Assembler changes this to ADDQ unless the number being added is greater than #8.
+    ADDI.L   #9,D1
+    ADDI.L   #0,D1
+    ADDI.L   #$FFFFFFFF,D7
+    ADDI.W   #$FFFF,D5
+    ADDI.W   #$0,D5
+    ADDI.W   #$9,D4
+    LEA $0,A0
+    LEA $1000,A1
+    LEA $8000,A2
+    LEA $FFFF0000,A3
+    LEA (A4),A5 
+    JSR     (A6)
+    JSR     $0
+    JSR     $1000
+    JSR     $8000
+    JSR     $FFEE0000
+    MOVEA.W   D2,A2
+    MOVEA.W   A5,A3
+    MOVEA.W   (A4)+,A3
+    MOVEA.W   -(A2),A5
+    MOVEA.W   $0,A3
+    MOVEA.W   $1234,A3
+    MOVEA.W   $8000,A3
+    MOVEA.W   $FFFFFF,A7
+    MOVEA.W   $0,A3
+    MOVEA.W   $1000,A3
+    MOVEA.W   $8000,A6
+    MOVE.L  $123,(A4)
+
+    add.w   #100, d3
+    MOVE.L  $123,D5
     MOVE.L  D1,D2
     MOVE.L  A5,D4
     MOVE.L  (A4),D3
@@ -22,6 +53,121 @@
     MOVE.L  $FFF,D1
     MOVE.L  $8000,D2
     MOVE.L  $20000,D3
+    
+      
+    ADDA.W   $1111,A2
+    ADDA.W   $8000,A2
+    ADDA.W   $0,A2
+    ADDA.W   $1111,A2
+    ADDA.W   $11111111,A2
+    ADDA.W   $1111,A2
+    ADDA.W   $0,A2
+    ADDA.W   $1111,A1
+    ADDA.W   D1,A7
+    ADDA.W   A1,A6
+    ADDA.W   (A0),A5
+    ADDA.W   (A7)+,A4
+    ADDA.W   -(A7),A4
+        
+    CLR.L   D0
+    CLR.L   (A2)
+    CLR.L   (A3)+
+    CLR.L   -(A4)
+    CLR.L   $0
+    CLR.L   $1000
+    CLR.L   $8000
+    CLR.L   $FFEF0000
+    
+    SUB.B   #68,D1
+    SUB.B   D3,D4
+    SUB.B   (A3),D6
+    SUB.B   -(A3),D5
+    SUB.B   D7,-(A3)
+    
+    LEA $A000, A3
+    LEA $1000, A4
+    LEA (A7), A5
+    
+    CLR.L   D1
+    CLR.B   D2
+    CLR.W   D5
+    CLR.L   (A4)
+    CLR.W   (A4)+
+    CLR.W   -(A4)
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
+        MOVE.B  (A4),$8000
+    MOVE.B  (A7)+,$8000
+    MOVE.B  -(A0),$8000
+    MOVE.B  $0,$8000
+    MOVE.B  $FFF,$8000
+    MOVE.B  $8000,$8000
+    MOVE.B  $20000,$8000
+    
     
     MOVE.L  #$123,(A4)
     MOVE.L  D1,(A4)
@@ -33,6 +179,23 @@
     MOVE.L  $FFF,(A4)
     MOVE.L  $8000,(A4)
     MOVE.L  $20000,(A4)
+    OR.B        D1,D4
+    OR.B        (A5),D5
+    OR.B        (A3)+,D6
+    OR.B        -(A2),D7
+    OR.B        $0,D6
+    OR.B        $1000,D0
+    OR.B        $8000,D1
+    OR.B        $FF0FF0FF,D2
+    OR.B        0,D3
+    OR.B        $FF,D4
+    OR.B        D0,(A1)
+    OR.B        D2,(A3)+
+    OR.B        D4,-(A5)
+    OR.B        D6,$0
+    OR.B        D0,$1000
+    OR.B        D1,$8000
+    OR.B        D2,$FF0FF0FF
     
     MOVE.L  #$123,(A4)+
     MOVE.L  D1,(A4)+
@@ -249,17 +412,7 @@
 *Start of MOVEA test code.***************************************************
 *****************************************************************************
 *Done.
-    MOVEA.W   D2,A2
-    MOVEA.W   A5,A3
-    MOVEA.W   (A4)+,A3
-    MOVEA.W   -(A2),A5
-    MOVEA.W   $0,A3
-    MOVEA.W   $1234,A3
-    MOVEA.W   $8000,A3
-    MOVEA.W   $FFFFFF,A7
-    MOVEA.W   #$0,A3
-    MOVEA.W   #$1000,A3
-    MOVEA.W   #$8000,A6
+
     
     MOVEA.L   D2,A2
     MOVEA.L   A5,A3
@@ -376,11 +529,7 @@
 *Start of LEA test code.****************************************************
 ****************************************************************************
 *Done
-    LEA $0,A0
-    LEA $1000,A1
-    LEA $8000,A2
-    LEA $FFFF0000,A3
-    LEA (A4),A5  
+ 
 *End of LEA test code.******************************************************
 ****************************************************************************
 
@@ -404,15 +553,7 @@
     CLR.W   $1000
     CLR.W   $8000
     CLR.W   $FFEF0000
-    
-    CLR.L   D0
-    CLR.L   (A2)
-    CLR.L   (A3)+
-    CLR.L   -(A4)
-    CLR.L   $0
-    CLR.L   $1000
-    CLR.L   $8000
-    CLR.L   $FFEF0000
+
     
 *End of CLR test code.******************************************************
 ****************************************************************************
@@ -420,11 +561,7 @@
 *Start of JSR test code.****************************************************
 ****************************************************************************
 *Done
-    JSR     (A6)
-    JSR     $0
-    JSR     $1000
-    JSR     $8000
-    JSR     $FFEE0000
+  
 *End of JSR test code.******************************************************
 ****************************************************************************
 
@@ -612,23 +749,7 @@
 *Start of OR test code.*******************************************************
 ******************************************************************************
 *Done
-    OR.B        D1,D4
-    OR.B        (A5),D5
-    OR.B        (A3)+,D6
-    OR.B        -(A2),D7
-    OR.B        $0,D6
-    OR.B        $1000,D0
-    OR.B        $8000,D1
-    OR.B        $FF0FF0FF,D2
-    OR.B        #0,D3
-    OR.B        #$FF,D4
-    OR.B        D0,(A1)
-    OR.B        D2,(A3)+
-    OR.B        D4,-(A5)
-    OR.B        D6,$0
-    OR.B        D0,$1000
-    OR.B        D1,$8000
-    OR.B        D2,$FF0FF0FF
+  
     
     OR.W        D1,D4
     OR.W        (A5),D5
@@ -860,20 +981,7 @@
     ADDA.L   (A0),A5
     ADDA.L   (A7)+,A4
     ADDA.L   -(A7),A4
-    
-    ADDA.W   #$1111,A2
-    ADDA.W   #$8000,A2
-    ADDA.W   #$0,A2
-    ADDA.W   #$1111,A2
-    ADDA.W   $11111111,A2
-    ADDA.W   $1111,A2
-    ADDA.W   $0,A2
-    ADDA.W   $1111,A1
-    ADDA.W   D1,A7
-    ADDA.W   A1,A6
-    ADDA.W   (A0),A5
-    ADDA.W   (A7)+,A4
-    ADDA.W   -(A7),A4
+  
     
 *End of ADDA test code.*****************************************************
 ****************************************************************************
@@ -1131,18 +1239,7 @@ DO_NOTHING
 
     MULS    D3,D4
     
-    SUB.B   #68,D1
-    SUB.B   D3,D4
-    SUB.B   (A3),D6
-    SUB.B   -(A3),D5
-    SUB.B   D7,-(A3)
-    
-    CLR.L   D1
-    CLR.B   D2
-    CLR.W   D5
-    CLR.L   (A4)
-    CLR.W   (A4)+
-    CLR.W   -(A4)
+
     
     MOVEA.L   #$11111111,A2
     MOVEA.L   #$1111,A2
@@ -1197,7 +1294,6 @@ INPUT
 * Put variables and constants here
 
 *    END    START        ; last line of source
-
 
 
 

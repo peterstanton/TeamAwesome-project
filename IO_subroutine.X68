@@ -1,3 +1,7 @@
+*START   ORG $1000      
+        *INCLUDE     'OP_EA.x68' 
+        *INCLUDE     'definitions.x68' 
+        *INCLUDE     'newHelper.x68'
 *-----------------------------------------------------------
 * Title      :
 * Written by :
@@ -38,7 +42,7 @@ IO_StartLoop    LEA     location_start_msg,A1
                 TRAP    #15
                 
                 JSR    sub_StartReadingData    *checks the validity of the start address
-                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
+                CMP    #1, D7                  *checks of subroutine returned 1, if so then invalid
                 BEQ    IO_StartLoop            *starts loop over due to invalidity
 *-----------------------------------------------------------
 *Gets the starting and ending inputs
@@ -68,7 +72,7 @@ IO_EndLoop      LEA     location_end_msg,A1
                 
                 
                 JSR    sub_endReadingData    *checks the validity of the start address
-                CMP.B  #1, D7                  *checks of subroutine returned 1, if so then invalid
+                CMP    #1, D7                  *checks of subroutine returned 1, if so then invalid
                 BEQ    IO_StartLoop            *starts loop over due to invalidity
                 
                 BRA     MAIN_LOOP
@@ -85,7 +89,7 @@ IO_PauseOutput  LEA     pause_msg,A1          *prints pause message to the scree
                 
                 MOVE.B  #0,linecount
                 
-                CMPA.L  A4,A5
+                CMPA.L  A3,A2                   * checks if the program is at the end
                 BGE     IO_EndProgram
                 
                 BRA     MAIN_LOOP
@@ -110,15 +114,21 @@ IO_EndProgram   LEA     endtest_msg,A1
                 TRAP    #15
 
                 MOVE.B  #5,linebreak            *used for question and prompts user to answer
-                
+
+                MOVE.L  input_buffer,D7
+                CMPI.L  #$79657300,D7
+                BEQ     IO_StartLoop
 
                 BRA     END_PROGRAM             
 *-----------------------------------------------------------
-               
 
 
 
-         
+
+
+
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

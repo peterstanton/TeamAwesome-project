@@ -1,16 +1,11 @@
 
 TEST  ORG $1000  
-    ASL     $A000                                               
-    ASL     (A0)
-    ASR     (A1)+
-    ASL     -(A2)
-    ASR     $4000
-   
     
-    ASL.B   #$7,D0
-    ASL.W   #$8,D1
-    ASL.L   D3,D2
-            
+    BCC         $20
+    
+    BGT         $20
+    
+    BLE         $20
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -873,19 +868,6 @@ MOVEQ
 
 
                 
-
-TRANSLATE
-                CMP     #$A,D3
-                BLE     TRANSLATE_IS_NUM
-               * ADD     *whatever number to convert to letter in ASCII,D3
-                MOVE    D3,(A6)+
-                RTS  
-                  
-TRANSLATE_IS_NUM
-               *  ADD     *whatever number to convert to a number in ASCII,D3
-                MOVE    D3,(A6)+        
-                RTS
-
 MOVEQ_BUFFER
                MOVE.B   #'M', (A6)+
                MOVE.B   #'O', (A6)+  
@@ -2516,6 +2498,7 @@ BUFFER DC.L 1
    END TEST
 
                
+
 
 *~Font name~Courier New~
 *~Font size~10~

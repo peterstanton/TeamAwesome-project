@@ -351,6 +351,16 @@ BCC
            MOVE.B   #'C',(A6)+
            MOVE.B   #'C',(A6)+
            MOVE.B   #' ',(A6)+
+           MOVE.B   #'#',(A6)+
+           MOVE.B   #'$',(A6)+
+           JSR      bits9to16
+           CMP      #$00,D3
+           BEQ      DISPLACED_16
+           
+           CMP      #$FF,D3
+           BEQ      DISPLACED_32
+           
+           MOVE.W   D3,(A6)+
            RTS
 
 *************************************
@@ -360,6 +370,17 @@ BGT
            MOVE.B   #'G',(A6)+
            MOVE.B   #'T',(A6)+
            MOVE.B   #' ',(A6)+
+           MOVE.B   #'#',(A6)+
+           MOVE.B   #'$',(A6)+
+           
+           JSR      bits9to16
+           CMP      #$00,D3
+           BEQ      DISPLACED_16
+           
+           CMP      #$FF,D3
+           BEQ      DISPLACED_32
+           
+           MOVE.W   D3,(A6)+
            RTS
 
 
@@ -372,7 +393,31 @@ BLE
            MOVE.B   #'L',(A6)+
            MOVE.B   #'E',(A6)+
            MOVE.B   #' ',(A6)+
+           MOVE.B   #'#',(A6)+
+           MOVE.B   #'$',(A6)+
+           
+           JSR      bits9to16
+           CMP      #$00,D3
+           BEQ      DISPLACED_16
+           
+           CMP      #$FF,D3
+           BEQ      DISPLACED_32
+           
+           MOVE.W   D3,(A6)+
+
            RTS
+
+
+*************************************
+DISPLACED_16
+
+           RTS
+
+
+DISPLACED_32
+
+           RTS
+
 
 
 *************************************
@@ -2447,6 +2492,7 @@ BUFFER DC.L 1
 
                
 
+<<<<<<< HEAD
 
 
 
@@ -2460,6 +2506,8 @@ BUFFER DC.L 1
 
 
 
+=======
+>>>>>>> master
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

@@ -1,15 +1,16 @@
 
-TEST  ORG $1000                                                 
+TEST  ORG $1000  
+    ASL     $A000                                               
+    ASL     (A0)
+    ASR     (A1)+
+    ASL     -(A2)
+    ASR     $4000
    
-    ADDA.W  D0,A0                
-    ADDA.W  A0,A1                 
-    ADDA.W  (A1),A2               
-    ADDA.W  (A2)+,A3             
-    ADDA.W  -(A3),A4              
-    ADDA.W  $4000,A5             
-    ADDA.W  $A000,A6             
-    ADDA.W  #$70,A7              
-    ADDA.W  #$7000,A0         
+    
+    ASL.B   #$7,D0
+    ASL.W   #$8,D1
+    ASL.L   D3,D2
+            
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -839,7 +840,7 @@ ADDQ_BUFFER
 
 ****************************************               
 MOVEQ
-                JSR     bits8to10
+                JSR     bits8to10  *** if bit 8 is ever equal to 1 it's invalid
                 CMP     #%100,D3
                 BEQ     INVALID_EA
                 CMP     #%101,D3
@@ -848,33 +849,40 @@ MOVEQ
                 BEQ     INVALID_EA
                 CMP     #%111,D3
                 BEQ     INVALID_EA
-                
-                
-                JSR     MOVEQ_BUFFER 
+               JSR     MOVEQ_BUFFER 
 
+               JSR    PRINT_BUFFER_NL
+               JSR     bits9to16
+               MOVE.B      #16,D2          // Setup for Base-16 conversion
+               MOVE.W      D3,D1        // print the hex value in current address      
+               MOVE.B      #15,D0          
+               TRAP        #15 
+               LEA         BUFFER,A6
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+ 
+               CLR.L    D3
+               MOVE.B   #'D', (A6)+
+               JSR    PRINT_BUFFER_NL
+               JSR      BITS5TO7
+               MOVE.B      #16,D2          // Setup for Base-16 conversion
+               MOVE.W      D3,D1        // print the hex value in current address      
+               MOVE.B      #15,D0          
+               TRAP        #15 
+               LEA         BUFFER,A6
+               RTS
 
-                JSR     bits8to16
-                MOVE    D3,D4
-                MASK    #$00F0,D3
-                rotate so it's like #$000F,D3
-                Do a translate
-                
-                MOVE    D4,D3
-                MASK    #$000F,D3
-                JSR     TRANSLATE
-                RTS 
 
                 
 
 TRANSLATE
                 CMP     #$A,D3
                 BLE     TRANSLATE_IS_NUM
-                ADD     *whatever number to convert to letter in ASCII,D3
+               * ADD     *whatever number to convert to letter in ASCII,D3
                 MOVE    D3,(A6)+
                 RTS  
                   
 TRANSLATE_IS_NUM
-                ADD     *whatever number to convert to a number in ASCII,D3
+               *  ADD     *whatever number to convert to a number in ASCII,D3
                 MOVE    D3,(A6)+        
                 RTS
 
@@ -1318,14 +1326,7 @@ ASR_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
             
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR      bits14to16
-               JSR      insert_num
+               jsr add_src
                RTS
             
 **************************************************
@@ -1337,14 +1338,7 @@ ASL_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
             
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR      bits14to16
-               JSR      insert_num
+             jsr    add_src
                RTS 
 
 
@@ -2063,6 +2057,12 @@ PRINT_ADDRESS
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
                  RTS     
+PRINT_BUFFER_NL    
+               MOVE.B   #%0,  (A6)+ ** null terminate the string       
+               LEA      BUFFER, A1
+               MOVE.W   #14,D0
+               TRAP     #15    
+               RTS             
 PRINT_BUFFER    
                MOVE.B   #%0,  (A6)+ ** null terminate the string       
                LEA      BUFFER, A1
@@ -2511,18 +2511,11 @@ SIZEISLONG
                 
      
 BUFFER DC.L 1     
-  INCLUDE 'helpers.x68'
+  * INCLUDE 'helpers.x68'
     END START 
    END TEST
 
                
-
-
-
-
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~

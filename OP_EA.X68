@@ -51,12 +51,13 @@ MAIN_LOOP
                  CMP     A3,A2
                  BGT     EXIT
                 * BGT     END_PROGRAM
+
                  BRA     MAIN_LOOP
                  * BRA     END_PROGRAM
                                 
-    INCLUDE 'definitions.x68'
+   INCLUDE 'definitions.x68'
     INCLUDE 'TEST_CODE.x68'
-           
+*           
 EXIT                 
        SIMHALT   
        
@@ -227,9 +228,9 @@ code1000
                 BRA        OR       ** OTHERWISE OR
                 
 
-code1001       
-               BRA         SUB
-code1010       BRA       INVALID_OP
+code1001       BRA         SUB
+
+code1010       BRA         INVALID_OP
 
 code1011       
                BRA         CMP
@@ -1429,7 +1430,7 @@ LSL_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
                 
-                JSR     LSL_BUFFER
+               JSR     LSL_BUFFER
                MOVE    D3,D4
                LEA     jmp_mode,A0    *Index into the table
                MULU    #6,D3       *Form offset     
@@ -1935,16 +1936,16 @@ ABSOLUTE_LONG
 MOVEM      
                     ** SIZE SUBROUTINE
                     ** 0 1	0 0  	1 | D | 0	0 1 | S	M	Xn	
-                    AND #%0000000001000000,D2 
-                    * WORD
-                    CMP.L   #%0000000001000000,D2
-                    JSR     MOVEM_W 
-                    *LONG
-                    CMP.L   #%0000000001000000,D2 
-                   ** JSR     MOVEM_L
-                    MOVE.B  #14,D0
-                    TRAP    #15
-                    RTS 
+*                    AND #%0000000001000000,D2 
+*                    * WORD
+*                    CMP.L   #%0000000001000000,D2
+*                    JSR     MOVEM_W 
+*                    *LONG
+*                    CMP.L   #%0000000001000000,D2 
+*                   ** JSR     MOVEM_L
+*                    MOVE.B  #14,D0
+*                    TRAP    #15
+*                    RTS 
                     
 MOVEM_W             MOVE.B #'M', (A6)+
                     MOVE.B #'O', (A6)+
@@ -1976,7 +1977,8 @@ PRINT_BUFFER
                LEA      BUFFER, A1
                MOVE.W   #14,D0
                TRAP     #15
-               LEA     linebreak,A1            *appends line at the end of the user input
+              
+              LEA     linebreak,A1            *appends line at the end of the user input
                MOVE.B  #14,D0
                TRAP    #15
                RTS  
@@ -2426,12 +2428,11 @@ SIZEISLONG
                 
      
 BUFFER DC.L 1     
-    INCLUDE 'helpers.x68'
+  INCLUDE 'helpers.x68'
     END START 
-    END TEST
+   END TEST
 
                
-
 
 
 

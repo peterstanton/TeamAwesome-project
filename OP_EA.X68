@@ -1,6 +1,16 @@
 
-TEST  ORG $1000                                                 
- MOVEQ  #$70,D7           
+TEST  ORG $1000  
+    ASL     $A000                                               
+    ASL     (A0)
+    ASR     (A1)+
+    ASL     -(A2)
+    ASR     $4000
+   
+    
+    ASL.B   #$7,D0
+    ASL.W   #$8,D1
+    ASL.L   D3,D2
+            
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -1271,14 +1281,7 @@ ASR_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
             
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR      bits14to16
-               JSR      insert_num
+               jsr add_src
                RTS
             
 **************************************************
@@ -1290,14 +1293,7 @@ ASL_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
             
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR      bits14to16
-               JSR      insert_num
+             jsr    add_src
                RTS 
 
 
@@ -2470,11 +2466,13 @@ SIZEISLONG
                 
      
 BUFFER DC.L 1     
-  INCLUDE 'helpers.x68'
+  * INCLUDE 'helpers.x68'
     END START 
    END TEST
 
                
+
+
 
 
 

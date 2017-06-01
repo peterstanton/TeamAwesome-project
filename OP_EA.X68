@@ -1,6 +1,6 @@
 
 TEST  ORG $1000  
-      
+    BCC     $FF
     ROL     -(A1)
     ROR     $4000
     ROL     $A000
@@ -351,8 +351,8 @@ BCC
            MOVE.B   #'C',(A6)+
            MOVE.B   #'C',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP      #$00,D3
            BEQ      DISPLACED_16
@@ -360,7 +360,55 @@ BCC
            CMP      #$FF,D3
            BEQ      DISPLACED_32
            
-           MOVE.W   D3,(A6)+
+           BRA DISPLACED_8
+
+           RTS
+
+*************************************
+DISPLACED_8
+           CLR.L    D6
+           MOVE.W    A2,D6
+           ADD.W    D3,D6
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.B      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           RTS
+DISPLACED_16
+
+           CLR.L    D6
+           CLR.L    D3
+           MOVE.W   (A2),D6
+           MOVE.W    A2,D3
+           ADD.W    D3,D6
+            ADD.W    #2,A2
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.W      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           CLR.L    D6
+           RTS
+
+
+DISPLACED_32
+           CLR.L    D6
+           CLR.L    D3
+           MOVE.L   (A2),D6
+           MOVE.L    A2,D3
+           ADD.W    D3,D6
+           ADD.W    #2,A2
+           MOVE.L   (A2),D6
+           MOVE.L    A2,D3
+           ADD.W    D3,D6
+           ADD.W    #2,A2
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.L      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           CLR.L    D6
            RTS
 
 *************************************
@@ -370,9 +418,8 @@ BGT
            MOVE.B   #'G',(A6)+
            MOVE.B   #'T',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
-           
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP      #$00,D3
            BEQ      DISPLACED_16
@@ -380,7 +427,8 @@ BGT
            CMP      #$FF,D3
            BEQ      DISPLACED_32
            
-           MOVE.W   D3,(A6)+
+           BRA DISPLACED_8
+
            RTS
 
 
@@ -393,9 +441,8 @@ BLE
            MOVE.B   #'L',(A6)+
            MOVE.B   #'E',(A6)+
            MOVE.B   #' ',(A6)+
-           MOVE.B   #'#',(A6)+
            MOVE.B   #'$',(A6)+
-           
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP      #$00,D3
            BEQ      DISPLACED_16
@@ -403,20 +450,12 @@ BLE
            CMP      #$FF,D3
            BEQ      DISPLACED_32
            
-           MOVE.W   D3,(A6)+
+           BRA DISPLACED_8
 
            RTS
 
 
 *************************************
-DISPLACED_16
-
-           RTS
-
-
-DISPLACED_32
-
-           RTS
 
 
 
@@ -2508,6 +2547,9 @@ BUFFER DC.L 1
 
 =======
 >>>>>>> master
+
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

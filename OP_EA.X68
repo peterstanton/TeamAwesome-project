@@ -1,23 +1,16 @@
 TEST  ORG $1000                                                 
-    ADDQ.B  #$1,D1                        
-    ADDQ.B  #$3,(A3)              
-    ADDQ.B  #$4,(A4)+             
-    ADDQ.B  #$5,-(A5)              
-    ADDQ.B  #$6,$6000              
-    ADDQ.B  #$7,$8000             
-    ADDQ.B  #$8,$A000 
-
-    ADDQ.W  #$1,D1    
-    ADDQ.W  #$7,D3             
-    ADDQ.W  #$3,A2                
-    ADDQ.W  #$5,(A3)              
-    ADDQ.W  #$7,(A4)+             
-    ADDQ.W  #$8,-(A5)              
-    ADDQ.W  #$6,$6000              
-    ADDQ.W  #$7,$8000             
-    ADDQ.W  #$8,$A000   
-    
-
+    MOVEQ       #127,D1
+    MOVEQ       #0,D4
+    MOVEQ       #1,D7
+    MOVEQ       #-127,D2
+    MOVEQ       #-1,D2
+    MOVEQ       #7,D2
+    MOVEQ       #2,D5
+    MOVEQ       #5,D3
+    MOVEQ       #1,D1
+    MOVEQ       #5,D3
+    MOVEQ       #0,D6
+    MOVEQ       #3,D1
           
 
 START  ORG $6000
@@ -779,7 +772,23 @@ ADDQ_BUFFER
 
 ****************************************               
 MOVEQ
-                JSR     MOVEQ_BUFFER  
+                JSR     bits8to10
+                CMP     #%100,D3
+                BEQ     INVALID_EA
+                CMP     #%101,D3
+                BEQ     INVALID_EA
+                CMP     #%110,D3
+                BEQ     INVALID_EA
+                CMP     #%111,D3
+                BEQ     INVALID_EA
+                
+                
+                JSR     MOVEQ_BUFFER 
+
+                JSR     bits8to16
+                
+
+ 
                 RTS
 
 MOVEQ_BUFFER
@@ -788,8 +797,6 @@ MOVEQ_BUFFER
                MOVE.B   #'V', (A6)+
                MOVE.B   #'E', (A6)+
                MOVE.B   #'Q', (A6)+
-               MOVE.B   #'.', (A6)+
-               MOVE.B   #'L', (A6)+
                MOVE.B   #' ', (A6)+
                RTS
 
@@ -1750,7 +1757,12 @@ bits9to10
                ROR.L    #6, D2          // rotate bits so isolated at the end
                MOVE.W   D2,D3 // moving isolated bits into d3
                RTS               
-                        
+bits9to16
+               CLR.L      D3
+               JSR      COPY_OPCODE  // opcode copied to D2
+               AND      #%0000000011111111, D2
+               MOVE.W   D2,D3 // moving isolated bits into d3
+               RTS                            
            
 bits11to13
                CLR.L      D3
@@ -2433,6 +2445,7 @@ BUFFER DC.L 1
    END TEST
 
                
+
 
 
 

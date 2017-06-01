@@ -1,25 +1,11 @@
 
 TEST  ORG $1000  
-    
-    BCC         $6100
-    BCC         $20
-    BCC         $FF
-    BCC         $FFFFFF00
-    
-    BGT         $6100
-    BGT         $20
-    BGT         $FF
-    BGT         $FFFFFF00
-    
-    BLE         $6100
-    BLE         $20
-    BLE         $FF
-    BLE         $FFFFFF00
 
-START  ORG $6000
-               MOVEA.L #$1000,A2 ** TEST START ADDRESS
-               MOVEA.L #$1030,A3 ** TEST END ADDRESS
-               JSR MAIN_LOOP
+
+START  ORG $1000
+              ; MOVEA.L #$1000,A2 ** TEST START ADDRESS
+              ; MOVEA.L #$1030,A3 ** TEST END ADDRESS
+              ; JSR MAIN_LOOP
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
 *** D5 - CURRENT OPCODE
@@ -261,28 +247,73 @@ code1101
                
 
 code1110       
-                * ASR
+                * ASR MEM
                 JSR     bits1to10
                 CMP     #%1110000011,D3
                 BEQ     ASR_MEM
                 
-                * ASL
+               * ASL  MEM
                 CMP     #%1110000111,D3
                 BEQ     ASL_MEM
+                
+                CMP     #%1110001111,D3
+                BEQ     LSL_MEM
+                
+       
+           
+                * LSR
+                CMP     #%1110001011,D3
+                BEQ     LSR_MEM
+                
+              
+                
+                    * ROR
+                CMP     #%1110011011,D3
+                BEQ     ROR_MEM
+                
+                * ROL
+                CMP     #%1110011111,D3
+                BEQ     ROL_MEM
+        
                 
                 * LSL -- has register/immediate shift and 
                 
                 ** bit 8 is the direction
-                CMP     #%1110001110,D3
-                BEQ     LSL_MEM
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000100000000,D2
+                BEQ     ASL_REG
+        
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000000000000,D2
+                BEQ     ASR_REG
                 
-                * LSR
-                CMP     #%1110001010,D3
-                BEQ     LSR_MEM
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000100001000,D2
+                BEQ     LSL_REG
+            
                 
-                * ROL
+         
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000000001000,D2
+                BEQ     LSR_REG
+               
+          
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000100011000,D2
+                BEQ     ROL_REG
                 
-                * ROR
+            
+         
+                JSR     COPY_OPCODE
+                AND.L   #%1111000100011000,D2
+                CMP     #%1110000000011000,D2
+                BEQ     ROR_REG
+              
 
 code1111       BRA       INVALID_OP
 
@@ -311,14 +342,63 @@ BCC
            MOVE.B   #'C',(A6)+
            MOVE.B   #' ',(A6)+
            MOVE.B   #'$',(A6)+
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP.B    $00,D3
            BEQ      DISPLACED_16
            
            
-           
-           
-           MOVE.B   D3,(A6)+
+
+           BRA DISPLACED_8
+
+           RTS
+
+*************************************
+DISPLACED_8
+           CLR.L    D6
+           MOVE.W    A2,D6
+           ADD.W    D3,D6
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.B      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           RTS
+DISPLACED_16
+
+           CLR.L    D6
+           CLR.L    D3
+           MOVE.W   (A2),D6
+           MOVE.W    A2,D3
+           ADD.W    D3,D6
+            ADD.W    #2,A2
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.W      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           CLR.L    D6
+           RTS
+
+
+DISPLACED_32
+           CLR.L    D6
+           CLR.L    D3
+           MOVE.L   (A2),D6
+           MOVE.L    A2,D3
+           ADD.W    D3,D6
+           ADD.W    #2,A2
+           MOVE.L   (A2),D6
+           MOVE.L    A2,D3
+           ADD.W    D3,D6
+           ADD.W    #2,A2
+           MOVE.B    #16,D2          // Setup for Base-16 conversion
+           MOVE.L      D6,D1        // print the hex value in current address      
+           MOVE.B      #15,D0          
+           TRAP        #15 
+           LEA      BUFFER,A6
+           CLR.L    D6
+
            RTS
 
 *************************************
@@ -329,13 +409,12 @@ BGT
            MOVE.B   #'T',(A6)+
            MOVE.B   #' ',(A6)+
            MOVE.B   #'$',(A6)+
-           
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP.B      #$00,D3
            BEQ      DISPLACED_16
-           
-           
-           MOVE.B   D3,(A6)+
+
+           BRA DISPLACED_8
            RTS
 
 
@@ -349,28 +428,23 @@ BLE
            MOVE.B   #'E',(A6)+
            MOVE.B   #' ',(A6)+
            MOVE.B   #'$',(A6)+
-           
+           JSR      PRINT_BUFFER_NL
            JSR      bits9to16
            CMP.B      #$00,D3
            BEQ      DISPLACED_16
-                      
-           MOVE.B   D3,(A6)+
+
+           
+           CMP      #$FF,D3
+           BEQ      DISPLACED_32
+           
+           BRA DISPLACED_8
+
 
            RTS
 
 
 *************************************
-DISPLACED_16
-           CMP.W    #$FF00,D3
-           BEQ      DISPLACED_32
-           ;stuff
 
-
-
-DISPLACED_32
-           ;stuff
-
-           RTS
 
 
 
@@ -1312,20 +1386,11 @@ ASR_MEM
                 CMP     #%001,D3
                 BEQ     INVALID_EA
             
-               jsr add_src
-               RTS
+                jsr add_src
+                   RTS
             
 **************************************************
-ASL_MEM
-                JSR     ASL_BUFFER
-                JSR     bits11to13
-                CMP     #%000,D3
-                BEQ     INVALID_EA
-                CMP     #%001,D3
-                BEQ     INVALID_EA
-            
-             jsr    add_src
-               RTS 
+
 
 
 **************************************************
@@ -1348,27 +1413,7 @@ ASL_BUFFER
 
 ************************************************
 
-ASR_REG     
-                JSR     bits11to13
-                CMP     #%001,D3
-                BEQ     INVALID_EA
-                CMP     #%010,D3
-                BEQ     INVALID_EA
-                CMP     #%011,D3
-                BEQ     INVALID_EA
-                CMP     #%101,D3
-                BEQ     INVALID_EA
-                CMP     #%110,D3
-                BEQ     INVALID_EA
-                CMP     #%111,D3
-                BEQ     INVALID_EA
-                
-                JSR     ASR_BUFFER
-                                
-                CMP     #%000,D3
-                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
-                CMP     #%100,D3
-                BEQ     AS_REG_HOLDSSHIFTREG
+
                 
 AS_DONE
                 RTS
@@ -1449,66 +1494,92 @@ AS_GETDEST
                 JSR     bits14to16
                 JSR     insert_num
                 BRA     AS_DONE
+                
+ASR_REG     
+                JSR     ASR_REG_BUFFER 
+                JSR     ROTATE_MAGIC  
+                RTS
 
-
-
-ASL_REG     
+ROTATE_MAGIC
+                JSR     COPY_OPCODE
+                AND.L   #%0000000000100000, D2
+                CMP.L    #%0000000000100000, D2
+                BEQ      DATA_REGISTER     
+                AND.L   #%0000000000000000, D2
+                CMP.L    #%0000000000000000, D2
+                BEQ      SHIFT_COUNT   
+ASL_REG_BUFFER 
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'L', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
+               RTS   
+ASR_REG_BUFFER 
+               MOVE.B   #'A',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'R', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
+               RTS   
+ASL_MEM
+                JSR     ASL_BUFFER
                 JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
                 CMP     #%001,D3
                 BEQ     INVALID_EA
-                CMP     #%010,D3
-                BEQ     INVALID_EA
-                CMP     #%011,D3
-                BEQ     INVALID_EA
-                CMP     #%101,D3
-                BEQ     INVALID_EA
-                CMP     #%110,D3
-                BEQ     INVALID_EA
-                CMP     #%111,D3
-                BEQ     INVALID_EA
-                
-                JSR     ASL_BUFFER
-                                
-                CMP     #%000,D3
-                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
-                CMP     #%100,D3
-                BEQ     AS_REG_HOLDSSHIFTREG
+            
+                jsr    add_src
+                RTS 
+
+ASL_REG      
+                JSR     ASL_REG_BUFFER 
+                JSR     ROTATE_MAGIC   
+                RTS
+DATA_REGISTER
+                CLR.L     D3
+                CLR.L     D4
+                MOVE.B  #'D',(A6)+
+                JSR     bits5to7
+                JSR     insert_num
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                CLR.L     D3
+                CLR.L     D4
+                MOVE.B  #'D',(A6)+
+                JSR     bits14to16
+                JSR     insert_num
+                RTS
+
+SHIFT_COUNT
+                CLR.L     D3
+                CLR.L     D4
+                MOVE.B  #'#',(A6)+
+                JSR     bits5to7
+                JSR     insert_num
+                MOVE.B  #',',(A6)+
+                MOVE.B  #' ',(A6)+
+                CLR.L     D3
+                CLR.L     D4
+                MOVE.B  #'D',(A6)+
+                JSR     bits14to16
+                JSR     insert_num
                 RTS
 
 
 *******************************************************
 
-LSL_MEM     
-                JSR     bits5to7
-                CMP     #%001,D3
-                BNE     INVALID_EA
-                
-                CLR.L     D3
-                JSR     bits8to10
-                
-                CMP     #%111,D3
-                BNE     INVALID_EA
-                CLR.L     D3
-                
+LSL_MEM         
+                JSR     LSL_BUFFER
                 JSR     bits11to13
                 CMP     #%000,D3
                 BEQ     INVALID_EA
                 CMP     #%001,D3
                 BEQ     INVALID_EA
-                
-               JSR     LSL_BUFFER
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR     bits14to16
-               JSR     insert_num
-               CLR.L     D3
-               CLR.L     D4
-                
-                RTS
+            
+                jsr    add_src
+                RTS 
 
 LSL_BUFFER
                MOVE.B   #'L',(A6)+
@@ -1517,38 +1588,31 @@ LSL_BUFFER
                MOVE.B   #' ', (A6)+
                RTS     
 
-LSR_MEM     
-                JSR     bits5to7
-                CMP     #%001,D3
-                BNE     INVALID_EA
-                
-                CLR.L     D3
-                JSR     bits8to10
-                
-                CMP     #%011,D3
-                BNE     INVALID_EA
-                CLR.L     D3
-                
+LSR_MEM                  
+                JSR     LSR_BUFFER
                 JSR     bits11to13
                 CMP     #%000,D3
                 BEQ     INVALID_EA
                 CMP     #%001,D3
                 BEQ     INVALID_EA
-                
-                JSR     LSR_BUFFER
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR     bits14to16
-               JSR     insert_num
-               CLR.L     D3
-               CLR.L     D4
-                
-                RTS
+            
+                jsr    add_src
+                RTS 
+LSR_REG_BUFFER 
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'R', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
+               RTS
 
+LSL_REG_BUFFER 
+               MOVE.B   #'L',(A6)+
+               MOVE.B   #'S', (A6)+  
+               MOVE.B   #'L', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
+               RTS
 
 LSR_BUFFER
                MOVE.B   #'L',(A6)+
@@ -1556,141 +1620,81 @@ LSR_BUFFER
                MOVE.B   #'R', (A6)+
                MOVE.B   #' ', (A6)+
                RTS       
-               
-               
-               
-               
-               
+                    
 LSR_REG     
-                JSR     bits11to13
-                CMP     #%001,D3
-                BEQ     INVALID_EA
-                CMP     #%010,D3
-                BEQ     INVALID_EA
-                CMP     #%011,D3
-                BEQ     INVALID_EA
-                CMP     #%101,D3
-                BEQ     INVALID_EA
-                CMP     #%110,D3
-                BEQ     INVALID_EA
-                CMP     #%111,D3
-                BEQ     INVALID_EA
-                
-                JSR     LSR_BUFFER
-                                
-                CMP     #%000,D3
-                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
-                CMP     #%100,D3
-                BEQ     AS_REG_HOLDSSHIFTREG
-                
-
+                JSR     LSR_REG_BUFFER 
+                JSR     ROTATE_MAGIC   
+                RTS
 
 LSL_REG     
-                JSR     bits11to13
-                CMP     #%001,D3
-                BEQ     INVALID_EA
-                CMP     #%010,D3
-                BEQ     INVALID_EA
-                CMP     #%011,D3
-                BEQ     INVALID_EA
-                CMP     #%101,D3
-                BEQ     INVALID_EA
-                CMP     #%110,D3
-                BEQ     INVALID_EA
-                CMP     #%111,D3
-                BEQ     INVALID_EA
-                
-                JSR     LSL_BUFFER
-                                
-                CMP     #%000,D3
-                BEQ     SHIFT_REG_HOLDSSHIFTCOUNT
-                CMP     #%100,D3
-                BEQ     AS_REG_HOLDSSHIFTREG
+                JSR     LSL_REG_BUFFER 
+                JSR     ROTATE_MAGIC   
                 RTS
 
  
 **********************************************
- 
-**********************************************
-ROL_MEM
-               JSR      bits5to7
-               CMP      #%011,D3
-               BNE      INVALID_EA
-               CLR.L      D3
-               
-               JSR      bits8to10
-               CMP      #%111,D3
-               BNE      INVALID_EA
-               CLR.L      D3
-               
-               JSR      bits11to13
-               CMP      #%000,D3
-               BEQ      INVALID_EA
-               CMP      #%001,D3
-               BEQ      INVALID_EA
-               
-               JSR      ROL_BUFFER
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR     bits14to16
-               JSR     insert_num
-               CLR.L     D3
-               CLR.L     D4
+ROL_MEM         
+                JSR     ROL_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+                jsr    add_src
+                RTS 
+
+ROL_BUFFER
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #'O', (A6)+  
+               MOVE.B   #'L', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS     
+
+ROR_MEM                  
+                JSR     ROR_BUFFER
+                JSR     bits11to13
+                CMP     #%000,D3
+                BEQ     INVALID_EA
+                CMP     #%001,D3
+                BEQ     INVALID_EA
+            
+                jsr    add_src
+                RTS 
+ROR_REG_BUFFER 
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #'O', (A6)+  
+               MOVE.B   #'R', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
                RTS
-               
 
-
-ROR_MEM
-               JSR      bits5to7
-               CMP      #%011,D3
-               BNE      INVALID_EA
-               CLR.L      D3
-               
-               JSR      bits8to10
-               CMP      #%011,D3
-               BNE      INVALID_EA
-               CLR.L      D3
-               
-               JSR      bits11to13
-               CMP      #%000,D3
-               BEQ      INVALID_EA
-               CMP      #%001,D3
-               BEQ      INVALID_EA
-               
-               JSR     ROR_BUFFER
-               MOVE    D3,D4
-               LEA     jmp_mode,A0    *Index into the table
-               MULU    #6,D3       *Form offset     
-               JSR     0(A0,D3)   *Jump indirect with index  
-               CLR.L     D3
-               
-               JSR     bits14to16
-               JSR     insert_num
-               CLR.L     D3
-               CLR.L     D4
+ROL_REG_BUFFER 
+               MOVE.B   #'R',(A6)+
+               MOVE.B   #'O', (A6)+  
+               MOVE.B   #'L', (A6)+
+               JSR      GETSIZE_OR
+               MOVE.B   #' ', (A6)+
                RTS
-               
-
-
 
 ROR_BUFFER
                MOVE.B   #'R',(A6)+
-               MOVE.B   #'O',(A6)+
-               MOVE.B   #'R',(A6)+
-               MOVE.B   #' ',(A6)+
-               RTS
-               
-ROL_BUFFER
-               MOVE.B   #'R',(A6)+
-               MOVE.B   #'O',(A6)+
-               MOVE.B   #'L',(A6)+
-               MOVE.B   #' ',(A6)+
-               RTS
-               
+               MOVE.B   #'O', (A6)+  
+               MOVE.B   #'R', (A6)+
+               MOVE.B   #' ', (A6)+
+               RTS       
+                    
+ROR_REG     
+                JSR     ROR_REG_BUFFER 
+                JSR     ROTATE_MAGIC   
+                RTS
+
+ROL_REG     
+                JSR     ROL_REG_BUFFER 
+                JSR     ROTATE_MAGIC   
+                RTS
+
+**********************************************
 ****************************************************
 
 
@@ -2033,7 +2037,7 @@ COPY_OPCODE
                      RTS  
 
 PRINT_ADDRESS     
-                 CLR.L         D2
+                 CLR.L       D2
                  MOVE.B      #16,D2          // Setup for Base-16 conversion
                  MOVE.L      A2,D1        
                  MOVE.B      #15,D0          

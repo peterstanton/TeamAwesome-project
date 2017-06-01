@@ -1,15 +1,6 @@
 
 TEST  ORG $1000                                                 
-   
-    ADDA.W  D0,A0                
-    ADDA.W  A0,A1                 
-    ADDA.W  (A1),A2               
-    ADDA.W  (A2)+,A3             
-    ADDA.W  -(A3),A4              
-    ADDA.W  $4000,A5             
-    ADDA.W  $A000,A6             
-    ADDA.W  #$70,A7              
-    ADDA.W  #$7000,A0         
+ MOVEQ  #$70,D7           
 
 START  ORG $6000
                MOVEA.L #$1000,A2 ** TEST START ADDRESS
@@ -794,7 +785,7 @@ ADDQ_BUFFER
 
 ****************************************               
 MOVEQ
-                JSR     bits8to10
+                JSR     bits8to10  *** if bit 8 is ever equal to 1 it's invalid
                 CMP     #%100,D3
                 BEQ     INVALID_EA
                 CMP     #%101,D3
@@ -803,33 +794,40 @@ MOVEQ
                 BEQ     INVALID_EA
                 CMP     #%111,D3
                 BEQ     INVALID_EA
-                
-                
-                JSR     MOVEQ_BUFFER 
+               JSR     MOVEQ_BUFFER 
 
+               JSR    PRINT_BUFFER_NL
+               JSR     bits9to16
+               MOVE.B      #16,D2          // Setup for Base-16 conversion
+               MOVE.W      D3,D1        // print the hex value in current address      
+               MOVE.B      #15,D0          
+               TRAP        #15 
+               LEA         BUFFER,A6
+               MOVE.B   #',', (A6)+
+               MOVE.B   #' ', (A6)+ 
+               CLR.L    D3
+               MOVE.B   #'D', (A6)+
+               JSR    PRINT_BUFFER_NL
+               JSR      BITS5TO7
+               MOVE.B      #16,D2          // Setup for Base-16 conversion
+               MOVE.W      D3,D1        // print the hex value in current address      
+               MOVE.B      #15,D0          
+               TRAP        #15 
+               LEA         BUFFER,A6
+               RTS
 
-                JSR     bits8to16
-                MOVE    D3,D4
-                MASK    #$00F0,D3
-                rotate so it's like #$000F,D3
-                Do a translate
-                
-                MOVE    D4,D3
-                MASK    #$000F,D3
-                JSR     TRANSLATE
-                RTS 
 
                 
 
 TRANSLATE
                 CMP     #$A,D3
                 BLE     TRANSLATE_IS_NUM
-                ADD     *whatever number to convert to letter in ASCII,D3
+               * ADD     *whatever number to convert to letter in ASCII,D3
                 MOVE    D3,(A6)+
                 RTS  
                   
 TRANSLATE_IS_NUM
-                ADD     *whatever number to convert to a number in ASCII,D3
+               *  ADD     *whatever number to convert to a number in ASCII,D3
                 MOVE    D3,(A6)+        
                 RTS
 
@@ -2018,6 +2016,12 @@ PRINT_ADDRESS
                  MOVE.B      #' ', (A6)+
                  MOVE.B      #' ', (A6)+
                  RTS     
+PRINT_BUFFER_NL    
+               MOVE.B   #%0,  (A6)+ ** null terminate the string       
+               LEA      BUFFER, A1
+               MOVE.W   #14,D0
+               TRAP     #15    
+               RTS             
 PRINT_BUFFER    
                MOVE.B   #%0,  (A6)+ ** null terminate the string       
                LEA      BUFFER, A1
@@ -2471,6 +2475,8 @@ BUFFER DC.L 1
    END TEST
 
                
+
+
 
 
 

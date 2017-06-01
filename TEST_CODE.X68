@@ -12,23 +12,27 @@
 *Start of Move test code.***************************************************
 ****************************************************************************
 *Done
-     ADDI.L   #4,D1   *Assembler changes this to ADDQ unless the number being added is greater than #8.
+    ADDI.L   #4,D1   *Assembler changes this to ADDQ unless the number being added is greater than #8.
     ADDI.L   #9,D1
     ADDI.L   #0,D1
     ADDI.L   #$FFFFFFFF,D7
     ADDI.W   #$FFFF,D5
     ADDI.W   #$0,D5
     ADDI.W   #$9,D4
+    
     LEA $0,A0
     LEA $1000,A1
     LEA $8000,A2
     LEA $FFFF0000,A3
     LEA (A4),A5 
+    
     JSR     (A6)
     JSR     $0
     JSR     $1000
     JSR     $8000
     JSR     $FFEE0000
+    
+
     MOVEA.W   D2,A2
     MOVEA.W   A5,A3
     MOVEA.W   (A4)+,A3
@@ -1294,6 +1298,8 @@ INPUT
 * Put variables and constants here
 
 *    END    START        ; last line of source
+
+
 
 
 

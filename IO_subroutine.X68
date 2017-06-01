@@ -35,7 +35,7 @@ IO_StartLoop    LEA     location_start_msg,A1
                 
                 MOVE.L  location_startData,A2
                 MOVEA.L A2,A4
-                ADD.L   #$2,A4                  *moves to next OpCode
+                *ADD.L   #$2,A4                  *moves to next OpCode
                 
                 LEA     linebreak,A1            *appends line at the end of the user input
                 MOVE.B  #14,D0
@@ -121,6 +121,10 @@ IO_EndProgram   LEA     endtest_msg,A1
 
                 BRA     END_PROGRAM             
 *-----------------------------------------------------------
+
+
+
+
 
 
 

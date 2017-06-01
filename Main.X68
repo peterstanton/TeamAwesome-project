@@ -17,9 +17,11 @@ END_PROGRAM     SIMHALT                *Stop the simulator
                 INCLUDE 'helpers.x68'
                 INCLUDE 'definitions.x68'
                 INCLUDE 'OP_EA.x68'
-                INCLUDE 'TEST_CODE.x68'
+                *INCLUDE 'TEST_CODE.x68'
                 
                 END    START        ; last line of source
+
+
 
 
 

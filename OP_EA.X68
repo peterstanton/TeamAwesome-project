@@ -1,21 +1,11 @@
 
 TEST  ORG $1000  
-    BCC     $FF
-    ROL     -(A1)
-    ROR     $4000
-    ROL     $A000
-    
-    ROL.B    #$7,D0
-    ROL.W    #$8,D1
-    ROL.L    D7,D1
-    ROR.B    #$7,D0
-    ROR.W    #$8,D1
-    ROR.L    D7,D1
 
-START  ORG $6000
-               MOVEA.L #$1000,A2 ** TEST START ADDRESS
-               MOVEA.L #$1030,A3 ** TEST END ADDRESS
-               JSR MAIN_LOOP
+
+START  ORG $1000
+              ; MOVEA.L #$1000,A2 ** TEST START ADDRESS
+              ; MOVEA.L #$1030,A3 ** TEST END ADDRESS
+              ; JSR MAIN_LOOP
 *** D3 - ISOLATED BITS FOR COMPARISONS
 *** D4 - MODE
 *** D5 - CURRENT OPCODE
@@ -354,12 +344,11 @@ BCC
            MOVE.B   #'$',(A6)+
            JSR      PRINT_BUFFER_NL
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B    $00,D3
            BEQ      DISPLACED_16
            
-           CMP      #$FF,D3
-           BEQ      DISPLACED_32
            
+
            BRA DISPLACED_8
 
            RTS
@@ -409,6 +398,7 @@ DISPLACED_32
            TRAP        #15 
            LEA      BUFFER,A6
            CLR.L    D6
+
            RTS
 
 *************************************
@@ -421,14 +411,10 @@ BGT
            MOVE.B   #'$',(A6)+
            JSR      PRINT_BUFFER_NL
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B      #$00,D3
            BEQ      DISPLACED_16
-           
-           CMP      #$FF,D3
-           BEQ      DISPLACED_32
-           
-           BRA DISPLACED_8
 
+           BRA DISPLACED_8
            RTS
 
 
@@ -444,18 +430,21 @@ BLE
            MOVE.B   #'$',(A6)+
            JSR      PRINT_BUFFER_NL
            JSR      bits9to16
-           CMP      #$00,D3
+           CMP.B      #$00,D3
            BEQ      DISPLACED_16
+
            
            CMP      #$FF,D3
            BEQ      DISPLACED_32
            
            BRA DISPLACED_8
 
+
            RTS
 
 
 *************************************
+
 
 
 
@@ -957,19 +946,6 @@ MOVEQ
 
 
                 
-
-TRANSLATE
-                CMP     #$A,D3
-                BLE     TRANSLATE_IS_NUM
-               * ADD     *whatever number to convert to letter in ASCII,D3
-                MOVE    D3,(A6)+
-                RTS  
-                  
-TRANSLATE_IS_NUM
-               *  ADD     *whatever number to convert to a number in ASCII,D3
-                MOVE    D3,(A6)+        
-                RTS
-
 MOVEQ_BUFFER
                MOVE.B   #'M', (A6)+
                MOVE.B   #'O', (A6)+  
@@ -2530,24 +2506,6 @@ BUFFER DC.L 1
    END TEST
 
                
-
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> master
-
 
 
 *~Font name~Courier New~
